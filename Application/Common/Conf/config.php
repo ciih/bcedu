@@ -13,7 +13,4 @@ return array(
 	'TMPL_L_DELIM'         => '<%', // 修改左定界符
 	'TMPL_R_DELIM'         => '%>', // 修改右定界符
 	'URL_MODEL'            => 2, // URL模式为Rewrite模式
-
-	//通用模板路径
-	'COMMON_TPL_PATH'      => './Application/Common/Tpl/',
 );

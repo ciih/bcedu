@@ -1,0 +1,46 @@
+/* Page home CSS */
+.bg-index {
+	background: url(../../img/index_login_bg.jpg) no-repeat 0 0 #fff;
+	background-size: 100%;
+}
+#index-login {
+	position: relative;
+	margin: 0 auto;
+	height: 564px;
+}
+#index-login .login-title {
+	margin-bottom: 15px;
+	font-size: 20px;
+}
+#index-login .login-section {
+	position: absolute;
+	top: 88px;
+	left: 60%;
+	padding: 30px;
+	width: 310px;
+	height: 296px;
+	background-color: #fff;
+	background-color: rgba(255,255,255,.9);
+	border-radius: 10px;
+}
+#index-login .login-section .input-group {
+	position: relative;;
+	margin-bottom: 15px;
+	width: 100%;
+}
+#index-login .login-section input {
+	padding-left: 42px;
+}
+#index-login .login-section .btn-info {
+	width: 100%;
+}
+#index-login .glyphicon {
+	z-index: 110;
+	position: absolute;
+	top: 16px;
+	left: 10px;
+	padding-right: 8px;
+	font-size: 16px;
+	color: #1fb8a4;
+	border-right: 1px solid #999;
+}

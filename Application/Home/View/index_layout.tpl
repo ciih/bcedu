@@ -10,16 +10,8 @@
 <body>
 <div class="wrapper">
     <div id="doc-view">
-        <div id="doc-hd">
-        	
-        </div>
         <div id="doc-bd">
-            <div class="container">
-                {__CONTENT__}
-            </div>
-        </div>
-        <div id="doc-ft">
-        	
+            {__CONTENT__}
         </div>
     </div>
 </div>

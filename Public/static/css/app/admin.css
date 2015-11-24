@@ -1,3 +1,8 @@
 /* Page CSS */
-
-/* framework */
+.bg-admin {
+	background: url(../../img/admin_login_bg.jpg) repeat-x #1e537f;
+}
+.bg-top-banner {
+	height: 100%;
+	background: url(../../img/admin_login_top_bg.jpg) no-repeat top center;
+}

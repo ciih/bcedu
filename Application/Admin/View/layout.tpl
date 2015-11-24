@@ -3,24 +3,28 @@
 <head>
 	<meta charset="utf-8">
 	<title>北辰区考试数据分析平台-后台管理</title>
-	<link rel="stylesheet" href="./Public/static/css/lib/bootstrap/bootstrap.min.css">
-	<link rel="stylesheet" href="./Public/static/css/app/admin.css">
+    <foreach name="homeCss" item="css" >
+        <link rel="stylesheet" href="<%$css%>">
+    </foreach>
 </head>
 <body>
 <div class="wrapper">
     <div id="doc-view">
         <div id="doc-hd">
-        	
+            
         </div>
         <div id="doc-bd">
-            {__CONTENT__}
+            <div class="container">
+                {__CONTENT__}
+            </div>
         </div>
         <div id="doc-ft">
-        	
+            
         </div>
     </div>
 </div>
 </body>
-<script src="./Public/static/js/lib/jquery.min.js"></script>
-<script src="./Public/static/js/lib/bootstrap/bootstrap.min.js"></script>
+<foreach name="homeJs" item="js" >
+    <script src="<%$js%>"></script>
+</foreach>
 </html>
