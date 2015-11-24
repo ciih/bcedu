@@ -6,3 +6,39 @@
 	height: 100%;
 	background: url(../../img/admin_login_top_bg.jpg) no-repeat top center;
 }
+#index-login {
+	position: absolute;
+	top: 400px;
+	left: 0;
+	width: 100%;
+	height: 50px;
+}
+#index-login .login-section {
+	margin: 0 auto;
+	width: 510px;
+	height: 50px;	
+}
+#index-login .login-section .input-group {
+	display: inline;
+	position: relative;
+	float: left;
+	margin-left: 10px;
+}
+#index-login .login-section input {
+	padding-left: 42px;
+	border-radius: 4px;
+	border-color: #4f8bbd;
+}
+#index-login .login-section .btn-info {
+	width: 60px;
+}
+#index-login .glyphicon {
+	z-index: 110;
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	padding-right: 8px;
+	font-size: 16px;
+	color: #1fb8a4;
+	border-right: 1px solid #999;
+}

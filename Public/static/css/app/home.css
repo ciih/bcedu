@@ -24,12 +24,14 @@
 	border-radius: 10px;
 }
 #index-login .login-section .input-group {
-	position: relative;;
+	position: relative;
 	margin-bottom: 15px;
 	width: 100%;
 }
 #index-login .login-section input {
 	padding-left: 42px;
+	border-top-left-radius: 6px;
+	border-bottom-left-radius: 6px;
 }
 #index-login .login-section .btn-info {
 	width: 100%;
