@@ -28,5 +28,19 @@ function getLoadJsStatic($index) {
 	}
 	return $jsSrc;
 }
+function getLoadHtmlStatic($index) {
+	$staticConfig = require "./Application/Common/Conf/load_static.php";
+	$htmlLink = Array();
+	$num = 0;
+	foreach ($staticConfig['STATIC_CONFIG'] as $key=>$val) { 
+		if ($key == $index) {
+			foreach ($staticConfig['STATIC_CONFIG'][$key]['html'] as $cont) {
+				$htmlLink[$num] = $cont;
+				$num++;
+			}
+		}
+	}
+	return $htmlLink;
+}
 
 ?>

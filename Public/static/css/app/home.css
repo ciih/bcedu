@@ -1,4 +1,8 @@
 /* Page home CSS */
+html,
+body {
+	height: 100%;
+}
 .bg-index {
 	background: url(../../img/index_login_bg.jpg) no-repeat 0 0 #fff;
 	background-size: 100%;

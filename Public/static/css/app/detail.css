@@ -1,0 +1,49 @@
+/* Page detail CSS */
+
+/* detail-section */
+.detail-section .tab-section .tab-nav .title {
+	display: block;
+	padding-top: 32px;
+	line-height: 20px;
+	background-image: url(../../img/icon_detail.png);
+	background-repeat: no-repeat;
+}
+.detail-section .tab-section .tab-nav .title:hover {
+	text-decoration: none;
+	color: #f7820d;
+}
+.detail-section .tab-section .tab-nav .tab-active .title {
+	color: #9d9d9d;
+}
+.detail-section .tab-section .tab-nav .cjfx {
+	background-position: 8px -115px;
+}
+.detail-section .tab-section .tab-nav .jcbb {
+	background-position: 8px -188px;
+}
+.detail-section .tab-section .tab-nav .sdfx {
+	background-position: 8px -280px;
+}
+.detail-section .tab-section .tab-nav .jsjl {
+	background-position: 8px -47px;
+}
+.detail-section .tab-section .tab-nav .xxfx {
+	background-position: 8px -378px;
+}
+.detail-section .tab-section .tab-nav .zzpj {
+	background-position: 8px 26px;
+}
+.detail-section .tab-section .tab-nav .sdtfx {
+	background-position: 8px -465px;
+}
+
+/* detail-section */
+.detail-section .classify-section {
+	padding: 0;
+}
+.detail-section .classify-section .section {
+	margin: 0;
+	border-width: 0 0 1px 0;
+	border-radius: 0;
+	box-shadow: 0 0 0;
+}

@@ -3,10 +3,10 @@ namespace Home\Controller;
 use Think\Controller;
 class IndexController extends Controller {
     public function index(){
-    	$homeCss = getLoadCssStatic('home');
-    	$homeJs = getLoadJsStatic('home');
-    	$this->assign('homeCss', $homeCss);
-    	$this->assign('homeJs', $homeJs);
+    	$loadCss = getLoadCssStatic('home');
+    	$loadJs = getLoadJsStatic('home');
+    	$this->assign('loadCss', $loadCss);
+    	$this->assign('loadJs', $loadJs);
     	$this->display();
     }
 	public function login(){
