@@ -47,3 +47,42 @@
 	border-radius: 0;
 	box-shadow: 0 0 0;
 }
+
+/* detail-hd */
+.detail-hd {
+	margin: 0 auto;
+	width: 95%;
+	border-bottom: 1px solid #dadada;
+}
+.detail-hd .title {
+	overflow: hidden;
+	float: left;
+	padding-left: 32px;
+	width: 132px;
+	height: 86px;
+	line-height: 86px;
+	font-size: 18px;
+	color: #9d9d9d;
+	text-shadow: 0 1px 0 #fff;
+}
+.detail-hd .title .glyphicon {
+	top: 3px;
+	margin-right: 6px;
+	color: #8cd5ed;
+}
+.detail-hd .school-classify {
+	float: right;
+	margin-top: 28px;
+}
+.detail-hd .school-classify .dropdown {
+	float: left;
+	margin-right: 10px;
+}
+.detail-hd .school-classify .btn-search,
+.detail-hd .school-classify .btn-download {
+	margin-right: 10px;
+}
+.detail-bd .loading {
+	margin: 20% auto;
+	width: 80%;
+}

@@ -244,6 +244,50 @@ body {
 	text-align: center;
 }
 
+/* table-section */
+.table-section {
+	margin: 20px auto 0;
+	width: 90%;
+}
+.table-section .table-content {
+
+}
+.table-section .table-content table {
+	width: 100%;
+}
+.table-section .table-content table thead tr {
+	box-shadow: 0 1px 3px #e6e6e6;
+}
+.table-section .table-content table thead th,
+.table-section .table-content table td {
+	padding: 8px 15px;
+	border: 1px solid #e0e0e0;
+}
+.table-section .table-content table th {
+	line-height: 24px;
+	font-size: 14px;
+	color: #9d9d9d;
+	text-shadow: 0 1px 0 #fff;
+	background: #fefefe; /* old browsers */
+	background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZlZmVmZSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmMmYyZjIiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+	background: -moz-linear-gradient(top, #fefefe 0%, #f2f2f2 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fefefe), color-stop(100%,#f2f2f2)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #fefefe 0%, #f2f2f2 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #fefefe 0%, #f2f2f2 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #fefefe 0%, #f2f2f2 100%); /* IE10+ */
+	background: linear-gradient(to bottom, #fefefe 0%, #f2f2f2 100%); /* W3C */
+	-webkit-box-shadow: inset 0 1px 0 #fff;
+	box-shadow: inset 0 1px 0 #fff;
+	border-bottom-color: #dadada;
+}
+.table-section .table-content table td {
+	font-size: 14px;
+	line-height: 24px;
+	font-weight: normal;
+	color: #696969;
+	text-shadow: 0 1px 0 #fff;
+}
+
 /* copyright */
 .copyright {
 	padding: 50px 0 20px;
