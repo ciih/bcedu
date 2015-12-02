@@ -9,7 +9,7 @@ class EduController extends Controller {
         $page = I('page');
         $type = I('type');
         $school = I('school');
-        $course = empty(I('course')) ? 'chinese' : I('course');
+        $grade = I('grade');
         $name = strtolower(CONTROLLER_NAME);
     	$tpl = 'Application/Home/View/Edu/' . $page . '_section.tpl';
     	$this->assign('loadCss', $loadCss);
@@ -19,7 +19,7 @@ class EduController extends Controller {
         $this->assign('page', $page);
         $this->assign('type', $type);
         $this->assign('school', $school);
-        $this->assign('course', $course);
+        $this->assign('grade', $grade);
     	$this->assign('tpl', $tpl);
     	$this->display();
     }

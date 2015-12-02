@@ -82,41 +82,6 @@ body {
 .nav-bar .icon-highschool .active {
 	background-position: 0 -98px;
 }
-.nav-bar .icon-chinese a{
-	background-position: -384px 0;
-}
-.nav-bar .icon-chinese a:hover,
-.nav-bar .icon-chinese .active {
-	background-position: -384px -98px;
-}
-.nav-bar .icon-math a{
-	background-position: -480px 0;
-}
-.nav-bar .icon-math a:hover,
-.nav-bar .icon-math .active {
-	background-position: -480px -98px;
-}
-.nav-bar .icon-english a{
-	background-position: -576px 0;
-}
-.nav-bar .icon-english a:hover,
-.nav-bar .icon-english .active {
-	background-position: -576px -98px;
-}
-.nav-bar .icon-physics a{
-	background-position: -672px 0;
-}
-.nav-bar .icon-physics a:hover,
-.nav-bar .icon-physics .active {
-	background-position: -672px -98px;
-}
-.nav-bar .icon-chemistry a{
-	background-position: -768px 0;
-}
-.nav-bar .icon-chemistry a:hover,
-.nav-bar .icon-chemistry .active {
-	background-position: -768px -98px;
-}
 
 /* .classify-section */
 .classify-section {
@@ -207,6 +172,12 @@ body {
 	background-color: #f9f9f9;
 	border-radius: 0 3px 3px 0;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+.detail-section .content-section table td a {
+	margin-right: 8px;
+}
+.detail-section .content-section table td a:hover {
+	color: #f7820d;
 }
 
 /* .pic-list */

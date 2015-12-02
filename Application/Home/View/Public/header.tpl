@@ -21,27 +21,46 @@
 					<span>高中</span>
 				</li>
 			<elseif condition="strtolower(CONTROLLER_NAME) eq 'edu'"/>
-				<li class="icon-tag icon-chinese">
-					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&course=chinese" title="语文" <eq name="course" value="chinese"> class="active" </eq>>语文</a>
-					<span>语文</span>
+				<if condition="$type eq 'junior'">
+				<li class="icon-tag icon-juniorschool">
+					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&grade=j4" title="四年级" <eq name="grade" value="j4"> class="active" </eq>>四年级</a>
+					<span>四年级</span>
 				</li>
-				<li class="icon-tag icon-math">
-					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&course=math" title="数学" <eq name="course" value="math"> class="active" </eq>>数学</a>
-					<span>数学</span>
+				<li class="icon-tag icon-juniorschool">
+					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&grade=j5" title="五年级" <eq name="grade" value="j5"> class="active" </eq>>五年级</a>
+					<span>五年级</span>
 				</li>
-				<li class="icon-tag icon-english">
-					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&course=english" title="英语" <eq name="course" value="english"> class="active" </eq>>英语</a>
-					<span>英语</span>
+				<li class="icon-tag icon-juniorschool">
+					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&grade=j6" title="六年级" <eq name="grade" value="j6"> class="active" </eq>>六年级</a>
+					<span>六年级</span>
 				</li>
-
-				<if condition="$type neq 'junior'">
-				<li class="icon-tag icon-physics">
-					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&course=physics" title="物理" <eq name="course" value="physics"> class="active" </eq>>物理</a>
-					<span>物理</span>
+				</if>
+				<if condition="$type eq 'middle'">
+				<li class="icon-tag icon-middleschool">
+					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&grade=m7" title="七年级" <eq name="grade" value="m7"> class="active" </eq>>七年级</a>
+					<span>七年级</span>
 				</li>
-				<li class="icon-tag icon-chemistry">
-					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&course=chemistry" title="化学" <eq name="course" value="chemistry"> class="active" </eq>>化学</a>
-					<span>化学</span>
+				<li class="icon-tag icon-middleschool">
+					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&grade=m8" title="八年级" <eq name="grade" value="m8"> class="active" </eq>>八年级</a>
+					<span>八年级</span>
+				</li>
+				<li class="icon-tag icon-middleschool">
+					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&grade=m9" title="九年级" <eq name="grade" value="m9"> class="active" </eq>>九年级</a>
+					<span>九年级</span>
+				</li>
+				</if>
+				<if condition="$type eq 'high'">
+				<li class="icon-tag icon-highschool">
+					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&grade=h1" title="高一" <eq name="grade" value="h1"> class="active" </eq>>高一</a>
+					<span>高一</span>
+				</li>
+				<li class="icon-tag icon-highschool">
+					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&grade=h2" title="高二" <eq name="grade" value="h2"> class="active" </eq>>高二</a>
+					<span>高二</span>
+				</li>
+				<li class="icon-tag icon-highschool">
+					<a href="/home/edu?page=<%$page%>&type=<%$type%>&school=<%$school%>&grade=h3" title="高三" <eq name="grade" value="h3"> class="active" </eq>>高三</a>
+					<span>高三</span>
 				</li>
 				</if>
 			</if>
