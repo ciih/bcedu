@@ -13,4 +13,10 @@ return array(
 	'TMPL_L_DELIM'         => '<%', // 修改左定界符
 	'TMPL_R_DELIM'         => '%>', // 修改右定界符
 	'URL_MODEL'            => 2, // URL模式为Rewrite模式
+
+	'TMPL_CACHE_ON'   => false,  // 默认开启模板编译缓存 false 的话每次都重新编译模板
+
+	'ACTION_CACHE_ON'  => false,  // 默认关闭Action 缓存
+
+	'HTML_CACHE_ON'   => false,   // 默认关闭静态缓存	
 );
