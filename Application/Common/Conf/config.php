@@ -1,10 +1,11 @@
 <?php
 return array(
 	// '数据库配置'
-	'DB_HOST'   => 'localhost',
-	'DB_NAME'   => 'bcedu',
+	'DB_TYPE'   => 'mysql',
+	'DB_HOST'   => 'chenhong.bcedu.com',
+	'DB_NAME'   => 'bcedu_test',
 	'DB_USER'   => 'root',
-	'DB_PWD'    => 'root',
+	'DB_PWD'    => '',
 	'DB_PORT'   => '3306',
 	'DB_PREFIX' => 'bc_',
 
@@ -18,5 +19,5 @@ return array(
 
 	'ACTION_CACHE_ON'  => false,  // 默认关闭Action 缓存
 
-	'HTML_CACHE_ON'   => false,   // 默认关闭静态缓存	
+	'HTML_CACHE_ON'   => false,   // 默认关闭静态缓存
 );

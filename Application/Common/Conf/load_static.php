@@ -17,7 +17,6 @@ return array(
         ),
         'home' => array(
             'css' => array(
-            	__ROOT__ . '/Public/static/css/common/common.css',
                 __ROOT__ . '/Public/static/css/app/home.css'
             ),
             'js_head' => array(),
@@ -41,8 +40,8 @@ return array(
         ),
         'admin' => array(
             'css' => array(
-            	__ROOT__ . '/Public/static/css/common/admin_common.css',
-                __ROOT__ . '/Public/static/css/app/admin.css'
+            	__ROOT__ . '/Public/static/css/admin/common.css',
+                __ROOT__ . '/Public/static/css/admin/admin.css'
             ),
             'js_head' => array(),
             'js_foot' => array()

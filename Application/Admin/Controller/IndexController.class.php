@@ -9,4 +9,15 @@ class IndexController extends Controller {
 		$this->assign('adminJs', $adminJs);
 		$this->display();
     }
+    public function login(){
+
+		$username = $_POST['inputUsername'];
+		$pwd = md5($_POST['inputPassword']);
+
+		$userTable = M('user');
+		$data = $userTable->where("username='$username' AND password='$pwd' AND role=0")->select();
+		if(!empty($data)) {
+			echo '欢迎光临';
+		}
+    }
 }
