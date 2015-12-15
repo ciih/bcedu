@@ -1,0 +1,26 @@
+/* layout */
+html,
+body {
+	height: 100%;
+}
+body {
+	font-family: "Microsoft YaHei";
+	background-color: #fff;
+}
+ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+input {
+	outline: none;
+}
+
+/* placeholder */
+::-webkit-input-placeholder {color:#999;}
+input:-moz-placeholder{color:#999;}
+.placeholder{color:#999;}
+
+/* comm: g-input (通用表单) */
+button::-moz-focus-inner{margin:0;padding:0;border:0;}
+input::-ms-clear{display:none;} /* 去掉ie10文本框后边的X */
