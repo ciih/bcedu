@@ -11,7 +11,7 @@
 				<input type="password" class="form-control" name="inputPassword" placeholder="密码">
 			</div>
 			<div class="input-group">
-				<button type="submit" class="btn btn-info">登录</button>
+				<button type="submit" name="inputSubmit" class="btn btn-info">登录</button>
 			</div>
 		</form>
 	</div>

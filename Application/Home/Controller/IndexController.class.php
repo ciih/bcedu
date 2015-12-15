@@ -10,13 +10,28 @@ class IndexController extends Controller {
     	$this->display();
     }
 	public function login(){
-		$username = I('post.inputUsername');
-		$password = md5(I('post.inputPassword'));
-		//假逻辑，只为做演示
-		if($username == 'admin' && $password == md5('admin')) {
-			$this->redirect('/Admin/');
-		} else {
-			echo 'error';
+    	if(!isset($_POST['inputSubmit'])){
+		    $this->redirect('/');
 		}
+
+		$username = trim($_POST['inputUsername']);
+		$pwd = md5($_POST['inputPassword']);
+
+
+		$userTable = M('user');
+		$data = $userTable->where("username='$username' AND password='$pwd'")->select();
+
+		if(!empty($data)) {
+			if($data[0]['role'] == 1) {
+				$this->redirect('/home/list/');
+			} elseif($data[0]['role'] == 2) {
+				$this->redirect('/home/detail/');
+			} else {
+				$this->redirect('/');
+			}
+		} else {
+			$this->redirect('/');
+		}
+
 	}
 }

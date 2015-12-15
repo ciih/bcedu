@@ -1,5 +1,6 @@
 <?php
 // todo 这两个方法可以合并成一个方法
+// 加载css样式
 function getLoadCssStatic($index) {
 	$staticConfig = require "./Application/Common/Conf/load_static.php";
 	$cssLink = Array();
@@ -14,6 +15,7 @@ function getLoadCssStatic($index) {
 	}
 	return $cssLink;
 }
+// 加载js
 function getLoadJsStatic($index) {
 	$staticConfig = require "./Application/Common/Conf/load_static.php";
 	$jsSrc = Array();
@@ -28,6 +30,7 @@ function getLoadJsStatic($index) {
 	}
 	return $jsSrc;
 }
+// 加载html
 function getLoadHtmlStatic($index) {
 	$staticConfig = require "./Application/Common/Conf/load_static.php";
 	$htmlLink = Array();
@@ -41,6 +44,13 @@ function getLoadHtmlStatic($index) {
 		}
 	}
 	return $htmlLink;
+}
+
+// 页面跳转
+function redirectUrl($url) {
+	if(empty($_SERVER['HTTP_REFERER']) && empty(strstr($_SERVER['HTTP_REFERER'],'edu.com')) ) {
+		redirect("/{$url}");
+	}
 }
 
 ?>

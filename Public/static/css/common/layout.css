@@ -36,10 +36,6 @@ input::-ms-clear{display:none;} /* 去掉ie10文本框后边的X */
 #doc-bd,
 #doc-ft{position:relative;}
 
-/* hack */
-.ie6 #doc-view,
-.ie6 #doc-bd{zoom:1;} /* 解决ie6下绝对定位的问题 */
-
 #doc,
 #doc-view{min-width:1002px;}
 
