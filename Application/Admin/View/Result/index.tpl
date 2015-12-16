@@ -4,7 +4,7 @@
 
 	<div class="portlet box blue">
 		<div class="portlet-title">
-			<div class="caption"><i class="icon-edit"></i>成绩单</div>
+			<div class="caption"><i class="icon-comments"></i>提交成绩单</div>
 		</div>
 		<div class="portlet-body">
 			<div class="alert alert-block alert-info fade in">
@@ -33,84 +33,33 @@
 
 		<div class="portlet-body">
 
-			<div id="sample_editable_1_wrapper" class="dataTables_wrapper form-inline" role="grid">
+			<div class="dataTables_wrapper form-inline" role="grid">
 				<table class="table table-striped table-hover table-bordered dataTable" id="sample_editable_1" aria-describedby="sample_editable_1_info">
 					<thead>
 						<tr role="row">
-							<th class="sorting_disabled" role="columnheader" rowspan="1" colspan="1" aria-label="Username" style="width: 148px;">Username</th>
-							<th class="sorting" role="columnheader" tabindex="0" aria-controls="sample_editable_1" rowspan="1" colspan="1" aria-label="Full Name: activate to sort column ascending" style="width: 200px;">Full Name</th>
-							<th class="sorting" role="columnheader" tabindex="0" aria-controls="sample_editable_1" rowspan="1" colspan="1" aria-label="Points: activate to sort column ascending" style="width: 97px;">Points</th>
-							<th class="sorting" role="columnheader" tabindex="0" aria-controls="sample_editable_1" rowspan="1" colspan="1" aria-label="Notes: activate to sort column ascending" style="width: 133px;">Notes</th>
-							<th class="sorting" role="columnheader" tabindex="0" aria-controls="sample_editable_1" rowspan="1" colspan="1" aria-label="Edit: activate to sort column ascending" style="width: 66px;">Edit</th>
-							<th class="sorting" role="columnheader" tabindex="0" aria-controls="sample_editable_1" rowspan="1" colspan="1" aria-label="Delete: activate to sort column ascending" style="width: 102px;">Delete</th>
+						<foreach name="keys" item="vo" >
+						    <th class="sorting_disabled" role="columnheader" rowspan="1" colspan="1"><%$vo%></th>
+						</foreach>
 						</tr>
 					</thead>
 					<tbody role="alert" aria-live="polite" aria-relevant="all">
-						<tr class="odd">
-							<td class=" sorting_1">alex</td>
-							<td class=" ">Alex Nilson</td>
-							<td class=" ">1234</td>
-							<td class="center ">power user</td>
-							<td class=" "><a class="edit" href="javascript:;">Edit</a></td>
-							<td class=" "><a class="delete" href="javascript:;">Delete</a></td>
-
-						</tr>
-						<tr class="even">
-							<td class=" sorting_1">gist124</td>
-							<td class=" ">Nick Roberts</td>
-							<td class=" ">62</td>
-							<td class="center ">new user</td>
-							<td class=" "><a class="edit" href="javascript:;">Edit</a></td>
-							<td class=" "><a class="delete" href="javascript:;">Delete</a></td>
-
-						</tr>
-						<tr class="odd">
-							<td class=" sorting_1">goldweb</td>
-							<td class=" ">Sergio Jackson</td>
-							<td class=" ">132</td>
-							<td class="center ">elite user</td>
-							<td class=" "><a class="edit" href="javascript:;">Edit</a></td>
-							<td class=" "><a class="delete" href="javascript:;">Delete</a></td>
-						</tr>
-						<tr class="even">
-							<td class=" sorting_1">lisa</td>
-							<td class=" ">Lisa Wong</td>
-							<td class=" ">434</td>
-							<td class="center ">new user</td>
-							<td class=" "><a class="edit" href="javascript:;">Edit</a></td>
-							<td class=" "><a class="delete" href="javascript:;">Delete</a></td>
-
-						</tr>
-						<tr class="odd">
-							<td class=" sorting_1">nick12</td>
-							<td class=" ">Nick Roberts</td>
-							<td class=" ">232</td>
-							<td class="center ">power user</td>
-							<td class=" "><a class="edit" href="javascript:;">Edit</a></td>
-							<td class=" "><a class="delete" href="javascript:;">Delete</a></td>
-
-						</tr>
+					<foreach name="rets" item="vo" key="k">
+						<if condition="$k%2 == 0">
+							<tr class="even">
+								<foreach name="vo" item="vos">
+							    	<td><%$vos%></td>
+							    </foreach>
+						    </tr>
+						<else />
+							<tr class="odd">
+								<foreach name="vo" item="vos">
+							    	<td><%$vos%></td>
+							    </foreach>
+						    </tr>
+						</if>
+					</foreach>
 					</tbody>
 				</table>
-			</div>
-			<div class="clearfix">
-				<ul class="pagination pull-right">
-					<li>
-						<a href="#" aria-label="Previous">
-							<span aria-hidden="true">«</span>
-						</a>
-					</li>
-					<li><a href="#">1</a></li>
-					<li><a href="#">2</a></li>
-					<li><a href="#">3</a></li>
-					<li><a href="#">4</a></li>
-					<li><a href="#">5</a></li>
-					<li>
-						<a href="#" aria-label="Next">
-							<span aria-hidden="true">»</span>
-						</a>
-					</li>
-				</ul>
 			</div>
 		</div>
 	</div>
