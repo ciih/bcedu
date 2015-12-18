@@ -5,7 +5,7 @@
 			<div class="sidebar-toggler hidden-phone"></div>
 		</li>
 
-		<if condition="strtolower(CONTROLLER_NAME) eq 'school' OR strtolower(CONTROLLER_NAME) eq 'result'">
+		<if condition="strtolower(CONTROLLER_NAME) eq 'school'">
 
 		<li class="start active open">
 			<a href="javascript:;">

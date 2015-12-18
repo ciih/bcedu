@@ -60,7 +60,8 @@ return array(
             ),
             'js_head' => array(),
             'js_foot' => array(
-                __ROOT__.'/Public/static/js/admin/app.js'
+                __ROOT__.'/Public/static/js/admin/app.js',
+                __ROOT__.'/Public/static/js/admin/result.js'
                 
             )
         )
