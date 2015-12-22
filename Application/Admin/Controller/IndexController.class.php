@@ -11,7 +11,7 @@ class IndexController extends Controller {
     }
     public function login(){
     	if(!isset($_POST['inputSubmit'])){
-		    $this->redirect('/admin/');
+		    $this->redirect('/admin');
 		}
 
 		$username = trim($_POST['inputUsername']);
@@ -22,9 +22,9 @@ class IndexController extends Controller {
 
 		if(!empty($data)) {
 			session('username',$data[0]['username']);
-			$this->redirect('/admin/list/');
+			$this->redirect('/admin/upload');
 		} else {
-			$this->redirect('/admin/');
+			$this->redirect('/admin');
 		}
     }
 }

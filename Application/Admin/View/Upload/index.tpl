@@ -1,7 +1,7 @@
 <layout name="layout" />
 
 <div class="col-xs-12">
-	<form id="form-xls" name="form-xls" action="/admin/result" method="post" enctype="multipart/form-data">
+	<form id="form-xls" name="form-xls" action="/admin/upload/file" method="post" enctype="multipart/form-data">
 	<div class="col-md-5 col-md-offset-4">
 		<div class="portlet box blue">
 			<div class="portlet-title">
@@ -13,7 +13,7 @@
 						<div class="col-md-7 col-md-offset-1">
 							<div class="form-group">
 							    <input type="file" name="inputFile" />
-							    <p class="help-block">只能上传excel文件</p>
+							    <p class="help-block">只能上传后缀为zip或者rar文件</p>
 							</div>
 						</div>
 					</div>
