@@ -2,6 +2,7 @@
 
 解释如何安装配置以到达动态生成图片
 
+
 ＃ 安装phatomjs
 
 - 安装nodejs 在 [nodejs主页](https://nodejs.org/en/) 下载4.2.X版本的nodejs
