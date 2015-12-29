@@ -55,13 +55,12 @@ return array(
                 __ROOT__.'/Public/static/css/admin/lib/style_responsive.css',
                 __ROOT__.'/Public/static/css/admin/lib/default.css',
                 __ROOT__.'/Public/static/css/admin/lib/select2_metro.css',
-                __ROOT__.'/Public/static/css/admin/lib/DT_bootstrap.css',
-                __ROOT__.'/Public/static/css/admin/home.css'
+                __ROOT__.'/Public/static/css/admin/lib/DT_bootstrap.css'
             ),
             'js_head' => array(),
             'js_foot' => array(
                 __ROOT__.'/Public/static/js/admin/app.js',
-                __ROOT__.'/Public/static/js/admin/result.js'
+                __ROOT__.'/Public/static/js/admin/common.js'
                 
             )
         )

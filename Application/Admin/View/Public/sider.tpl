@@ -37,9 +37,9 @@
 		<if condition="strtolower(CONTROLLER_NAME) eq 'result'">
 
 		<li>
-			<a href="/admin/list">
+			<a href="/admin/upload">
 				<i class="icon-reply"></i> 
-				<span class="title">返回列表页</span>
+				<span class="title">返回上传成绩页</span>
 			</a>
 		</li>
 

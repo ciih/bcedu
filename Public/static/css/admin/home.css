@@ -11,9 +11,13 @@
     background-color: #f5f5f5;
 }
 
-.upload-loading {
+.loading {
 	display: none;
 	text-align: center;
+}
+
+.alert-result {
+	margin-bottom: 0;
 }
 
 

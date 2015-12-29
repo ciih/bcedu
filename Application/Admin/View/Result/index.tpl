@@ -4,63 +4,76 @@
 
 	<div class="portlet box blue">
 		<div class="portlet-title">
-			<div class="caption"><i class="icon-comments"></i>提交成绩单</div>
+			<div class="caption"><i class="icon-comments"></i><span>提交成绩单</span></div>
 		</div>
 		<div class="portlet-body">
-			<div class="alert alert-block alert-info fade in">
-
+			<div class="alert alert-block alert-info fade in alert-result info-section">
 				<h4 class="alert-heading">重要提示：</h4>
-				<p>请认真核对学生成绩及考卷信息，错误的数据将影响到最后报表的各项参数！</p>
+				<p>请认真核对基本信息与双向明细表信息，这将直接影响最后报表生成的数据情况！</p>
 				<p>
-					<a class="btn blue" href="#" style="margin-right:15px;">确认</a><a class="btn red" href="#">返回</a>
+					<button class="btn blue">生成分析报告</button>
 				</p>
-
+			</div>
+			<div class="loading">
+				<img src="../Public/static/img/admin/ajax_loading.gif" title="正在生成分析报告">
 			</div>
 		</div>
 	</div>
 
-	<div class="alert alert-success"><strong>Success!</strong> The page has been added.</div>
-
 </div>
 
 <div class="col-xs-12">
-
-	<div class="portlet box blue">
-
-		<div class="portlet-title">
-			<div class="caption"><i class="icon-edit"></i>成绩单</div>
-		</div>
-
-		<div class="portlet-body">
-
-			<div class="dataTables_wrapper form-inline" role="grid">
-				<table class="table table-striped table-hover table-bordered dataTable" id="sample_editable_1" aria-describedby="sample_editable_1_info">
-					<thead>
-						<tr role="row">
-						<foreach name="keys" item="vo" >
-						    <th class="sorting_disabled" role="columnheader" rowspan="1" colspan="1"><%$vo%></th>
-						</foreach>
-						</tr>
-					</thead>
-					<tbody role="alert" aria-live="polite" aria-relevant="all">
-					<foreach name="rets" item="vo" key="k">
-						<if condition="$k%2 == 0">
-							<tr class="even">
-								<foreach name="vo" item="vos">
-							    	<td><%$vos%></td>
-							    </foreach>
-						    </tr>
-						<else />
-							<tr class="odd">
-								<foreach name="vo" item="vos">
-							    	<td><%$vos%></td>
-							    </foreach>
-						    </tr>
-						</if>
-					</foreach>
-					</tbody>
-				</table>
-			</div>
-		</div>
+	<h3 class="page-header">基本信息</h3>
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped table-info">
+			<thead>
+				<tr>
+					<th class="item-title"><%$schoolType['title']%></th>
+					<th><%$schoolType['type']%></th>
+				</tr>
+				<tr>
+					<th class="item-title"><%$exam['title']%></th>
+					<th><%$exam['name']%></th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+	<h3 class="page-header">学校</h3>
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped table-info">
+			<tbody>
+				<foreach name="school" item="vo" key="title">
+					<tr>
+						<th class="item-title"><span><%$title%></span></th>
+						<td>
+						<foreach name="vo" item="vc">
+					    	<span><%$vc%></span><span class="line">|</span>
+					    </foreach>
+						</td>
+				    </tr>
+				</foreach>
+			</tbody>
+		</table>
+	</div>
+	<h3 class="page-header">优秀水平</h3>
+	<div class="table-responsive">
+		<table class="table table-bordered table-striped table-info">
+			<thead>
+				<tr>
+					<foreach name="course" item="co">
+					<th scope="row"><span><%$co%></span></th>
+				    </foreach>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<foreach name="score" item="sc">
+					<td>
+				    	<span><%$sc%></span>
+					</td>
+				    </foreach>
+			    </tr>
+			</tbody>
+		</table>
 	</div>
 </div>

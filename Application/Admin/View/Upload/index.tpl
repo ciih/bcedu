@@ -8,7 +8,7 @@
 				<div class="caption"><i class="icon-edit"></i><span>上传成绩单</span></div>
 			</div>
 			<div class="portlet-body clearfix">
-				<div class="upload-section">
+				<div class="info-section">
 					<div class="clearfix">
 						<div class="col-md-7 col-md-offset-1">
 							<div class="form-group">
@@ -19,12 +19,12 @@
 					</div>
 					<div class="clearfix">
 						<div class="col-md-7 col-md-offset-1">
-							<button id="btn-upload" type="submit" class="btn blue">开始上传</button>
+							<button type="submit" class="btn blue btn-ok">开始上传</button>
 						</div>
 					</div>
 				</div>
-				<div class="upload-loading">
-					<img src="../Public/static/img/admin/ajax_loading.gif">
+				<div class="loading">
+					<img src="../Public/static/img/admin/ajax_loading.gif" title="正在上传中">
 				</div>
 			</div>
 		</div>
