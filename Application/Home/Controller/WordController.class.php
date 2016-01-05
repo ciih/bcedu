@@ -108,10 +108,10 @@ class WordController extends Controller {
 		// 设置一张占位图，此图大小和最终大小一致。然后把土的alt text设置为变量名如${placeholder}, 调用下面方法即可
     	$document->setImageValue($document->getImgFileName($document->seachImagerId("placeholder")), $workDir.$picFile);
 
-		$document->save($wordBaseDir.'hello.docx');
-		header("Content-Disposition: attachment; filename='hello.docx'");
-		echo file_get_contents($wordBaseDir.'hello.docx');
-		unlink($wordBaseDir.'hello.docx');  // remove temp file		
+		$document->save($wordBaseDir.'chenhong.docx');
+		header("Content-Disposition: attachment; filename='chenhong.docx'");
+		echo file_get_contents($wordBaseDir.'chenhong.docx');
+		unlink($wordBaseDir.'chenhong.docx');  // remove temp file		
         @unlink($workDir.$picFile);
         @unlink($jsFile);
         @rmdir($workDir);

@@ -11,7 +11,7 @@
 				<h4 class="alert-heading">重要提示：</h4>
 				<p>请认真核对基本信息与双向明细表信息，这将直接影响最后报表生成的数据情况！</p>
 				<p>
-					<button class="btn blue">生成分析报告</button>
+					<a href="/admin/result/createword" class="btn blue">生成分析报告</a>
 				</p>
 			</div>
 			<div class="loading">
@@ -38,7 +38,7 @@
 			</thead>
 		</table>
 	</div>
-	<h3 class="page-header">学校</h3>
+	<h3 class="page-header">学校<span>(共涉及<%$schoolCount%>所学校)</span></h3>
 	<div class="table-responsive">
 		<table class="table table-bordered table-striped table-info">
 			<tbody>

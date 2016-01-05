@@ -32,3 +32,9 @@
 .table-info .item-title {
 	width: 100px;
 }
+
+.btn-download-template {
+	position: absolute;
+	top: 36px;
+	right: 15px;
+}

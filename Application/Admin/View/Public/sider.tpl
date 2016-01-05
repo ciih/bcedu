@@ -15,6 +15,14 @@
 			</a>
 		</li>
 
+		<li <eq name="pagename" value="school"> class="active open" </eq>>
+			<a href="/admin/school">
+				<i class="icon-sitemap"></i>
+				<span class="title">学校列表</span>
+				<span class="selected"></span>
+			</a>
+		</li>
+
 		<li <eq name="pagename" value="user"> class="active open" </eq>>
 			<a href="javascript:;">
 				<i class="icon-user"></i> 

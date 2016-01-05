@@ -1,4 +1,8 @@
 /* Page CSS */
+html,
+body {
+	height: 100%;
+}
 .bg-admin {
 	background: url(../../img/admin_login_bg.jpg) repeat-x #1e537f;
 }

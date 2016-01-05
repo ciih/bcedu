@@ -2,7 +2,7 @@
 namespace Admin\Controller;
 use Think\Controller;
 
-class UploadController extends Controller {
+class SchoolController extends Controller {
     public function index(){
 
         if (!session('?username')) {
@@ -12,6 +12,17 @@ class UploadController extends Controller {
         $username = session('username');
         $pagename = strtolower(CONTROLLER_NAME);
 
+
+        $data = new \Admin\Model\SchoolData();
+
+        $juniorData = $data->getSchoolData('junior');
+        $middleData = $data->getSchoolData('middle');
+        $highData = $data->getSchoolData('high');
+
+        $juniorCount = count($juniorData,1) - count($juniorData);
+        $middleCount = count($middleData,1) - count($middleData);
+        $highCount = count($highData,1) - count($highData);
+
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');
         $this->assign('adminCss', $adminCss);
@@ -19,6 +30,13 @@ class UploadController extends Controller {
 
         $this->assign('username', $username);
         $this->assign('pagename', $pagename);
+
+        $this->assign('juniorData', $juniorData);
+        $this->assign('middleData', $middleData);
+        $this->assign('highData', $highData);
+        $this->assign('juniorCount', $juniorCount);
+        $this->assign('middleCount', $middleCount);
+        $this->assign('highCount', $highCount);
 
         $this->display();
     }
@@ -51,7 +69,7 @@ class UploadController extends Controller {
         $archive  = new \PHPZip();
 
 
-        $savepath  = './Data/'.$uploadDate;
+        $savepath  = './Excel/Template/';
         $foldername  = substr($file['name'],0,-4);
         $array     = $archive->GetZipInnerFilesInfo($filePath);
         $filecount = 0;
@@ -79,7 +97,7 @@ class UploadController extends Controller {
         if(count($failfiles) > 0) {// 上传错误提示错误信息
             $this->error('上传文件解压失败，请返回重新上传！');
         } else {
-            header('Location: /admin/result?date='.$uploadDate.'&foldername='.$foldername);
+            $this->redirect('/admin/school');
         }
 
     }
