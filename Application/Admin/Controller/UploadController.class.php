@@ -50,7 +50,6 @@ class UploadController extends Controller {
 
         $archive  = new \PHPZip();
 
-
         $savepath  = './Data/'.$uploadDate;
         $foldername  = substr($file['name'],0,-4);
         $array     = $archive->GetZipInnerFilesInfo($filePath);
@@ -79,8 +78,61 @@ class UploadController extends Controller {
         if(count($failfiles) > 0) {// 上传错误提示错误信息
             $this->error('上传文件解压失败，请返回重新上传！');
         } else {
-            header('Location: /admin/result?date='.$uploadDate.'&foldername='.$foldername);
+            header('Location: /admin/upload/score?date='.$uploadDate.'&foldername='.$foldername);
+        }
+    }
+
+    public function score() {
+
+        if (!session('?username')) {
+            redirectUrl('admin');
+        }
+        
+        $username = session('username');
+        $pagename = strtolower(CONTROLLER_NAME);
+
+        $date = $_GET['date'];
+        $foldername = $_GET['foldername'];
+
+        $courseData = new \Admin\Model\CourseData();
+        $course = $courseData->getCourseData($date, $foldername);
+        $courseCount = count($course);
+
+        $adminCss = getLoadCssStatic('admin_other');
+        $adminJs = getLoadJsStatic('admin_other');
+        $this->assign('adminCss', $adminCss);
+        $this->assign('adminJs', $adminJs);
+
+        $this->assign('username', $username);
+        $this->assign('pagename', $pagename);
+        $this->assign('date', $date);
+        $this->assign('foldername', $foldername);
+        $this->assign('course', $course);
+        $this->assign('courseCount', $courseCount);
+
+        $this->display();
+    }
+
+    public function update() {
+
+        $date = $_POST['date'];
+        $foldername = $_POST['foldername'];
+        $courseCount = $_POST['courseCount'];
+
+        $data = array();
+
+        $num = count($_POST) - 3;
+
+        for ($i = 0; $i < $courseCount; $i++) {
+            $data[$i][] = $_POST['score_1_'.$i];
+            $data[$i][] = $_POST['score_2_'.$i];
         }
 
+        $updateData = new \Admin\Model\ScoreRateData();
+
+        $updateData->setScoreRateData($date, $foldername, $data);
+
+        header('Location: /admin/result?date='.$date.'&foldername='.$foldername);
     }
+
 }

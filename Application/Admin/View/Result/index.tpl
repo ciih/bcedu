@@ -4,7 +4,7 @@
 
 	<div class="portlet box blue">
 		<div class="portlet-title">
-			<div class="caption"><i class="icon-comments"></i><span>提交成绩单</span></div>
+			<div class="caption"><i class="icon-comments"></i><span>分析报告</span></div>
 		</div>
 		<div class="portlet-body">
 			<div class="alert alert-block alert-info fade in alert-result info-section">
@@ -20,60 +20,4 @@
 		</div>
 	</div>
 
-</div>
-
-<div class="col-xs-12">
-	<h3 class="page-header">基本信息</h3>
-	<div class="table-responsive">
-		<table class="table table-bordered table-striped table-info">
-			<thead>
-				<tr>
-					<th class="item-title"><%$schoolType['title']%></th>
-					<th><%$schoolType['type']%></th>
-				</tr>
-				<tr>
-					<th class="item-title"><%$exam['title']%></th>
-					<th><%$exam['name']%></th>
-				</tr>
-			</thead>
-		</table>
-	</div>
-	<h3 class="page-header">学校<span>(共涉及<%$schoolCount%>所学校)</span></h3>
-	<div class="table-responsive">
-		<table class="table table-bordered table-striped table-info">
-			<tbody>
-				<foreach name="school" item="vo" key="title">
-					<tr>
-						<th class="item-title"><span><%$title%></span></th>
-						<td>
-						<foreach name="vo" item="vc">
-					    	<span><%$vc%></span><span class="line">|</span>
-					    </foreach>
-						</td>
-				    </tr>
-				</foreach>
-			</tbody>
-		</table>
-	</div>
-	<h3 class="page-header">优秀水平</h3>
-	<div class="table-responsive">
-		<table class="table table-bordered table-striped table-info">
-			<thead>
-				<tr>
-					<foreach name="course" item="co">
-					<th scope="row"><span><%$co%></span></th>
-				    </foreach>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<foreach name="score" item="sc">
-					<td>
-				    	<span><%$sc%></span>
-					</td>
-				    </foreach>
-			    </tr>
-			</tbody>
-		</table>
-	</div>
 </div>

@@ -15,27 +15,9 @@ class ResultController extends Controller {
         $date = $_GET['date'];
         $foldername = $_GET['foldername'];
 
-        $data = new \Admin\Model\ExcelData();
+        $studentData = new \Admin\Model\StudentData();
+        $courseBase = $studentData->getStudentData($date, $foldername);
 
-        $excelData = $data->getData($date, $foldername);
-
-        session('excelData', $excelData);
-
-        $baseinfo = $excelData['common'];
-
-        $schoolType = array(
-            'title' => $baseinfo['keys'][0],
-            'type' => $baseinfo['type']
-        );
-        
-        $exam = array(
-            'title' => $baseinfo['keys'][1],
-            'name' => $baseinfo['title']
-        );
-        $school = $baseinfo['school'];
-        $schoolCount = count($baseinfo['school']);
-        $course = $baseinfo['course'];
-        $score = $baseinfo['score'];
 
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');
@@ -43,12 +25,6 @@ class ResultController extends Controller {
         $this->assign('adminJs', $adminJs);
 
         $this->assign('username', $username);
-        $this->assign('schoolType', $schoolType);
-        $this->assign('exam', $exam);
-        $this->assign('school', $school);
-        $this->assign('schoolCount', $schoolCount);
-        $this->assign('course', $course);
-        $this->assign('score', $score);
 
         $this->display();
     }
