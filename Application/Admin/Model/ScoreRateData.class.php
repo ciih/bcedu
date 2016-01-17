@@ -44,7 +44,7 @@ class ScoreRateData {
     }
 
     /**
-     * 获取小学列表
+     * 获取优秀、及格、不及格得分率
      */
     public function getScoreRateData()
     {
@@ -73,7 +73,7 @@ class ScoreRateData {
     }
 
     /**
-     * 获取学校列表
+     * 设置优秀、及格、不及格得分率
      * @param $data 分数
      */
     public function setScoreRateData($date, $foldername, $data)

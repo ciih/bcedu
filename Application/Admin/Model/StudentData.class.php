@@ -35,6 +35,12 @@ class StudentData {
     const STUDENT_SCORE_NAME = '学生题型分析';
 
     /**
+     * 单科成绩分数表名(未加科目)
+     * @var string
+     */
+    const COURSE_SCORE_NAME = '_小题分';
+
+    /**
      * 日期目录
      * @var string
      */
@@ -57,6 +63,12 @@ class StudentData {
      * @var string
      */
     protected static $courseAll = array();
+
+    /**
+     * 课程
+     * @var string
+     */
+    protected static $queryCourse = '';
 
     /**
      * 打开excel表
@@ -228,7 +240,7 @@ class StudentData {
     }
 
     /**
-     * 获取平均分
+     * 获取学生分
      */
     private function getStudentScoreData($courseAnalysis, $averageScore)
     {
@@ -322,37 +334,108 @@ class StudentData {
 
         foreach (self::$courseAll as $key => $value) {
             $studentScore[$value] = array(
+                'baseScore'        => $baseScore[$value],
                 'count'             => $count[$value],
                 'rate'              => $rate[$value],
                 'cumulativeCount'   => $cumulativeCount[$value],
-                'cumulativeRate'   => $cumulativeRate[$value],
+                'cumulativeRate'    => $cumulativeRate[$value],
             );
         }
-
-        // var_dump($studentScore);
-
-
     }
+
+    /**
+     * 获取知识分析
+     */
+    private function getKnowledgeAnalysis()
+    {
+
+        $scoreData = array(); // 分数数据
+
+        $num = 0;
+
+        $filename = $value.'/'.$value.self::COURSE_SCORE_NAME;
+
+        $data = self::openExcel($filename);
+
+        foreach($data->getRowIterator() as $kr => $row){
+
+            $cellIterator = $row->getCellIterator();
+
+            foreach($cellIterator as $kc => $cell){
+                $scoreData[$num][] = $cell->getValue();
+            }
+
+            array_splice($scoreData[$num], 0, 2);
+
+            for ($i = 0; $i < count(self::$courseAll); $i++) { 
+                array_splice($scoreData[$num], $i + 2, 1);
+            }
+
+            $num++;
+        }
+
+        var_dump($scoreData);
+    }
+
+    /*private function getKnowledgeAnalysis()
+    {
+
+        set_time_limit(0);
+
+        $scoreData = array(); // 分数数据
+
+        foreach (self::$courseAll as $key => $value) {
+            $num = 0;
+            $filename = $value.'/'.$value.self::COURSE_SCORE_NAME;
+            $data[$key] = self::openExcel($filename);
+
+            foreach($data[$key]->getRowIterator() as $kr => $row){
+
+                $cellIterator = $row->getCellIterator();
+
+                foreach($cellIterator as $kc => $cell){
+                    $scoreData[$num][] = $cell->getValue();
+                }
+
+                array_splice($scoreData[$num], 0, 2);
+
+                for ($i = 0; $i < count(self::$courseAll); $i++) { 
+                    array_splice($scoreData[$num], $i + 2, 1);
+                }
+
+                $num++;
+
+            }
+        }
+
+        var_dump($scoreData);
+    }*/
 
     /**
      * 获取学校列表
      * @param $data 分数
      */
-    public function getStudentData($date, $foldername)
+    public function getStudentData($date, $foldername, $course)
     {
 
-        self::$dateDir = $date;
-        self::$mainDir = $foldername;
+        self::$dateDir     = $date; // 得到日期
+        self::$mainDir     = $foldername; // 得到主目录
+        self::$queryCourse = $course; // 查询课程
+
+        var_dump(self::$queryCourse);
 
         $courseAnalysis = self::getCourseAnalysisData();
+
+        /*$courseAnalysis = self::getCourseAnalysisData();
         $averageScore = self::getAverageData();
         $studentScore = self::getStudentScoreData($courseAnalysis, $averageScore);
+        $knowledgeAnalysis = self::getKnowledgeAnalysis();
 
 
         $data = array(
             'courseAnalysis' => $courseAnalysis,
             'averageScore' => $averageScore,
-        );
+        );*/
 
         // var_dump($data['averageScore']);
 
