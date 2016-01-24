@@ -14,9 +14,15 @@ class ResultController extends Controller {
 
         $date = $_GET['date'];
         $foldername = $_GET['foldername'];
+        $course = $_GET['course'];
 
-        $courseData = new \Admin\Model\CourseData();
-        $course = $courseData->getCourseData($date, $foldername);
+        $courseObj = new \Admin\Model\CourseData();
+        $courseData = $courseObj->getCourseData($date, $foldername);
+
+        $courseBaseObj = new \Admin\Model\StudentData();
+        $courseBaseData = $courseBaseObj->getStudentData($date, $foldername, $course);
+
+        // var_dump($courseBaseData);
 
 
         $adminCss = getLoadCssStatic('admin_other');
@@ -27,7 +33,7 @@ class ResultController extends Controller {
         $this->assign('username', $username);
         $this->assign('date', $date);
         $this->assign('foldername', $foldername);
-        $this->assign('course', $course);
+        $this->assign('course', $courseData);
 
         $this->display();
     }

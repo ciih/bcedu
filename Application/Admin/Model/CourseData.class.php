@@ -102,9 +102,9 @@ class CourseData {
         self::$dateDir = $date;
         self::$mainDir = $foldername;
 
-        $course = self::getData();
+        $data = self::getData();
 
-        return $course;
+        return $data;
 
     }
 

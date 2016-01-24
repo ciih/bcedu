@@ -29,6 +29,12 @@ class CourseBaseData {
     protected static $mainDir = '';
 
     /**
+     * 科目
+     * @var string
+     */
+    protected static $queryCourse = '';
+
+    /**
      * 打开excel表
      * @return string $objWorksheet 返回相应excel文件的工作薄
      */
@@ -73,94 +79,93 @@ class CourseBaseData {
         $examNumber = array(); //考试题号
 
         $score = array(); // 分数列表
-        $totalScore = array(); // 总分
+        $totalScore = 0; // 总分
 
-        for ($i = 0; $i < count($course); $i++) {
+        $filename = self::$mainDir.'.'.$course;
 
-            $filename = self::$mainDir.'.'.$course[$i];
+        $courseFile = self::openExcel($filename);
 
-            $courseData[] = self::openExcel($filename);
+        foreach($courseFile->getRowIterator() as $kr => $row){
 
-            foreach($courseData[$i]->getRowIterator() as $kr => $row){
+            $cellIterator = $row->getCellIterator();
 
-                $cellIterator = $row->getCellIterator();
-
-                if($kr == 3) {
-                    foreach($cellIterator as $kc => $cell){
-                        if($cell->getValue() == '考核层级要求') {
-                            $typeStartPos = $kc;
-                        }
-                        if($cell->getValue() == '预估难度') {
-                            $typeScorePos = $kc + 1;
-                        }
+            if($kr == 3) {
+                foreach($cellIterator as $kc => $cell){
+                    if($cell->getValue() == '考核层级要求') {
+                        $typeStartPos = $kc;
+                    }
+                    if($cell->getValue() == '预估难度') {
+                        $typeScorePos = $kc + 1;
                     }
                 }
+            }
 
-                if($kr == 5) {
-                    foreach($cellIterator as $kc => $cell){
-                        if($kc >= $typeStartPos && !empty($cell->getValue())) {
-                            $type[$course[$i]][] = $cell->getValue();
-                        }
+            if($kr == 5) {
+                foreach($cellIterator as $kc => $cell){
+                    if($kc >= $typeStartPos && !empty($cell->getValue())) {
+                        $type[] = $cell->getValue();
                     }
-                }
-
-                if($kr > 6) {
-                    foreach($cellIterator as $kc => $cell){
-                        $data[$course[$i]]['item'][$kc-1][] = $cell->getValue();
-                        if ($typeScorePos == $kc) {
-                            $score[$course[$i]][] = $cell->getValue();
-                        }
-                    }
-                }
-
-            }
-            
-            $score[$course[$i]] = array_slice($score[$course[$i]],0,-3);
-            foreach ($score[$course[$i]] as $kg => $value) {
-                $totalScore[$course[$i]] = $totalScore[$course[$i]] + $value;
-            }
-
-            $examTypeData = array_unique(array_slice($data[$course[$i]]['item'][0],0,-3));
-            foreach ($examTypeData as $kf => $val) {
-                $examType[$course[$i]][] = $val;
-            }
-
-            $examCount[$course[$i]] = count(array_slice($data[$course[$i]]['item'][5],0,-3));
-
-            for ($j = 0; $j < $examCount[$course[$i]]; $j++) {
-                if(empty($data[$course[$i]]['item'][5][$j])) {
-                    $examNumber[$course[$i]][] = $data[$course[$i]]['item'][4][$j];
-                } else {
-                    $examNumber[$course[$i]][] = $data[$course[$i]]['item'][4][$j].'_'.$data[$course[$i]]['item'][5][$j];
                 }
             }
 
-            for ($k = 0; $k < count($type[$course[$i]]); $k++) {
-                $arrType = array_slice($data[$course[$i]]['item'][$typeStartPos - 1 + $k],0,-3); 
-                foreach($arrType as $kd => $val){
-                    if(!empty($val)) {
-                        $typeNumber[$course[$i]][$type[$course[$i]][$k]][] = $examNumber[$course[$i]][$kd];
-                        $typeScore[$course[$i]][$type[$course[$i]][$k]] = $typeScore[$course[$i]][$type[$course[$i]][$k]] + $score[$course[$i]][$kd];
+            if($kr > 6) {
+                foreach($cellIterator as $kc => $cell){
+                    $data['item'][$kc-1][] = $cell->getValue();
+                    if ($typeScorePos == $kc) {
+                        $score[] = $cell->getValue();
                     }
-                } 
+                }
             }
 
-            for ($l = 0; $l < count($examType[$course[$i]]); $l++) {
-                $arr = array_slice($data[$course[$i]]['item'][0],0,-3); 
-                foreach($arr as $ke => $val){
-                    if($val == $examType[$course[$i]][$l]) {
-                        $examTypeNumber[$course[$i]][$examType[$course[$i]][$l]][] = $examNumber[$course[$i]][$ke];
-                        $examTypeScore[$course[$i]][$examType[$course[$i]][$l]] = $examTypeScore[$course[$i]][$examType[$course[$i]][$l]] + $score[$course[$i]][$ke];
-                    }
+        }
+
+        $score = array_slice($score,0,-3);
+
+        foreach ($score as $kg => $value) {
+            $totalScore = $totalScore + $value;
+        }
+
+        $examTypeData = array_unique(array_slice($data['item'][0],0,-3));
+        foreach ($examTypeData as $kf => $val) {
+            $examType[] = $val;
+        }
+
+        $examCount = count(array_slice($data['item'][5],0,-3));
+
+        for ($j = 0; $j < $examCount; $j++) {
+            if(empty($data['item'][5][$j])) {
+                $examNumber[] = $data['item'][4][$j];
+            } else {
+                $examNumber[] = $data['item'][4][$j].'_'.$data['item'][5][$j];
+            }
+        }
+
+        for ($k = 0; $k < count($type); $k++) {
+            $arrType = array_slice($data['item'][$typeStartPos - 1 + $k],0,-3); 
+            foreach($arrType as $kd => $val){
+                if(!empty($val)) {
+                    $typeNumber[$type[$k]][] = $examNumber[$kd];
+                    $typeScore[$type[$k]] = $typeScore[$type[$k]] + $score[$kd];
+                }
+            } 
+        }
+
+        for ($l = 0; $l < count($examType); $l++) {
+            $arr = array_slice($data['item'][0],0,-3); 
+            foreach($arr as $ke => $val){
+                if($val == $examType[$l]) {
+                    $examTypeNumber[$examType[$l]][] = $examNumber[$ke];
+                    $examTypeScore[$examType[$l]] = $examTypeScore[$examType[$l]] + $score[$ke];
                 }
             }
         }
 
         $courseBaseData = array(
-            'exam'       => $examType, 
+            'course'     => $course,
+            'examName'   => $examType, 
             'examNumber' => $examTypeNumber, 
             'examScore'  => $examTypeScore,
-            'type'       => $type,
+            'typeName'   => $type,
             'typeNumber' => $typeNumber,
             'typeScore'  => $examTypeScore,
             'totalScore' => $totalScore
@@ -174,16 +179,14 @@ class CourseBaseData {
      * 获取学校列表
      * @param $data 分数
      */
-    public function getCourseBaseData($date, $foldername)
+    public function getCourseBaseData($date, $foldername, $course)
     {
 
         self::$dateDir = $date;
         self::$mainDir = $foldername;
+        self::$queryCourse  = $course;
 
-        $courseData = new \Admin\Model\CourseData();
-        $course = $courseData->getCourseData($date, $foldername);
-
-        $data = self::getData($course);
+        $data = self::getData(self::$queryCourse);
 
         return $data;
 

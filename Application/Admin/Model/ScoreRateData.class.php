@@ -46,24 +46,29 @@ class ScoreRateData {
     /**
      * 获取优秀、及格、不及格得分率
      */
-    public function getScoreRateData()
+    public function getScoreRateData($course)
     {
         $data = self::openExcel(self::SCORE_NAME);
 
-        $keys = array(); // 基本项标题
         $rets = array(); // 基本项内容
+
+        $num = 0;
 
         foreach($data->getRowIterator() as $kr => $row){
 
             $cellIterator = $row->getCellIterator();
             if ($kr == 1){
                 foreach($cellIterator as $kc => $cell){
-                    $keys[] = $cell->getValue();
+                    if($course == $cell->getValue()) {
+                        $num = $kc;
+                    }
                 }
             }
             else {
                 foreach($cellIterator as $kc => $cell){
-                    $rets[$keys[$kc]][] = $cell->getValue() / 100;
+                    if($kc == $num) {
+                        $rets[] = $cell->getValue() / 100;
+                    }
                 }       
             }
         }
