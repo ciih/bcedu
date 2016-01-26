@@ -21,7 +21,7 @@
 			<tbody>
 				<tr>
 				<foreach name="course" item="vo">
-					<td><a href="/admin/result/createword?date=<%$date%>&foldername=<%$foldername%>&course=<%$vo%>" class="btn blue">生成报告</a></td>
+					<td><a href="/admin/result/createword?date=<%$date%>&foldername=<%$foldername%>&course=<%$vo%>" class="btn blue" target="_blank">生成报告</a></td>
 			    </foreach>
 				</tr>
 			</tbody>

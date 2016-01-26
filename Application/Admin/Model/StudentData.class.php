@@ -41,6 +41,12 @@ class StudentData {
     const COURSE_SCORE_NAME = '_小题分';
 
     /**
+     * 选择题分析表名(未加科目)
+     * @var string
+     */
+    const CHOICE_QUESTIONS_NAME = '_小题分析';
+
+    /**
      * 日期目录
      * @var string
      */
@@ -194,7 +200,7 @@ class StudentData {
     /**
      * 获取平均分
      */
-    private function getAverageData($course)
+    private function getAverageData()
     {
         $data = self::openExcel(self::AVERAGE_NAME);
 
@@ -203,10 +209,10 @@ class StudentData {
         $keys = array(); // 平均分字段名
 
         $schoolName = array(); // 学校名称
-        $amountScore = 0; // 全区平均分
-        $schoolScore = array(); // 学校平均分
+        $amountAverageScore = 0; // 全区平均分
+        $schoolAverageScore = array(); // 学校平均分
 
-        $courseName = $course . '均分';
+        $courseName = self::$queryCourse . '均分';
 
         foreach($data->getRowIterator() as $kr => $row){
 
@@ -242,9 +248,9 @@ class StudentData {
             if ($courseName == $keys[$i]) {
                 foreach ($schoolName as $key => $value) {
                     if ($key == count($scoreData[$i]) - 1) {
-                        $amountScore = floatval($scoreData[$i][$key]);
+                        $amountAverageScore = floatval($scoreData[$i][$key]);
                     } else {
-                        $schoolScore[$schoolName[$key]] = floatval($scoreData[$i][$key]);
+                        $schoolAverageScore[$schoolName[$key]] = floatval($scoreData[$i][$key]);
                     }
                 }
             }
@@ -253,36 +259,31 @@ class StudentData {
         array_splice($schoolName, count($schoolName) - 1, 1);
 
         $averageData = array(
-            'course'      => $course,
-            'schoolName'  => $schoolName,
-            'amountScore' => $amountScore,
-            'schoolScore' => $schoolScore
+            'course'      => self::$queryCourse,
+            'schoolName'  => $schoolName, // 学校列表
+            'amountAverageScore' => $amountAverageScore, // 全区平均分
+            'schoolAverageScore' => $schoolAverageScore // 各学校平均分
         );
 
         return $averageData;
     }
 
     /**
-     * 获取学生分
+     * 获取学生人数百分比
      */
-    private function getStudentScoreData($courseAnalysis, $scoreRate, $courseBaseData)
+    private function getStudentCountRateData($courseAnalysis, $scoreRate, $detailTableData)
     {
         $data = self::openExcel(self::STUDENT_SCORE_NAME);
-
-        $courseAnalysis = $courseAnalysis;
-        $averageScore = $averageScore;
 
         $scoreData = array(); // 学生分数
 
         $baseScore = array(); // 考试基准分数线
 
-        $studentScore = array(); // 返回学生分数信息
+        $studentCountRateData = array(); // 返回学生分数信息
 
-        $num = 0;
-        $scoreRow = 0;
-        $courseName = self::$queryCourse . '分数';
-
-        $keys = array();
+        $num = 0; // 数组下标
+        $scoreRow = 0; // 分数所在列
+        $courseName = self::$queryCourse . '分数'; // 分数名称
 
         $count = array(); // 统计人数
         $cumulativeCount = array(); // 统计累积人数
@@ -315,7 +316,7 @@ class StudentData {
 
         array_splice($scoreData, -3, 3);
 
-        $totalScore = $courseBaseData['totalScore'];
+        $totalScore = $detailTableData['totalScore'];
 
         $baseScore['excellentScore'] = $totalScore * $scoreRate[0];
         $baseScore['passScore'] = $totalScore * $scoreRate[1];
@@ -346,21 +347,21 @@ class StudentData {
         $cumulativeRate['passRate'] = number_format($cumulativeCount['passCount'] / $courseAnalysis['amount'] * 100, 2, '.', '');
         $cumulativeRate['failRate'] = number_format($cumulativeCount['failCount'] / $courseAnalysis['amount'] * 100, 2, '.', '');
 
-        $studentScore = array(
-            'baseScore'       => $baseScore,
-            'count'           => $count,
-            'rate'            => $rate,
-            'cumulativeCount' => $cumulativeCount,
-            'cumulativeRate'  => $cumulativeRate,
+        $studentCountRateData = array(
+            'baseScore'       => $baseScore, // 优秀分数、及格分数
+            'count'           => $count, // 全区优秀人数、及格人数、未及格人数
+            'rate'            => $rate, // 全区优秀率、及格率、未及格率
+            'cumulativeCount' => $cumulativeCount, // 全区累计优秀人数、累计及格人数、未及格人数
+            'cumulativeRate'  => $cumulativeRate, // 全区累计优秀率、累计及格率、未及格率
         );
 
-        return $studentScore;
+        return $studentCountRateData;
     }
 
     /**
-     * 获取知识分析
+     * 获取分数统计
      */
-    private function getKnowledgeAnalysis($schoolData, $scoreRate, $courseBaseData)
+    private function getScoreStatisticsData($schoolData, $scoreRate, $detailTableData)
     {
 
         $scoreData = array(); // 分数数据
@@ -373,7 +374,7 @@ class StudentData {
 
         $keys = array();
 
-        $totalScore = $courseBaseData['totalScore'];
+        $totalScore = $detailTableData['totalScore'];
 
         $baseScore['excellentScore'] = $totalScore * $scoreRate[0];
         $baseScore['passScore'] = $totalScore * $scoreRate[1];
@@ -402,6 +403,9 @@ class StudentData {
                 break;
             case 'middle' :
 
+                break;
+            case 'high' :
+                
                 $examScoreData['totalCount'] = 0;
 
                 $examScoreData['excellentCount'] = 0;
@@ -410,75 +414,75 @@ class StudentData {
 
                 foreach($schoolData['全区学校'] as $schoolName){
 
-                    $examScoreData[$schoolName]['totalCount'] = 0;
+                    $examScoreData['schoolCount'][$schoolName]['totalCount'] = 0;
 
-                    $examScoreData[$schoolName]['excellentCount'] = 0;
-                    $examScoreData[$schoolName]['passCount'] = 0;
-                    $examScoreData[$schoolName]['failCount'] = 0;
+                    $examScoreData['schoolCount'][$schoolName]['excellentCount'] = 0;
+                    $examScoreData['schoolCount'][$schoolName]['passCount'] = 0;
+                    $examScoreData['schoolCount'][$schoolName]['failCount'] = 0;
                 }
 
                 foreach($scoreData['全卷'] as $key => $score){
 
                     $examScoreData['totalCount']++;
-                    $examScoreData[$scoreData['学校'][$key]]['totalCount']++;
+                    $examScoreData['schoolCount'][$scoreData['学校'][$key]]['totalCount']++;
 
                     if($scoreData['全卷'][$key] >= $baseScore['excellentScore']) {
 
                         $examScoreData['excellentCount']++;
-                        $examScoreData[$scoreData['学校'][$key]]['excellentCount']++;
+                        $examScoreData['schoolCount'][$scoreData['学校'][$key]]['excellentCount']++;
                     
                     } elseif($scoreData['全卷'][$key] >= $baseScore['passScore'] && $scoreData['全卷'][$key] < $baseScore['excellentScore']) {
 
                         $examScoreData['passCount']++;
-                        $examScoreData[$scoreData['学校'][$key]]['passCount']++;
+                        $examScoreData['schoolCount'][$scoreData['学校'][$key]]['passCount']++;
 
                     } else {
 
                         $examScoreData['failCount']++;
-                        $examScoreData[$scoreData['学校'][$key]]['failCount']++;
+                        $examScoreData['schoolCount'][$scoreData['学校'][$key]]['failCount']++;
 
                     }
 
                 }
 
-                foreach($courseBaseData['examName'] as $itemName){
+                foreach($detailTableData['examName'] as $itemName){
 
-                    $examScoreData[$itemName]['totalScore'] = 0;
+                    $examScoreData['exam'][$itemName]['total']['totalScore'] = 0;
 
-                    $examScoreData[$itemName]['excellentScore'] = 0;
-                    $examScoreData[$itemName]['passScore'] = 0;
-                    $examScoreData[$itemName]['failScore'] = 0;
+                    $examScoreData['exam'][$itemName]['total']['excellentScore'] = 0;
+                    $examScoreData['exam'][$itemName]['total']['passScore'] = 0;
+                    $examScoreData['exam'][$itemName]['total']['failScore'] = 0;
 
                     foreach($schoolData['全区学校'] as $schoolName){
 
-                        $examScoreData[$itemName][$schoolName]['totalScore'] = 0;
+                        $examScoreData['exam'][$itemName]['schoolScore'][$schoolName]['totalScore'] = 0;
 
-                        $examScoreData[$itemName][$schoolName]['excellentScore'] = 0;
-                        $examScoreData[$itemName][$schoolName]['passScore'] = 0;
-                        $examScoreData[$itemName][$schoolName]['failScore'] = 0;
+                        $examScoreData['exam'][$itemName]['schoolScore'][$schoolName]['excellentScore'] = 0;
+                        $examScoreData['exam'][$itemName]['schoolScore'][$schoolName]['passScore'] = 0;
+                        $examScoreData['exam'][$itemName]['schoolScore'][$schoolName]['failScore'] = 0;
                     }
 
-                    foreach($courseBaseData['examNumber'][$itemName] as $itemNum){
+                    foreach($detailTableData['examNumber'][$itemName] as $itemNum){
 
                         foreach($scoreData[$itemNum] as $key => $value){
 
-                            $examScoreData[$itemName]['totalScore'] = $examScoreData[$itemName]['totalScore'] + $value;
-                            $examScoreData[$itemName][$scoreData['学校'][$key]]['totalScore'] = $examScoreData[$itemName][$scoreData['学校'][$key]]['totalScore'] + $value;
+                            $examScoreData['exam'][$itemName]['total']['totalScore'] = $examScoreData['exam'][$itemName]['total']['totalScore'] + $value;
+                            $examScoreData['exam'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['totalScore'] = $examScoreData['exam'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['totalScore'] + $value;
 
                             if($scoreData['全卷'][$key] >= $baseScore['excellentScore']) {
 
-                                $examScoreData[$itemName]['excellentScore'] = $examScoreData[$itemName]['excellentScore'] + $value;
-                                $examScoreData[$itemName][$scoreData['学校'][$key]]['excellentScore'] = $examScoreData[$itemName][$scoreData['学校'][$key]]['excellentScore'] + $value;
+                                $examScoreData['exam'][$itemName]['total']['excellentScore'] = $examScoreData['exam'][$itemName]['total']['excellentScore'] + $value;
+                                $examScoreData['exam'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['excellentScore'] = $examScoreData['exam'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['excellentScore'] + $value;
                             
                             } elseif($scoreData['全卷'][$key] >= $baseScore['passScore'] && $scoreData['全卷'][$key] < $baseScore['excellentScore']) {
 
-                                $examScoreData[$itemName]['passScore'] = $examScoreData[$itemName]['passScore'] + $value;
-                                $examScoreData[$itemName][$scoreData['学校'][$key]]['passScore'] = $examScoreData[$itemName][$scoreData['学校'][$key]]['passScore'] + $value;
+                                $examScoreData['exam'][$itemName]['total']['passScore'] = $examScoreData['exam'][$itemName]['total']['passScore'] + $value;
+                                $examScoreData['exam'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['passScore'] = $examScoreData['exam'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['passScore'] + $value;
 
                             } else {
 
-                                $examScoreData[$itemName]['failScore'] = $examScoreData[$itemName]['failScore'] + $value;
-                                $examScoreData[$itemName][$scoreData['学校'][$key]]['failScore'] = $examScoreData[$itemName][$scoreData['学校'][$key]]['failScore'] + $value;
+                                $examScoreData['exam'][$itemName]['total']['failScore'] = $examScoreData['exam'][$itemName]['total']['failScore'] + $value;
+                                $examScoreData['exam'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['failScore'] = $examScoreData['exam'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['failScore'] + $value;
 
                             }
 
@@ -487,44 +491,44 @@ class StudentData {
 
                 }
 
-                foreach($courseBaseData['typeName'] as $itemName){
+                foreach($detailTableData['typeName'] as $itemName){
 
-                    $examScoreData[$itemName]['totalScore'] = 0;
+                    $examScoreData['type'][$itemName]['total']['totalScore'] = 0;
 
-                    $examScoreData[$itemName]['excellentScore'] = 0;
-                    $examScoreData[$itemName]['passScore'] = 0;
-                    $examScoreData[$itemName]['failScore'] = 0;
+                    $examScoreData['type'][$itemName]['total']['excellentScore'] = 0;
+                    $examScoreData['type'][$itemName]['total']['passScore'] = 0;
+                    $examScoreData['type'][$itemName]['total']['failScore'] = 0;
 
                     foreach($schoolData['全区学校'] as $schoolName){
 
-                        $examScoreData[$itemName][$schoolName]['totalScore'] = 0;
+                        $examScoreData['type'][$itemName]['schoolScore'][$schoolName]['totalScore'] = 0;
 
-                        $examScoreData[$itemName][$schoolName]['excellentScore'] = 0;
-                        $examScoreData[$itemName][$schoolName]['passScore'] = 0;
-                        $examScoreData[$itemName][$schoolName]['failScore'] = 0;
+                        $examScoreData['type'][$itemName]['schoolScore'][$schoolName]['excellentScore'] = 0;
+                        $examScoreData['type'][$itemName]['schoolScore'][$schoolName]['passScore'] = 0;
+                        $examScoreData['type'][$itemName]['schoolScore'][$schoolName]['failScore'] = 0;
                     }
 
-                    foreach($courseBaseData['typeNumber'][$itemName] as $itemNum){
+                    foreach($detailTableData['typeNumber'][$itemName] as $itemNum){
 
                         foreach($scoreData[$itemNum] as $key => $value){
 
-                            $examScoreData[$itemName]['totalScore'] = $examScoreData[$itemName]['totalScore'] + $value;
-                            $examScoreData[$itemName][$scoreData['学校'][$key]]['totalScore'] = $examScoreData[$itemName][$scoreData['学校'][$key]]['totalScore'] + $value;
+                            $examScoreData['type'][$itemName]['total']['totalScore'] = $examScoreData['type'][$itemName]['total']['totalScore'] + $value;
+                            $examScoreData['type'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['totalScore'] = $examScoreData['type'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['totalScore'] + $value;
 
                             if($scoreData['全卷'][$key] >= $baseScore['excellentScore']) {
 
-                                $examScoreData[$itemName]['excellentScore'] = $examScoreData[$itemName]['excellentScore'] + $value;
-                                $examScoreData[$itemName][$scoreData['学校'][$key]]['excellentScore'] = $examScoreData[$itemName][$scoreData['学校'][$key]]['excellentScore'] + $value;
+                                $examScoreData['type'][$itemName]['total']['excellentScore'] = $examScoreData['type'][$itemName]['total']['excellentScore'] + $value;
+                                $examScoreData['type'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['excellentScore'] = $examScoreData['type'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['excellentScore'] + $value;
                             
                             } elseif($scoreData['全卷'][$key] >= $baseScore['passScore'] && $scoreData['全卷'][$key] < $baseScore['excellentScore']) {
 
-                                $examScoreData[$itemName]['passScore'] = $examScoreData[$itemName]['passScore'] + $value;
-                                $examScoreData[$itemName][$scoreData['学校'][$key]]['passScore'] = $examScoreData[$itemName][$scoreData['学校'][$key]]['passScore'] + $value;
+                                $examScoreData['type'][$itemName]['total']['passScore'] = $examScoreData['type'][$itemName]['total']['passScore'] + $value;
+                                $examScoreData['type'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['passScore'] = $examScoreData['type'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['passScore'] + $value;
 
                             } else {
 
-                                $examScoreData[$itemName]['failScore'] = $examScoreData[$itemName]['failScore'] + $value;
-                                $examScoreData[$itemName][$scoreData['学校'][$key]]['failScore'] = $examScoreData[$itemName][$scoreData['学校'][$key]]['failScore'] + $value;
+                                $examScoreData['type'][$itemName]['total']['failScore'] = $examScoreData['type'][$itemName]['total']['failScore'] + $value;
+                                $examScoreData['type'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['failScore'] = $examScoreData['type'][$itemName]['schoolScore'][$scoreData['学校'][$key]]['failScore'] + $value;
 
                             }
 
@@ -532,14 +536,150 @@ class StudentData {
                     }
 
                 }
-                
-                break;
-            case 'high' :
-                
+
                 break;
         }
 
-        var_dump($examScoreData);
+        return $examScoreData;
+
+    }
+
+    /**
+     * 获取分数率统计
+     */
+    private function getScoreStatisticsRateData($detailTableData, $scoreStatistics)
+    {
+
+        $scoreStatisticsRateData = array(); // 分数率数据
+        $rate = array('totalRate','excellentRate','passRate','failRate');
+        $count = array('totalCount','excellentCount','passCount','failCount');
+        $score = array('totalScore','excellentScore','passScore','failScore');
+
+        switch (self::$schoolType) {
+            case 'junior' :
+                
+                break;
+            case 'middle' :
+
+                break;
+            case 'high' :
+                
+
+                foreach($detailTableData['examName'] as $name){
+
+                    for($i = 0; $i < count($scoreStatistics['exam'][$name]['total']); $i++) {
+                        $scoreStatisticsRateData['exam'][$name]['total'][$rate[$i]] = number_format($scoreStatistics['exam'][$name]['total'][$score[$i]] / $scoreStatistics[$count[$i]] / $detailTableData['examScore'][$name], 2, '.', '');
+                    }
+
+                    foreach($scoreStatistics['exam'][$name]['schoolScore'] as $key => $schoolScore){
+
+                        for($j = 0; $j < count($schoolScore); $j++) {
+                            $scoreStatisticsRateData['exam'][$name]['schoolScore'][$key][$rate[$j]] = number_format($schoolScore[$score[$j]] / $scoreStatistics['schoolCount'][$key][$count[$j]] / $detailTableData['examScore'][$name], 2, '.', '');
+                        }
+
+                    }
+                    
+                }
+
+                foreach($detailTableData['typeName'] as $name){
+
+                    for($i = 0; $i < count($scoreStatistics['type'][$name]['total']); $i++) {
+                        $scoreStatisticsRateData['type'][$name]['total'][$rate[$i]] = number_format($scoreStatistics['type'][$name]['total'][$score[$i]] / $scoreStatistics[$count[$i]] / $detailTableData['typeScore'][$name], 2, '.', '');
+                    }
+
+                    foreach($scoreStatistics['type'][$name]['schoolScore'] as $key => $schoolScore){
+
+                        for($j = 0; $j < count($schoolScore); $j++) {
+                            $scoreStatisticsRateData['type'][$name]['schoolScore'][$key][$rate[$j]] = number_format($schoolScore[$score[$j]] / $scoreStatistics['schoolCount'][$key][$count[$j]] / $detailTableData['typeScore'][$name], 2, '.', '');
+                        }
+
+                    }
+                    
+                }
+
+                break;
+        }
+
+        return $scoreStatisticsRateData;
+    }
+
+    /**
+     * 获取分数率统计
+     */
+    private function getChoiceQuestionsAnalysisData($detailTableData, $scoreStatistics)
+    {
+
+        $choiceQuestionsAnalysisData = array(); // 分数数据
+
+        $filename = self::$queryCourse.'/'.self::$queryCourse.self::CHOICE_QUESTIONS_NAME;
+
+        $data = self::openExcel($filename);
+
+        $keys = array();
+        $rets = array();
+
+        $num = 0;
+
+        foreach($data->getRowIterator() as $kr => $row){
+
+            $cellIterator = $row->getCellIterator();
+
+            if ($kr == 1){
+                foreach($cellIterator as $kc => $cell){
+                    $keys[] = $cell->getValue();
+                }
+            }
+            else {
+                foreach($cellIterator as $kc => $cell){
+                    $rets[$keys[$kc]][] = $cell->getValue();
+                }       
+            }
+        }
+
+        for ($i = 0; $i < count($rets['题号']); $i++) { 
+            if($rets['答案'][$i] == 'A' || $rets['答案'][$i] == 'B' || $rets['答案'][$i] == 'C' || $rets['答案'][$i] == 'D'){
+                $choiceQuestionsAnalysisData[$num][$keys[0]] = $rets['题号'][$i];
+                $choiceQuestionsAnalysisData[$num][$keys[2]] = $rets['答案'][$i];
+                $choiceQuestionsAnalysisData[$num][$keys[3]] = $rets['人数'][$i];
+                $choiceQuestionsAnalysisData[$num][$keys[6]] = $rets['平均分'][$i];
+                $choiceQuestionsAnalysisData[$num][$keys[7]] = $rets['标准差'][$i];
+                $choiceQuestionsAnalysisData[$num][$keys[8]] = $rets['得分率'][$i];
+                $choiceQuestionsAnalysisData[$num][$keys[11]] = $rets['难度'][$i];
+                if($rets['难度'][$i] > 0.9){
+                    $choiceQuestionsAnalysisData[$num]['难度评价标准'] = '容易';
+                }
+                elseif($rets['难度'][$i] > 0.7 && $rets['难度'][$i] <= 0.9){
+                    $choiceQuestionsAnalysisData[$num]['难度评价标准'] = '较易';
+                }
+                elseif($rets['难度'][$i] > 0.4 && $rets['难度'][$i] <= 0.7){
+                    $choiceQuestionsAnalysisData[$num]['难度评价标准'] = '中等';
+                }
+                elseif($rets['难度'][$i] <= 0.4){
+                    $choiceQuestionsAnalysisData[$num]['难度评价标准'] = '偏难';
+                }
+                $choiceQuestionsAnalysisData[$num][$keys[12]] = $rets['区分度'][$i];
+                $choiceQuestionsAnalysisData[$num]['区分度评价标准'] = $rets['区分度'][$i];
+                if($rets['区分度'][$i] >= 0.4){
+                    $choiceQuestionsAnalysisData[$num]['区分度评价标准'] = '区分度较高';
+                }
+                elseif($rets['区分度'][$i] >= 0.3 && $rets['区分度'][$i] <= 0.39){
+                    $choiceQuestionsAnalysisData[$num]['区分度评价标准'] = '区分度中等';
+                }
+                elseif($rets['区分度'][$i] >= 0.2 && $rets['区分度'][$i] <= 0.29){
+                    $choiceQuestionsAnalysisData[$num]['区分度评价标准'] = '区分度一般';
+                }
+                elseif($rets['区分度'][$i] < 0.2){
+                    $choiceQuestionsAnalysisData[$num]['区分度评价标准'] = '区分度较低';
+                }
+                $choiceQuestionsAnalysisData[$num][$keys[14]] = $rets['选A率%'][$i];
+                $choiceQuestionsAnalysisData[$num][$keys[16]] = $rets['选B率%'][$i];
+                $choiceQuestionsAnalysisData[$num][$keys[18]] = $rets['选C率%'][$i];
+                $choiceQuestionsAnalysisData[$num][$keys[20]] = $rets['选D率%'][$i];
+                $num++;
+            }
+        }
+
+        return $choiceQuestionsAnalysisData;
     }
 
     /**
@@ -552,7 +692,7 @@ class StudentData {
         self::$dateDir     = $date; // 得到日期
         self::$mainDir     = $foldername; // 得到主目录
         self::$queryCourse = $course; // 查询课程
-        self::$schoolType  = 'middle'; // 学校类型
+        self::$schoolType  = 'high'; // 学校类型
 
         $schoolObj = new \Admin\Model\SchoolData();
         $schoolData = $schoolObj->getSchoolData(self::$schoolType);
@@ -565,18 +705,23 @@ class StudentData {
         $rateObj = new \Admin\Model\ScoreRateData();
         $scoreRate = $rateObj->getScoreRateData(self::$queryCourse);
 
-        $courseBaseObj = new \Admin\Model\CourseBaseData();
-        $courseBaseData = $courseBaseObj->getCourseBaseData($date, $foldername, $course);
+        $detailTableObj = new \Admin\Model\DetailTableData();
+        $detailTableData = $detailTableObj->getDetailTableData($date, $foldername, $course);
 
-        $courseAnalysis = self::getCourseAnalysisData();
+        /*$courseAnalysis = self::getCourseAnalysisData();
 
         $averageScore = self::getAverageData();
 
-        // $studentScore = self::getStudentScoreData($courseAnalysis, $scoreRate, $courseBaseData);
+        $studentCountRate = self::getStudentCountRateData($courseAnalysis, $scoreRate, $detailTableData);
 
-        $knowledgeAnalysis = self::getKnowledgeAnalysis($schoolData, $scoreRate, $courseBaseData);
+        $scoreStatistics = self::getScoreStatisticsData($schoolData, $scoreRate, $detailTableData);
+        $scoreStatisticsRate = self::getScoreStatisticsRateData($detailTableData, $scoreStatistics);*/
 
-        // var_dump($courseBaseData);
+
+        // $choiceQuestionsAnalysis = self::getChoiceQuestionsAnalysisData();
+
+        // var_dump($choiceQuestionsAnalysis);
+
 
         /*
 

@@ -50,7 +50,7 @@ class ScoreRateData {
     {
         $data = self::openExcel(self::SCORE_NAME);
 
-        $rets = array(); // 基本项内容
+        $scoreRateData = array(); // 基本项内容
 
         $num = 0;
 
@@ -67,13 +67,13 @@ class ScoreRateData {
             else {
                 foreach($cellIterator as $kc => $cell){
                     if($kc == $num) {
-                        $rets[] = $cell->getValue() / 100;
+                        $scoreRateData[] = $cell->getValue() / 100;
                     }
                 }       
             }
         }
 
-        return $rets;
+        return $scoreRateData;
 
     }
 

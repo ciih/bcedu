@@ -35,6 +35,12 @@ class CourseData {
     protected static $mainDir = '';
 
     /**
+     * 年级
+     * @var string
+     */
+    protected static $grade = '';
+
+    /**
      * 全区目录
      * @var string
      */
@@ -74,7 +80,7 @@ class CourseData {
         $keys = array(); // 基本项标题
         $rets = array(); // 基本项内容
 
-        $course = array(); // 学科
+        $courseData = array(); // 学科
 
         foreach($data->getRowIterator() as $kr => $row){
 
@@ -82,13 +88,13 @@ class CourseData {
             if($kr > 1) {
                 foreach($cellIterator as $kc => $cell){
                     if($kc == 0) {
-                        $course[] = $cell->getValue();
+                        $courseData[] = $cell->getValue();
                     }
                 }
             }
         }
 
-        return $course;
+        return $courseData;
 
     }
 
@@ -96,11 +102,12 @@ class CourseData {
      * 获取学校列表
      * @param $data 分数
      */
-    public function getCourseData($date, $foldername)
+    public function getCourseData($date, $foldername, $grade)
     {
 
         self::$dateDir = $date;
         self::$mainDir = $foldername;
+        self::$grade   = $grade;
 
         $data = self::getData();
 

@@ -100,3 +100,61 @@
   可以为教育局、各高、中、小学相关人员开通网站登录权限
 
   由于教育局及各类学校老师共千人之多，所以为了方便开发，首先只给教育局、各类学校各开一个公共帐号，此功能后续再完善
+
+## 数据说明
+
+* SchoolData.class.php
+
+  获取学校列表：
+  方    法：getSchoolData()；
+  返回数据：学校列表，例：array('第二中学','第九十三中学','第七十八中学');
+
+* CourseData.class.php
+
+  获取学科列表：
+  方    法：getCourseData()；
+  返回数据：本次考试科目，例：array('语文','数学','外语');
+
+* DetailTableData.class.php
+
+  获取学科双向明细表：
+  方    法：getDetailTableData()；
+  返回数据：考核范畴、考核层级要求，包括：名称、题号、分数、总分;
+
+* ScoreRateData.class.php
+
+  设置分数率：
+  方    法：setScoreRateData()；
+  设置数据：优秀率、及格率;
+
+  获取分数率
+  方    法：getScoreRateData()；
+  返回数据：返回某科优秀率、及格率;
+
+* StudentData.class.php
+
+  获取学科分析：
+  方    法：getCourseAnalysisData()；
+  返回数据：总人数、难度、区分度、信度及评语;
+
+  获取平均分：
+  方    法：getAverageData()；
+  返回数据：学校列表、全区平均分、各学校平均分;
+
+  获取学生分：
+  方    法：getStudentCountRateData()；
+  返回数据：优秀分数、及格分数，全区优秀、及格、未及格人数、率，全区累计优秀、及格、未及格人数、率;
+
+  获取分数统计：
+  方    法：getScoreStatistics()；
+  返回数据：全区及各学校人数、考核范畴分数、考核层级分数;
+
+  获取分数率统计：
+  方    法：getScoreStatisticsRate()；
+  返回数据：全区及各学校人数、考核范畴分数、考核层级分数率;
+
+
+
+
+
+

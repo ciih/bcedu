@@ -20,19 +20,19 @@ class SchoolData {
      * 小学表名
      * @var string
      */
-    const JUNIOR_NAME = '小学列表';
+    const JUNIOR_NAME = '小学';
 
     /**
      * 各科综合表名
      * @var string
      */
-    const MIDDLE_NAME = '初中列表';
+    const MIDDLE_NAME = '初中';
 
     /**
      * 平均分表名
      * @var string
      */
-    const HIGH_NAME = '高中列表';
+    const HIGH_NAME = '高中';
 
     /**
      * 打开excel表
@@ -58,12 +58,15 @@ class SchoolData {
     /**
      * 获取小学列表
      */
-    private function getData($filename)
+    private function getData($typeName)
     {
+        $filename = $typeName . '列表';
         $data = self::openExcel($filename);
 
         $keys = array(); // 基本项标题
         $rets = array(); // 基本项内容
+
+        $schoolData = array(); // 学校列表
 
         foreach($data->getRowIterator() as $kr => $row){
 
@@ -80,30 +83,30 @@ class SchoolData {
             }
         }
 
-        switch ($filename)
+        switch ($typeName)
         {
-            case '小学列表':
+            case '小学':
                 for ($x = 0; $x < count($rets); $x++) {
                   foreach($rets[$x] as $val){
-                    $school[$keys[$x]][] = $val;
+                    $schoolData[$keys[$x]][] = $val;
                   }
                 }
                 break;
-            case '初中列表':
+            case '初中':
                 for ($x = 0; $x < count($rets); $x++) {
                   foreach($rets[$x] as $val){
-                    $school[$keys[$x]][] = $val;
+                    $schoolData[$keys[$x]][] = $val;
                   }
                 }
                 break;
-            case '高中列表':
+            case '高中':
                 foreach($rets as $val){
-                    $school[$keys[0]] = $val;
+                    $schoolData[$keys[0]] = $val;
                 }
                 break;
         }
 
-        return $school;
+        return $schoolData;
 
     }
 
@@ -116,17 +119,17 @@ class SchoolData {
 
         switch ($type) {
             case 'junior' :
-                $schoolData  = self::getData(self::JUNIOR_NAME);
+                $data  = self::getData(self::JUNIOR_NAME); // 小学列表
                 break;
             case 'middle' :
-                $schoolData  = self::getData(self::MIDDLE_NAME);
+                $data  = self::getData(self::MIDDLE_NAME); // 中学列表
                 break;
             case 'high' :
-                $schoolData  = self::getData(self::HIGH_NAME);
+                $data  = self::getData(self::HIGH_NAME); // 高中列表
                 break;
         }
 
-        return $schoolData;
+        return $data;
     }
 
 }

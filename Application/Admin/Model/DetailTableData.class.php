@@ -8,7 +8,7 @@
 namespace Admin\Model;
 use Think\Model;
 
-class CourseBaseData {
+class DetailTableData {
    
     /**
      * Excel表目录
@@ -59,18 +59,12 @@ class CourseBaseData {
     /**
      * 获取小学列表
      */
-    private function getData($course)
+    private function getData()
     {
 
-        $courseData = array(); // 明细表数据
+        $detailTableData = array(); // 明细表数据
 
         $data = array();  // 获取后的数据
-
-        $type = array(); // 考核层级要求项名称
-        $typeStartPos = 0; // 考核层级要求的起始位置
-        $typeNumber = array(); // 考核层级类型包含的题号
-        $typeScore = array(); // 考核层级类型分数
-        $typeScorePos = 0; // 考核层级类型分数位置
 
         $examType = array(); // 考试类型
         $examTypeNumber = array(); // 考试类型题号
@@ -78,14 +72,20 @@ class CourseBaseData {
         $examCount = array(); // 试题的数量
         $examNumber = array(); //考试题号
 
+        $type = array(); // 考核层级要求项名称
+        $typeStartPos = 0; // 考核层级要求的起始位置
+        $typeNumber = array(); // 考核层级类型包含的题号
+        $typeScore = array(); // 考核层级类型分数
+        $typeScorePos = 0; // 考核层级类型分数位置
+
         $score = array(); // 分数列表
         $totalScore = 0; // 总分
 
-        $filename = self::$mainDir.'.'.$course;
+        $filename = self::$mainDir.'.'.self::$queryCourse;
 
-        $courseFile = self::openExcel($filename);
+        $detailTableFile = self::openExcel($filename);
 
-        foreach($courseFile->getRowIterator() as $kr => $row){
+        foreach($detailTableFile->getRowIterator() as $kr => $row){
 
             $cellIterator = $row->getCellIterator();
 
@@ -119,7 +119,7 @@ class CourseBaseData {
 
         }
 
-        $score = array_slice($score,0,-3);
+        $score = array_slice($score, 0, -3);
 
         foreach ($score as $kg => $value) {
             $totalScore = $totalScore + $value;
@@ -160,18 +160,18 @@ class CourseBaseData {
             }
         }
 
-        $courseBaseData = array(
-            'course'     => $course,
-            'examName'   => $examType, 
-            'examNumber' => $examTypeNumber, 
-            'examScore'  => $examTypeScore,
-            'typeName'   => $type,
-            'typeNumber' => $typeNumber,
-            'typeScore'  => $examTypeScore,
-            'totalScore' => $totalScore
+        $detailTableData = array(
+            'course'     => self::$queryCourse,
+            'examName'   => $examType, // 考试范畴
+            'examNumber' => $examTypeNumber, // 考试范畴题号
+            'examScore'  => $examTypeScore, // 考试范畴总分
+            'typeName'   => $type, // 考试层级名称
+            'typeNumber' => $typeNumber, // 考试层级题号
+            'typeScore'  => $typeScore, // 考试层级总分
+            'totalScore' => $totalScore // 本科考试总分
         );
 
-        return $courseBaseData;
+        return $detailTableData;
 
     }
 
@@ -179,14 +179,14 @@ class CourseBaseData {
      * 获取学校列表
      * @param $data 分数
      */
-    public function getCourseBaseData($date, $foldername, $course)
+    public function getDetailTableData($date, $foldername, $course)
     {
 
         self::$dateDir = $date;
         self::$mainDir = $foldername;
-        self::$queryCourse  = $course;
+        self::$queryCourse = $course;
 
-        $data = self::getData(self::$queryCourse);
+        $data = self::getData();
 
         return $data;
 
