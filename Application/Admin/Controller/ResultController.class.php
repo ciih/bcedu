@@ -14,10 +14,9 @@ class ResultController extends Controller {
 
         $date = $_GET['date'];
         $foldername = $_GET['foldername'];
-        $grade = $_GET['$grade'];
 
         $courseObj = new \Admin\Model\CourseData();
-        $courseData = $courseObj->getCourseData($date, $foldername, $grade);
+        $courseData = $courseObj->getCourseData($date, $foldername);
 
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');
@@ -43,8 +42,8 @@ class ResultController extends Controller {
         $foldername = $_GET['foldername'];
         $course = $_GET['course'];
 
-        $studentData = new \Admin\Model\StudentData();
-        $courseBase = $studentData->getStudentData($date, $foldername, $course);
+        $studentObj = new \Admin\Model\StudentData();
+        $studentData = $studentObj->getStudentData($date, $foldername, $course);
 
 
         // var_dump(session('baseinfo'));

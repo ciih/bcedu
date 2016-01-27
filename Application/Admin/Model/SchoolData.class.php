@@ -58,9 +58,9 @@ class SchoolData {
     /**
      * 获取小学列表
      */
-    private function getData($typeName)
+    private function getData($schoolTypeName)
     {
-        $filename = $typeName . '列表';
+        $filename = $schoolTypeName . '列表';
         $data = self::openExcel($filename);
 
         $keys = array(); // 基本项标题
@@ -83,7 +83,7 @@ class SchoolData {
             }
         }
 
-        switch ($typeName)
+        switch ($schoolTypeName)
         {
             case '小学':
                 for ($x = 0; $x < count($rets); $x++) {
@@ -112,12 +112,12 @@ class SchoolData {
 
     /**
      * 获取学校列表
-     * @param $type 学校列表
+     * @param $schoolType 学校类型
      */
-    public function getSchoolData($type)
+    public function getSchoolData($schoolType)
     {
 
-        switch ($type) {
+        switch ($schoolType) {
             case 'junior' :
                 $data  = self::getData(self::JUNIOR_NAME); // 小学列表
                 break;

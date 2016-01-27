@@ -35,12 +35,6 @@ class CourseData {
     protected static $mainDir = '';
 
     /**
-     * 年级
-     * @var string
-     */
-    protected static $grade = '';
-
-    /**
      * 全区目录
      * @var string
      */
@@ -102,12 +96,11 @@ class CourseData {
      * 获取学校列表
      * @param $data 分数
      */
-    public function getCourseData($date, $foldername, $grade)
+    public function getCourseData($date, $foldername)
     {
 
         self::$dateDir = $date;
         self::$mainDir = $foldername;
-        self::$grade   = $grade;
 
         $data = self::getData();
 

@@ -26,25 +26,25 @@ class StudentData {
      * 平均分对比表名
      * @var string
      */
-    const AVERAGE_NAME = '平均分对比';
+    const AVERAGE_NAME = '综合指标';
 
     /**
      * 学生成绩表名
      * @var string
      */
-    const STUDENT_SCORE_NAME = '学生题型分析';
+    const STUDENT_SCORE_NAME = '学生成绩';
 
     /**
      * 单科成绩分数表名(未加科目)
      * @var string
      */
-    const COURSE_SCORE_NAME = '_小题分';
+    const COURSE_SCORE_NAME = '小题分';
 
     /**
      * 选择题分析表名(未加科目)
      * @var string
      */
-    const CHOICE_QUESTIONS_NAME = '_小题分析';
+    const CHOICE_QUESTIONS_NAME = '小题分析';
 
     /**
      * 日期目录
@@ -83,6 +83,12 @@ class StudentData {
     protected static $courseAmount = 0;
 
     /**
+     * 年级
+     * @var string
+     */
+    protected static $grade = '';
+
+    /**
      * 打开excel表
      * @return string $objWorksheet 返回相应excel文件的工作薄
      */
@@ -115,7 +121,6 @@ class StudentData {
         $courseAnalysisData = array(); // 学科分析数据
 
         $course = array(); // 学科项目
-        $amount = array(); // 参考人数
 
         $difficulty = array(); // 全卷难度
         $distinguish = array(); // 全卷区分度
@@ -134,9 +139,6 @@ class StudentData {
                 foreach($cellIterator as $kc => $cell){
                     if ($kc == 0) {
                         $course[] = $cell->getValue();
-                    }
-                    if (($kc == 1)) {
-                        $amount[] = $cell->getValue();
                     }
                     if (($kc == 4)) {
                         $difficulty[] = $cell->getValue();
@@ -180,7 +182,6 @@ class StudentData {
             if ($course[$i] == self::$queryCourse) {
                 $courseAnalysisData = array(
                     'course'         => $course[$i],
-                    'amount'         => $amount[$i],
                     'difficulty'     => $difficulty[$i],
                     'difficultyTxt'  => $difficultyTxt[$i],
                     'distinguish'    => $distinguish[$i],
@@ -194,7 +195,6 @@ class StudentData {
         }
 
         return $courseAnalysisData;
-
     }
 
     /**
@@ -202,15 +202,18 @@ class StudentData {
      */
     private function getAverageData()
     {
-        $data = self::openExcel(self::AVERAGE_NAME);
+        $filename = self::$queryCourse.'/'.self::AVERAGE_NAME;
+        $data = self::openExcel($filename);
 
         $averageData = array(); // 平均分对比数据
-        $scoreData = array(); // 平均分
+
         $keys = array(); // 平均分字段名
 
         $schoolName = array(); // 学校名称
+        $amountStudentCount = 0; // 全区参加考试人数
+        $studentCount = array(); // 全学校参加考试人数
         $amountAverageScore = 0; // 全区平均分
-        $schoolAverageScore = array(); // 学校平均分
+        $averageScore = array(); // 各学校平均分
 
         $courseName = self::$queryCourse . '均分';
 
@@ -229,40 +232,30 @@ class StudentData {
                     if ($kd == 0) {
                         $schoolName[] = $cell->getValue();
                     }
-                    if ($kd > 0) {
-                        $scoreData[$kd-1][] =  $cell->getValue();
+                    if ($kd == 2) {
+                        $studentCount[] = $cell->getValue();
+                    }
+                    if ($kd == 3) {
+                        $averageScore[] = $cell->getValue();
                     }
                 }
             }
         }
 
-        $scoreData = array_slice($scoreData, 0, -2);
-        $keys = array_slice($keys, 0, -3);
+        $amountStudentCount = $studentCount[count($studentCount)-1];
+        $amountAverageScore = $averageScore[count($averageScore)-1];
 
-        for ($i = 0; $i < self::$courseAmount; $i++) { 
-            array_splice($scoreData, $i + 1, 1);
-            array_splice($keys, $i, 1);
-        }
-
-        for ($i = 0; $i < self::$courseAmount; $i++) {
-            if ($courseName == $keys[$i]) {
-                foreach ($schoolName as $key => $value) {
-                    if ($key == count($scoreData[$i]) - 1) {
-                        $amountAverageScore = floatval($scoreData[$i][$key]);
-                    } else {
-                        $schoolAverageScore[$schoolName[$key]] = floatval($scoreData[$i][$key]);
-                    }
-                }
-            }
-        }
-
-        array_splice($schoolName, count($schoolName) - 1, 1);
+        $schoolName = array_splice($schoolName, 0, -1);
+        $studentCount = array_splice($studentCount, 0, -1);
+        $averageScore = array_splice($averageScore, 0, -1);
 
         $averageData = array(
             'course'      => self::$queryCourse,
             'schoolName'  => $schoolName, // 学校列表
-            'amountAverageScore' => $amountAverageScore, // 全区平均分
-            'schoolAverageScore' => $schoolAverageScore // 各学校平均分
+            'studentCount' => $studentCount, // 各学校参加考试总人数
+            'amountStudentCount' => $amountStudentCount, // 全区参加考试总人数
+            'averageScore' => $averageScore, // 各学校平均分
+            'amountAverageScore' => $amountAverageScore // 全区平均分
         );
 
         return $averageData;
@@ -271,10 +264,29 @@ class StudentData {
     /**
      * 获取学生人数百分比
      */
-    private function getStudentCountRateData($courseAnalysis, $scoreRate, $detailTableData)
+    private function getStudentCountRateData($averageScore, $scoreRate, $detailTableData)
     {
-        $data = self::openExcel(self::STUDENT_SCORE_NAME);
-
+        if(self::$grade == 'h3') {
+            if(self::$queryCourse == '数学(理)') {
+                $filename = self::STUDENT_SCORE_NAME.'_理科';
+                $data = self::openExcel($filename);
+            }
+            elseif(self::$queryCourse == '数学(文)') {
+                $filename = self::STUDENT_SCORE_NAME.'_文科';
+                $data = self::openExcel($filename);
+            }
+            else {
+                $filenameScience = self::STUDENT_SCORE_NAME.'_理科';
+                $filenameLiberal = self::STUDENT_SCORE_NAME.'_文科';
+                $data[0] = self::openExcel($filenameScience);
+                $data[1] = self::openExcel($filenameLiberal);
+            }
+        }
+        else {
+            $filename = self::STUDENT_SCORE_NAME;
+            $data = self::openExcel($filename);
+        }
+        
         $scoreData = array(); // 学生分数
 
         $baseScore = array(); // 考试基准分数线
@@ -290,31 +302,58 @@ class StudentData {
         $rate = array(); // 所占百分比
         $cumulativeRate = array(); // 累计所占百分比
 
-        foreach($data->getRowIterator() as $kr => $row){
+        if(self::$grade == 'h3' && self::$queryCourse != '数学(理)' && self::$queryCourse != '数学(文)') {
+            for ($i = 0; $i < count($data); $i++) { 
+                foreach($data[$i]->getRowIterator() as $kr => $row){
 
-            $cellIterator = $row->getCellIterator();
+                    $cellIterator = $row->getCellIterator();
 
-            if($kr == 1) {
-                foreach($cellIterator as $kc => $cell){
-                    if($courseName == $cell->getValue()) {
-                        $scoreRow = $kc;
+                    if($kr == 1) {
+                        foreach($cellIterator as $kc => $cell){
+                            if($courseName == $cell->getValue()) {
+                                $scoreRow = $kc;
+                            }
+                        }
+                    }
+
+                    if($kr > 1) {
+
+                        foreach($cellIterator as $kc => $cell){
+                            if($kc == 2 || $kc == $scoreRow) {
+                                $scoreData[$num][] = $cell->getValue();
+                            }
+                        }
+
+                        $num++;
                     }
                 }
-            }
-
-            if($kr > 1) {
-
-                foreach($cellIterator as $kc => $cell){
-                    if($kc == 2 || $kc == $scoreRow) {
-                        $scoreData[$num][] = $cell->getValue();
-                    }
-                }
-
-                $num++;
             }
         }
+        else {
+            foreach($data->getRowIterator() as $kr => $row){
 
-        array_splice($scoreData, -3, 3);
+                $cellIterator = $row->getCellIterator();
+
+                if($kr == 1) {
+                    foreach($cellIterator as $kc => $cell){
+                        if($courseName == $cell->getValue()) {
+                            $scoreRow = $kc;
+                        }
+                    }
+                }
+
+                if($kr > 1) {
+
+                    foreach($cellIterator as $kc => $cell){
+                        if($kc == 2 || $kc == $scoreRow) {
+                            $scoreData[$num][] = $cell->getValue();
+                        }
+                    }
+
+                    $num++;
+                }
+            }
+        }
 
         $totalScore = $detailTableData['totalScore'];
 
@@ -330,7 +369,7 @@ class StudentData {
                 $count['excellentCount']++;
             } elseif($scoreData[$i][1] >= $baseScore['passScore'] && $scoreData[$i][1] < $baseScore['excellentScore']) {
                 $count['passCount']++;
-            } else {
+            } elseif($scoreData[$i][1] < $baseScore['passScore'] && !empty($scoreData[$i][1])) {
                 $count['failCount']++;
             }
         }
@@ -339,13 +378,13 @@ class StudentData {
         $cumulativeCount['passCount'] = $count['excellentCount'] + $count['passCount'];
         $cumulativeCount['failCount'] = $count['excellentCount'] + $count['passCount'] + $count['failCount'];
 
-        $rate['excellentRate'] = number_format($count['excellentCount'] / $courseAnalysis['amount'] * 100, 2, '.', '');
-        $rate['passRate'] = number_format($count['passCount'] / $courseAnalysis['amount'] * 100, 2, '.', '');
-        $rate['failRate'] = number_format($count['failCount'] / $courseAnalysis['amount'] * 100, 2, '.', '');
+        $rate['excellentRate'] = number_format($count['excellentCount'] / $averageScore['amountStudentCount'] * 100, 2, '.', '');
+        $rate['passRate'] = number_format($count['passCount'] / $averageScore['amountStudentCount'] * 100, 2, '.', '');
+        $rate['failRate'] = number_format($count['failCount'] / $averageScore['amountStudentCount'] * 100, 2, '.', '');
 
-        $cumulativeRate['excellentRate'] = number_format($cumulativeCount['excellentCount'] / $courseAnalysis['amount'] * 100, 2, '.', '');
-        $cumulativeRate['passRate'] = number_format($cumulativeCount['passCount'] / $courseAnalysis['amount'] * 100, 2, '.', '');
-        $cumulativeRate['failRate'] = number_format($cumulativeCount['failCount'] / $courseAnalysis['amount'] * 100, 2, '.', '');
+        $cumulativeRate['excellentRate'] = number_format($cumulativeCount['excellentCount'] / $averageScore['amountStudentCount'] * 100, 2, '.', '');
+        $cumulativeRate['passRate'] = number_format($cumulativeCount['passCount'] / $averageScore['amountStudentCount'] * 100, 2, '.', '');
+        $cumulativeRate['failRate'] = number_format($cumulativeCount['failCount'] / $averageScore['amountStudentCount'] * 100, 2, '.', '');
 
         $studentCountRateData = array(
             'baseScore'       => $baseScore, // 优秀分数、及格分数
@@ -368,7 +407,7 @@ class StudentData {
 
         $num = 0;
 
-        $filename = self::$queryCourse.'/'.self::$queryCourse.self::COURSE_SCORE_NAME;
+        $filename = self::$queryCourse.'/'.self::COURSE_SCORE_NAME;
 
         $data = self::openExcel($filename);
 
@@ -541,7 +580,6 @@ class StudentData {
         }
 
         return $examScoreData;
-
     }
 
     /**
@@ -604,14 +642,14 @@ class StudentData {
     }
 
     /**
-     * 获取分数率统计
+     * 获取客观题统计
      */
     private function getChoiceQuestionsAnalysisData($detailTableData, $scoreStatistics)
     {
 
         $choiceQuestionsAnalysisData = array(); // 分数数据
 
-        $filename = self::$queryCourse.'/'.self::$queryCourse.self::CHOICE_QUESTIONS_NAME;
+        $filename = self::$queryCourse.'/'.self::CHOICE_QUESTIONS_NAME;
 
         $data = self::openExcel($filename);
 
@@ -692,7 +730,45 @@ class StudentData {
         self::$dateDir     = $date; // 得到日期
         self::$mainDir     = $foldername; // 得到主目录
         self::$queryCourse = $course; // 查询课程
-        self::$schoolType  = 'high'; // 学校类型
+
+        $folderArr = explode("_" , $foldername);
+
+        if($folderArr[2] == '高三年级') {
+            self::$grade      = 'h3';
+            self::$schoolType = 'high';
+        }
+        elseif($folderArr[2] == '高二年级') {
+            self::$grade      = 'h2';
+            self::$schoolType = 'high';
+        }
+        elseif($folderArr[2] == '高一年级') {
+            self::$grade      = 'h1';
+            self::$schoolType = 'high';
+        }
+        elseif($folderArr[2] == '九年级') {
+            self::$grade      = 'm9';
+            self::$schoolType = 'middle';
+        }
+        elseif($folderArr[2] == '八年级') {
+            self::$grade      = 'm8';
+            self::$schoolType = 'middle';
+        }
+        elseif($folderArr[2] == '七年级') {
+            self::$grade      = 'm7';
+            self::$schoolType = 'middle';
+        }
+        elseif($folderArr[2] == '六年级') {
+            self::$grade      = 'j6';
+            self::$schoolType = 'junior';
+        }
+        elseif($folderArr[2] == '五年级') {
+            self::$grade      = 'j5';
+            self::$schoolType = 'junior';
+        }
+        elseif($folderArr[2] == '四年级') {
+            self::$grade      = 'j4';
+            self::$schoolType = 'junior';
+        }
 
         $schoolObj = new \Admin\Model\SchoolData();
         $schoolData = $schoolObj->getSchoolData(self::$schoolType);
@@ -708,30 +784,24 @@ class StudentData {
         $detailTableObj = new \Admin\Model\DetailTableData();
         $detailTableData = $detailTableObj->getDetailTableData($date, $foldername, $course);
 
-        /*$courseAnalysis = self::getCourseAnalysisData();
+        $courseAnalysis = self::getCourseAnalysisData();
 
         $averageScore = self::getAverageData();
 
-        $studentCountRate = self::getStudentCountRateData($courseAnalysis, $scoreRate, $detailTableData);
+        $studentCountRate = self::getStudentCountRateData($averageScore, $scoreRate, $detailTableData);
 
         $scoreStatistics = self::getScoreStatisticsData($schoolData, $scoreRate, $detailTableData);
-        $scoreStatisticsRate = self::getScoreStatisticsRateData($detailTableData, $scoreStatistics);*/
+        $scoreStatisticsRate = self::getScoreStatisticsRateData($detailTableData, $scoreStatistics);
 
-
-        // $choiceQuestionsAnalysis = self::getChoiceQuestionsAnalysisData();
-
-        // var_dump($choiceQuestionsAnalysis);
-
-
-        /*
-
+        $choiceQuestionsAnalysis = self::getChoiceQuestionsAnalysisData();
 
         $data = array(
-            'courseAnalysis' => $courseAnalysis,
-            'averageScore' => $averageScore,
-        );*/
-
-        // var_dump($data['averageScore']);
+            'courseAnalysis' => $courseAnalysis, // 学科分析（包括：难度、区分度、信度）
+            'averageScore' => $averageScore, // 平均分（包括：学校列表、各学校参加考试总人数、全区参加考试总人数、各学校平均分、全区平均分）
+            'studentCountRate' => $studentCountRate, // 学生优秀率统计（包括：全区优秀人数、全区优秀率、全区累计优秀人数、全区累计优秀率）
+            'scoreStatisticsRate' => $scoreStatisticsRate, // 分数率统计（包括：总体、各学校考核范畴与考核层级各项优秀率统计）
+            'choiceQuestionsAnalysis' => $choiceQuestionsAnalysis // 客观题统计（包括：所有单选题各项指数）
+        );
 
         return $data;
 

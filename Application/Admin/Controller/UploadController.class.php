@@ -94,17 +94,8 @@ class UploadController extends Controller {
         $date = $_GET['date'];
         $foldername = $_GET['foldername'];
 
-        $folderArr = explode("_" , $foldername);
-
-        if($folderArr[2] == '高三年级') {
-            $grade = 1;
-        }
-        else {
-            $grade = 0;
-        }
-
         $courseData = new \Admin\Model\CourseData();
-        $course = $courseData->getCourseData($date, $foldername, $grade);
+        $course = $courseData->getCourseData($date, $foldername);
         $courseCount = count($course);
 
         $adminCss = getLoadCssStatic('admin_other');
@@ -118,7 +109,6 @@ class UploadController extends Controller {
         $this->assign('foldername', $foldername);
         $this->assign('course', $course);
         $this->assign('courseCount', $courseCount);
-        $this->assign('grade', $grade);
 
         $this->display();
     }
@@ -128,7 +118,6 @@ class UploadController extends Controller {
         $date = $_POST['date'];
         $foldername = $_POST['foldername'];
         $courseCount = $_POST['courseCount'];
-        $grade = $_POST['grade'];
 
         $data = array();
 
@@ -143,7 +132,7 @@ class UploadController extends Controller {
 
         $updateData->setScoreRateData($date, $foldername, $data);
 
-        header('Location: /admin/result?date='.$date.'&foldername='.$foldername.'&grade='.$grade);
+        header('Location: /admin/result?date='.$date.'&foldername='.$foldername);
     }
 
 }

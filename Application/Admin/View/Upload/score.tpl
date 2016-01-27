@@ -23,7 +23,6 @@
 					<input type="hidden" name="date" value="<%$date%>">
 					<input type="hidden" name="foldername" value="<%$foldername%>">
 					<input type="hidden" name="courseCount" value="<%$courseCount%>">
-					<input type="hidden" name="grade" value="<%$grade%>">
 					<div class="col-md-12 btn-upload">
 						<button type="submit" class="btn blue btn-score-update">上传分数</button>
 					</div>
