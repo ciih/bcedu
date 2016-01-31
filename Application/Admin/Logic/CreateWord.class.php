@@ -1029,8 +1029,6 @@ class CreateWord {
             arsort($kgtRate[$i]);
         }
 
-        var_dump($kgtRate);
-
         $section->addText('     注：区分度评价标准:>0.4区分度较高;0.3~0.39 区分度中等;0.2~0.29 区分度一般;<0.2区分度较低', $tableTitleStyleFont, $tableStyleParagraph);
         $section->addText('         难度评价标准:  >0.9容易;0.7~0.9较易;0.4~0.7中等;<0.4偏难;', $tableTitleStyleFont, $tableStyleParagraph);
 
