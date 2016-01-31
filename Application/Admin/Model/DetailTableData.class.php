@@ -29,6 +29,12 @@ class DetailTableData {
     protected static $mainDir = '';
 
     /**
+     * 文件前缀
+     * @var string
+     */
+    protected static $filenamePrefix = '';
+
+    /**
      * 科目
      * @var string
      */
@@ -81,7 +87,7 @@ class DetailTableData {
         $score = array(); // 分数列表
         $totalScore = 0; // 总分
 
-        $filename = self::$mainDir.'.'.self::$queryCourse;
+        $filename = self::$filenamePrefix.'.'.self::$queryCourse;
 
         $detailTableFile = self::openExcel($filename);
 
@@ -188,6 +194,8 @@ class DetailTableData {
         self::$dateDir = $date;
         self::$mainDir = $foldername;
         self::$queryCourse = $course;
+
+        self::$filenamePrefix = implode('',explode("_" , $foldername));
 
         $data = self::getData();
 
