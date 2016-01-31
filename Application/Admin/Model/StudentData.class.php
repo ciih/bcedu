@@ -141,7 +141,7 @@ class StudentData {
                         $course[] = $cell->getValue();
                     }
                     if (($kc == 4)) {
-                        $difficulty[] = $cell->getValue();
+                        $difficulty[] = number_format($cell->getValue(), 2, '.', '');
                         if ($cell->getValue() >= 0.9) {
                             $difficultyTxt[] = '容易';
                         } elseif ($cell->getValue() >= 0.7 && $cell->getValue() < 0.9) {
@@ -153,7 +153,7 @@ class StudentData {
                         }
                     }
                     if (($kc == 7)) {
-                        $distinguish[] = $cell->getValue();
+                        $distinguish[] = number_format($cell->getValue(), 2, '.', '');
                         if ($cell->getValue() >= 0.4) {
                             $distinguishTxt[] = '较高';
                         } elseif ($cell->getValue() >= 0.3 && $cell->getValue() < 0.4) {
@@ -165,7 +165,7 @@ class StudentData {
                         }
                     }
                     if (($kc == 10)) {
-                        $reliability[] = $cell->getValue();
+                        $reliability[] = number_format($cell->getValue(), 2, '.', '');
                         if ($cell->getValue() >= 0.9) {
                             $reliabilityTxt[] = '优秀';
                         } elseif ($cell->getValue() >= 0.7 && $cell->getValue() < 0.9) {
@@ -236,7 +236,7 @@ class StudentData {
                         $studentCount[] = $cell->getValue();
                     }
                     if ($kd == 3) {
-                        $averageScore[] = $cell->getValue();
+                        $averageScore[] = number_format($cell->getValue(), 2, '.', '');
                     }
                 }
             }
@@ -793,14 +793,16 @@ class StudentData {
         $scoreStatistics = self::getScoreStatisticsData($schoolData, $scoreRate, $detailTableData);
         $scoreStatisticsRate = self::getScoreStatisticsRateData($detailTableData, $scoreStatistics);
 
-        $choiceQuestionsAnalysis = self::getChoiceQuestionsAnalysisData();
+        // $choiceQuestionsAnalysis = self::getChoiceQuestionsAnalysisData();
 
         $data = array(
+            'scoreRate' => $scoreRate, // 分数率
+            'detailTable' => $detailTableData, // 双向明细表（包括：总分）
             'courseAnalysis' => $courseAnalysis, // 学科分析（包括：难度、区分度、信度）
             'averageScore' => $averageScore, // 平均分（包括：学校列表、各学校参加考试总人数、全区参加考试总人数、各学校平均分、全区平均分）
             'studentCountRate' => $studentCountRate, // 学生优秀率统计（包括：全区优秀人数、全区优秀率、全区累计优秀人数、全区累计优秀率）
             'scoreStatisticsRate' => $scoreStatisticsRate, // 分数率统计（包括：总体、各学校考核范畴与考核层级各项优秀率统计）
-            'choiceQuestionsAnalysis' => $choiceQuestionsAnalysis // 客观题统计（包括：所有单选题各项指数）
+            // 'choiceQuestionsAnalysis' => $choiceQuestionsAnalysis // 客观题统计（包括：所有单选题各项指数）
         );
 
         return $data;

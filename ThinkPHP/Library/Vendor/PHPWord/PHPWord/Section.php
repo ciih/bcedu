@@ -109,7 +109,8 @@ class PHPWord_Section {
 	 * @return PHPWord_Section_Text
 	 */
 	public function addText($text, $styleFont = null, $styleParagraph = null) {
-		$givenText = utf8_encode($text);
+		// $givenText = utf8_encode($text);
+		$givenText = $text;
 		$text = new PHPWord_Section_Text($givenText, $styleFont, $styleParagraph);
 		$this->_elementCollection[] = $text;
 		return $text;

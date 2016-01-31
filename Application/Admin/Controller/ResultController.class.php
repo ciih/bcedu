@@ -18,6 +18,10 @@ class ResultController extends Controller {
         $courseObj = new \Admin\Model\CourseData();
         $courseData = $courseObj->getCourseData($date, $foldername);
 
+        /*$aaaObj = new \Admin\Model\StudentData();
+        $aaaData = $aaaObj->getStudentData($date, $foldername, '数学(理)');
+        var_export($aaaData);*/
+
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');
         $this->assign('adminCss', $adminCss);
@@ -42,12 +46,18 @@ class ResultController extends Controller {
         $foldername = $_GET['foldername'];
         $course = $_GET['course'];
 
-        $studentObj = new \Admin\Model\StudentData();
-        $studentData = $studentObj->getStudentData($date, $foldername, $course);
+        /*$studentObj = new \Admin\Model\StudentData();
+        $studentData = $studentObj->getStudentData($date, $foldername, $course);*/
+
+
+        $wordObj = new \Admin\Logic\CreateWord();
+        $wordObj->creatWordFile($date, $foldername, $course);
+
 
 
         // var_dump(session('baseinfo'));
 
+        // var_dump($studentData);
 
 
 

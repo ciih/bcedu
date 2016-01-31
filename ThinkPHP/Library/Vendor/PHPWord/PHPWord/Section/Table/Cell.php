@@ -108,7 +108,8 @@ class PHPWord_Section_Table_Cell {
 	 * @return PHPWord_Section_Text
 	 */
 	public function addText($text, $styleFont = null, $styleParagraph = null) {
-		$text = utf8_encode($text);
+		// $text = utf8_encode($text);
+		$text = $text;
 		$text = new PHPWord_Section_Text($text, $styleFont, $styleParagraph);
 		$this->_elementCollection[] = $text;
 		return $text;

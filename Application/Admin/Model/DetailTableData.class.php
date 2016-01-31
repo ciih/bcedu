@@ -147,6 +147,9 @@ class DetailTableData {
                     $typeNumber[$type[$k]][] = $examNumber[$kd];
                     $typeScore[$type[$k]] = $typeScore[$type[$k]] + $score[$kd];
                 }
+                else {
+                    $typeScore[$type[$k]] = $typeScore[$type[$k]] + 0;
+                }
             } 
         }
 

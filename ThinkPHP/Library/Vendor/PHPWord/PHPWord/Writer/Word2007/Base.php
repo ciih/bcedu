@@ -309,6 +309,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		// Font
 		if($font != 'Arial') {
 			$objWriter->startElement('w:rFonts');
+				$objWriter->writeAttribute('w:eastAsia', $font);
 				$objWriter->writeAttribute('w:ascii', $font);
 				$objWriter->writeAttribute('w:hAnsi', $font);
 				$objWriter->writeAttribute('w:cs', $font);

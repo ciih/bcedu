@@ -67,7 +67,7 @@ class ScoreRateData {
             else {
                 foreach($cellIterator as $kc => $cell){
                     if($kc == $num) {
-                        $scoreRateData[] = $cell->getValue() / 100;
+                        $scoreRateData[] = number_format($cell->getValue() / 100, 2, '.', '');
                     }
                 }       
             }

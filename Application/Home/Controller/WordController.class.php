@@ -46,7 +46,7 @@ class WordController extends Controller {
         $jsTplFile = $phantomBaseDir."/data.tpl.js";
         $jsFile = $workDir."/data.js";
 
-        $baseUrl = "http://liuguanyu.bcedu.com:9001/index.php";
+        $baseUrl = "http://chenhong.bcedu.com/index.php";
         $picFile = "data.pic.png";
 
 		$js = file_get_contents($jsTplFile);
@@ -67,7 +67,7 @@ class WordController extends Controller {
 		), $js);
 
         file_put_contents($jsFile, $js);
-        exec("/usr/local/bin/node /usr/local/bin/phantomjs ".$jsFile); 
+        exec("D:/server/nodejs/node /usr/local/bin/phantomjs ".$jsFile); 
 
         // 等待截图完成
         sleep(2);
@@ -78,7 +78,7 @@ class WordController extends Controller {
        
         $PHPWord = new \PHPWord();
         $wordBaseDir = dirname(dirname(dirname(dirname(__FILE__))))."/Tmp/";
-		$document = $PHPWord->loadTemplate($wordBaseDir.'Template.docx');
+		$document = $PHPWord->loadTemplate($wordBaseDir.'Template.doc');
 
 		$document->setValue('valuea', $data1["语言知识"]["G5"]);
 		$document->setValue('valueb', $data1["文学常识和名句名篇"]["G5"]);
@@ -108,10 +108,10 @@ class WordController extends Controller {
 		// 设置一张占位图，此图大小和最终大小一致。然后把土的alt text设置为变量名如${placeholder}, 调用下面方法即可
     	$document->setImageValue($document->getImgFileName($document->seachImagerId("placeholder")), $workDir.$picFile);
 
-		$document->save($wordBaseDir.'chenhong.docx');
-		header("Content-Disposition: attachment; filename='chenhong.docx'");
-		echo file_get_contents($wordBaseDir.'chenhong.docx');
-		unlink($wordBaseDir.'chenhong.docx');  // remove temp file		
+		$document->save($wordBaseDir.'chenhong.doc');
+		header("Content-Disposition: attachment; filename='chenhong.doc'");
+		echo file_get_contents($wordBaseDir.'chenhong.doc');
+		unlink($wordBaseDir.'chenhong.doc');  // remove temp file		
         @unlink($workDir.$picFile);
         @unlink($jsFile);
         @rmdir($workDir);

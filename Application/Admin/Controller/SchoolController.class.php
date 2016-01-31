@@ -23,6 +23,14 @@ class SchoolController extends Controller {
         $middleCount = count($middleData,1) - count($middleData);
         $highCount = count($highData,1) - count($highData);
 
+        $chenhong = array('man'=>43,'wom'=>23,'old'=>73,'son'=>13);
+
+        arsort($chenhong);
+
+        
+
+        var_dump(array_keys($chenhong)[0]);
+
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');
         $this->assign('adminCss', $adminCss);
