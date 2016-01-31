@@ -793,7 +793,7 @@ class StudentData {
         $scoreStatistics = self::getScoreStatisticsData($schoolData, $scoreRate, $detailTableData);
         $scoreStatisticsRate = self::getScoreStatisticsRateData($detailTableData, $scoreStatistics);
 
-        // $choiceQuestionsAnalysis = self::getChoiceQuestionsAnalysisData();
+        $choiceQuestionsAnalysis = self::getChoiceQuestionsAnalysisData();
 
         $data = array(
             'scoreRate' => $scoreRate, // 分数率
@@ -802,7 +802,7 @@ class StudentData {
             'averageScore' => $averageScore, // 平均分（包括：学校列表、各学校参加考试总人数、全区参加考试总人数、各学校平均分、全区平均分）
             'studentCountRate' => $studentCountRate, // 学生优秀率统计（包括：全区优秀人数、全区优秀率、全区累计优秀人数、全区累计优秀率）
             'scoreStatisticsRate' => $scoreStatisticsRate, // 分数率统计（包括：总体、各学校考核范畴与考核层级各项优秀率统计）
-            // 'choiceQuestionsAnalysis' => $choiceQuestionsAnalysis // 客观题统计（包括：所有单选题各项指数）
+            'choiceQuestionsAnalysis' => $choiceQuestionsAnalysis // 客观题统计（包括：所有单选题各项指数）
         );
 
         return $data;

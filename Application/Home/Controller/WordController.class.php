@@ -49,6 +49,8 @@ class WordController extends Controller {
         $baseUrl = "http://chenhong.bcedu.com/index.php";
         $picFile = "data.pic.png";
 
+        $workDir2 = str_replace("\\", '/', $workDir);
+
 		$js = file_get_contents($jsTplFile);
 		$js = str_replace(array(
 			"{baseurl}", 
@@ -59,7 +61,7 @@ class WordController extends Controller {
 			"{sign}"
 		), array(
 			$baseUrl, 
-			$workDir, 
+			$workDir2, 
 			$picFile,
 			rawurlencode($dataStr),
 			$case,
@@ -67,21 +69,21 @@ class WordController extends Controller {
 		), $js);
 
         file_put_contents($jsFile, $js);
-        exec("D:/server/nodejs/node /usr/local/bin/phantomjs ".$jsFile); 
+        exec("D:/server/phantomjs/bin/phantomjs.exe ".$jsFile); 
 
         // 等待截图完成
         sleep(2);
 
-        $image = file_get_contents($workDir."test.png");
+        $image = file_get_contents($workDir."data.pic.png");
 
         vendor("PHPWord.PHPWord");
        
         $PHPWord = new \PHPWord();
         $wordBaseDir = dirname(dirname(dirname(dirname(__FILE__))))."/Tmp/";
-		$document = $PHPWord->loadTemplate($wordBaseDir.'Template.doc');
+		$document = $PHPWord->loadTemplate($wordBaseDir.'Template.docx');
 
 		$document->setValue('valuea', $data1["语言知识"]["G5"]);
-		$document->setValue('valueb', $data1["文学常识和名句名篇"]["G5"]);
+		/*$document->setValue('valueb', $data1["文学常识和名句名篇"]["G5"]);
 		$document->setValue('valuec', $data1["古代诗文阅读"]["G5"]);
 		$document->setValue('valued', $data1["现代文阅读"]["G5"]);
 		$document->setValue('valuee', $data1["写作"]["G5"]);
@@ -102,7 +104,7 @@ class WordController extends Controller {
 		$document->setValue('valueb3', $data1["文学常识和名句名篇"]["G2"]);
 		$document->setValue('valuec3', $data1["古代诗文阅读"]["G2"]);
 		$document->setValue('valued3', $data1["现代文阅读"]["G2"]);
-		$document->setValue('valuee3', $data1["写作"]["G2"]);
+		$document->setValue('valuee3', $data1["写作"]["G2"]);*/
 
 		// set alt text to a picture http://accessproject.colostate.edu/udl/modules/word/tut_alt_text.php?display=pg_2
 		// 设置一张占位图，此图大小和最终大小一致。然后把土的alt text设置为变量名如${placeholder}, 调用下面方法即可
@@ -112,9 +114,9 @@ class WordController extends Controller {
 		header("Content-Disposition: attachment; filename='chenhong.doc'");
 		echo file_get_contents($wordBaseDir.'chenhong.doc');
 		unlink($wordBaseDir.'chenhong.doc');  // remove temp file		
-        @unlink($workDir.$picFile);
-        @unlink($jsFile);
-        @rmdir($workDir);
+        // @unlink($workDir.$picFile);
+        // @unlink($jsFile);
+        // @rmdir($workDir);
     }
 
     public function datapic(){
