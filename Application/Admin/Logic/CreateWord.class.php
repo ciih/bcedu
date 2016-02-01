@@ -60,19 +60,13 @@ class CreateWord {
         $PHPWord->setDefaultFontName('楷体_GB2312');
         $PHPWord->setDefaultFontSize(14);
 
-        // $wordBaseDir = dirname(dirname(dirname(dirname(__FILE__))))."/Word/Template/";
-        // $document = $PHPWord->loadTemplate($wordBaseDir.'Template.docx');
-
-
-        $wordSaveDate = date("Y-m-d");
+        $wordSaveDate = $date;
         $wordSaveDir = dirname(dirname(dirname(dirname(__FILE__))))."/Word/".$wordSaveDate."/";
 
         if (!file_exists($wordSaveDir))
         {
             mkdir ($wordSaveDir);
         }
-
-
 
         $section = $PHPWord->createSection($sectionStyle);
 
@@ -138,8 +132,6 @@ class CreateWord {
         ); 
 
         $PHPWord->addTableStyle('myTableStyle', $styleTable, $styleFirstRow);
-
-
 
         $section->addTextBreak(2);
         $section->addText($courseTitle, $coverStyleFont, $coverStyleParagraph);
@@ -208,7 +200,6 @@ class CreateWord {
         $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['rate']['failRate'], $cellPurpleStyleFont, $cellStyle); 
         $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['cumulativeCount']['failCount'], $cellPurpleStyleFont, $cellStyle); 
         $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['cumulativeRate']['failRate'], $cellPurpleStyleFont, $cellStyle);
-
 
         $section->addTextBreak();
 

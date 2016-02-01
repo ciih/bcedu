@@ -18,10 +18,6 @@ class ResultController extends Controller {
         $courseObj = new \Admin\Model\CourseData();
         $courseData = $courseObj->getCourseData($date, $foldername);
 
-        /*$aaaObj = new \Admin\Model\StudentData();
-        $aaaData = $aaaObj->getStudentData($date, $foldername, '数学(理)');
-        var_export($aaaData);*/
-
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');
         $this->assign('adminCss', $adminCss);
@@ -46,29 +42,16 @@ class ResultController extends Controller {
         $foldername = $_GET['foldername'];
         $course = $_GET['course'];
 
-        /*$studentObj = new \Admin\Model\StudentData();
-        $studentData = $studentObj->getStudentData($date, $foldername, $course);*/
-
-
         $wordObj = new \Admin\Logic\CreateWord();
         $wordObj->creatWordFile($date, $foldername, $course);
-
-
-
-        // var_dump(session('baseinfo'));
-
-        // var_dump($studentData);
-
-
-
-
-
 
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');
         $this->assign('adminCss', $adminCss);
         $this->assign('adminJs', $adminJs);
 
+        $this->assign('date', $date);
+        $this->assign('course', $course);
 
         $this->assign('username', $username);
 
@@ -81,34 +64,10 @@ class ResultController extends Controller {
             redirectUrl('admin');
         }
 
-        // var_dump(session('baseinfo'));
-        
-        vendor("PHPWord.PHPWord");
-       
-        $PHPWord = new \PHPWord();
-        $wordBaseDir = dirname(dirname(dirname(dirname(__FILE__))))."/Word/";
-        $wordTemplateDir = $wordBaseDir."/Template/";
-        $document = $PHPWord->loadTemplate($wordBaseDir.'high.docx');
+        $date = $_GET['date'];
+        $course = $_GET['course'];
 
-
-
-        $document->setValue('valuetitle', $baseinfo['keys'][0]);
-
-
-        $document->save($wordBaseDir.'chenhong.docx');
-        header("Content-Disposition: attachment; filename='chenhong.docx'");
-        echo file_get_contents($wordBaseDir.'chenhong.docx');
-        unlink($wordBaseDir.'chenhong.docx');  // remove temp file      
-        @rmdir($workDir);
-
-        $this->display();
-
-    }
-
-    const KEY = "__gen_data__";
-
-    private function getSign($json, $case){
-        return substr(md5($json."--".$case."--".self::KEY), 16, 8);
+        header('Location: /Word/'.$date.'/'.$course.'.docx');
     }
 
 }

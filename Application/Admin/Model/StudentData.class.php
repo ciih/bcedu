@@ -89,6 +89,12 @@ class StudentData {
     protected static $grade = '';
 
     /**
+     * 搜索数据表数量
+     * @var string
+     */
+    protected static $queryExcelCount = 1;
+
+    /**
      * 打开excel表
      * @return string $objWorksheet 返回相应excel文件的工作薄
      */
@@ -267,24 +273,28 @@ class StudentData {
     private function getStudentCountRateData($averageScore, $scoreRate, $detailTableData)
     {
         if(self::$grade == 'h3') {
-            if(self::$queryCourse == '数学(理)') {
+            if(self::$queryCourse == '数学(理)' || self::$queryCourse == '物理' || self::$queryCourse == '化学' || self::$queryCourse == '生物') {
                 $filename = self::STUDENT_SCORE_NAME.'_理科';
                 $data = self::openExcel($filename);
+                self::$queryExcelCount = 1;
             }
-            elseif(self::$queryCourse == '数学(文)') {
+            elseif(self::$queryCourse == '数学(文)' || self::$queryCourse == '历史' || self::$queryCourse == '地理' || self::$queryCourse == '政治') {
                 $filename = self::STUDENT_SCORE_NAME.'_文科';
                 $data = self::openExcel($filename);
+                self::$queryExcelCount = 1;
             }
             else {
                 $filenameScience = self::STUDENT_SCORE_NAME.'_理科';
                 $filenameLiberal = self::STUDENT_SCORE_NAME.'_文科';
                 $data[0] = self::openExcel($filenameScience);
                 $data[1] = self::openExcel($filenameLiberal);
+                self::$queryExcelCount = 2;
             }
         }
         else {
             $filename = self::STUDENT_SCORE_NAME;
             $data = self::openExcel($filename);
+            self::$queryExcelCount = 1;
         }
         
         $scoreData = array(); // 学生分数
@@ -302,7 +312,32 @@ class StudentData {
         $rate = array(); // 所占百分比
         $cumulativeRate = array(); // 累计所占百分比
 
-        if(self::$grade == 'h3' && self::$queryCourse != '数学(理)' && self::$queryCourse != '数学(文)') {
+        if(self::$queryExcelCount == 1) {
+            foreach($data->getRowIterator() as $kr => $row){
+
+                $cellIterator = $row->getCellIterator();
+
+                if($kr == 1) {
+                    foreach($cellIterator as $kc => $cell){
+                        if($courseName == $cell->getValue()) {
+                            $scoreRow = $kc;
+                        }
+                    }
+                }
+
+                if($kr > 1) {
+
+                    foreach($cellIterator as $kc => $cell){
+                        if($kc == 2 || $kc == $scoreRow) {
+                            $scoreData[$num][] = $cell->getValue();
+                        }
+                    }
+
+                    $num++;
+                }
+            }
+        }
+        elseif(self::$queryExcelCount == 2) {
             for ($i = 0; $i < count($data); $i++) { 
                 foreach($data[$i]->getRowIterator() as $kr => $row){
 
@@ -326,31 +361,6 @@ class StudentData {
 
                         $num++;
                     }
-                }
-            }
-        }
-        else {
-            foreach($data->getRowIterator() as $kr => $row){
-
-                $cellIterator = $row->getCellIterator();
-
-                if($kr == 1) {
-                    foreach($cellIterator as $kc => $cell){
-                        if($courseName == $cell->getValue()) {
-                            $scoreRow = $kc;
-                        }
-                    }
-                }
-
-                if($kr > 1) {
-
-                    foreach($cellIterator as $kc => $cell){
-                        if($kc == 2 || $kc == $scoreRow) {
-                            $scoreData[$num][] = $cell->getValue();
-                        }
-                    }
-
-                    $num++;
                 }
             }
         }

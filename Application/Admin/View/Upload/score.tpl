@@ -12,7 +12,7 @@
 					<div class="form-group">
 						<label class="col-sm-3 control-label"><%$vo%>优秀水平</label>
 						<div class="col-sm-2">
-							<input name="score_1_<%$key%>" type="text" class="form-control" placeholder="85" value="85">
+							<input name="score_1_<%$key%>" type="text" class="form-control" placeholder="80" value="80">
 						</div>
 						<label class="col-sm-3 control-label"><%$vo%>及格水平</label>
 						<div class="col-sm-2">

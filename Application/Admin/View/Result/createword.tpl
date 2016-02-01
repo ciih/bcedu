@@ -6,19 +6,13 @@
 		<table class="table table-bordered table-striped table-info">
 			<thead>
 				<tr>
-					<foreach name="course" item="co">
-					<th scope="row"><span><%$co%></span></th>
-				    </foreach>
+					<th class="item-title"><%$course%></th>
 				</tr>
 			</thead>
 			<tbody>
 				<tr>
-					<foreach name="score" item="sc">
-					<td>
-				    	<span><%$sc%></span>
-					</td>
-				    </foreach>
-			    </tr>
+					<td><a href="/admin/result/linkword?date=<%$date%>&course=<%$course%>" class="btn blue" target="_blank">下载报告</a></td>
+				</tr>
 			</tbody>
 		</table>
 	</div>
