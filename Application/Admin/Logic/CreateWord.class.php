@@ -298,7 +298,8 @@ class CreateWord {
 
         $examNameList = implode('、', $studentData['detailTable']['examName']);
         $examNameScore = implode('分、', $studentData['detailTable']['examScore']);
-        $examNameScore = substr($examNameScore, 0, -1).'分';
+        // $examNameScore = substr($examNameScore, 0, -1).'分';
+        $examNameScore = $examNameScore.'分';
         arsort($studentData['detailTable']['examScore']);
 
 
@@ -414,7 +415,8 @@ class CreateWord {
 
         $typeNameList = implode('、', $studentData['detailTable']['typeName']);
         $typeNameScore = implode('分、', $studentData['detailTable']['typeScore']);
-        $typeNameScore = substr($typeNameScore, 0, -1).'分';
+        // $typeNameScore = substr($typeNameScore, 0, -1).'分';
+        $typeNameScore = $typeNameScore.'分';
         arsort($studentData['detailTable']['tpeScore']);
 
 
