@@ -22,6 +22,7 @@ class CreateWord {
         $studentObj = new \Admin\Model\StudentData();
         $studentData = $studentObj->getStudentData($date, $foldername, $course);
         // var_export($studentData);
+        exit();
 
         $folderArr = explode("_" , $foldername);
 

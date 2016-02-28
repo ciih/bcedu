@@ -63,17 +63,22 @@ class SchoolData {
         $filename = $schoolTypeName . '列表';
         $data = self::openExcel($filename);
 
-        $keys = array(); // 基本项标题
         $rets = array(); // 基本项内容
 
-        $schoolData = array(); // 学校列表
+        $schoolType = ''; // 学校类型
+        $schoolArea = array(); // 学校区域
+        $schoolList = array(); // 学校列表
+
+        $schoolData = array(); // 学校信息
 
         foreach($data->getRowIterator() as $kr => $row){
 
             $cellIterator = $row->getCellIterator();
             if ($kr == 1){
                 foreach($cellIterator as $kc => $cell){
-                    $keys[] = $cell->getValue();
+                    if(!empty($cell->getValue())) {
+                        $schoolArea[] = $cell->getValue();
+                    }
                 }
             }
             else {
@@ -88,23 +93,32 @@ class SchoolData {
             case '小学':
                 for ($x = 0; $x < count($rets); $x++) {
                   foreach($rets[$x] as $val){
-                    $schoolData[$keys[$x]][] = $val;
+                    $schoolList[$schoolArea[$x]][] = $val;
                   }
                 }
+                $schoolType = 'junior';
                 break;
-            case '初中':
+            case '高中':
                 for ($x = 0; $x < count($rets); $x++) {
                   foreach($rets[$x] as $val){
-                    $schoolData[$keys[$x]][] = $val;
+                    $schoolList[$schoolArea[$x]][] = $val;
                   }
                 }
+                $schoolType = 'middle';
                 break;
             case '高中':
                 foreach($rets as $val){
-                    $schoolData[$keys[0]] = $val;
+                    $schoolList[$schoolArea[0]] = $val;
                 }
+                $schoolType = 'high';
                 break;
         }
+
+        $schoolData = array(
+            'schoolType'       => $schoolType, // 学校类型
+            'schoolArea'       => $schoolArea, // 学校区域
+            'schoolList'       => $schoolList, // 学校列表
+        );
 
         return $schoolData;
 
