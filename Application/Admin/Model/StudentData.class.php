@@ -1249,35 +1249,62 @@ class StudentData {
         foreach ($cValue['exam']['schoolScore'] as $schoolName => $schoolList) {
             foreach ($schoolList as $itemName => $itemList) {
                 foreach ($itemList as $key => $value) {
-                    $chenhong[] = $scoreStatisticsData['schoolAverageScore'][$schoolName][$key] - $averageScoreData['amountAverageScore'];
-                    $chenhong[] = ($scoreStatisticsData['schoolCount'][$schoolName]['totalCount']-1) * pow($value ,2);
-                    $chenhong[] = ($scoreStatisticsData['count']['totalCount']-1) * pow($eValue['exam']['total'][$itemName][$key] ,2);
-                    $chenhong[] = $scoreStatisticsData['schoolCount'][$schoolName]['totalCount'] + $scoreStatisticsData['count']['totalCount'] - 2;
-                    $chenhong[] = 'end';
+                    /*$chenhong[] = $schoolName.'的'.$itemName.'平均分：'.$scoreStatisticsData['examAverageScore'][$itemName]['schoolScore'][$schoolName][$key];
+                    $chenhong[] = '全区的'.$itemName.'总平均分：'.$scoreStatisticsData['examAverageScore'][$itemName]['total'][$key];
+
+                    $chenhong[] = $schoolName.'总人数：'.$scoreStatisticsData['schoolCount'][$schoolName]['totalCount'];
+                    $chenhong[] = '全区总人数：'.$scoreStatisticsData['count']['totalCount'];
+
+                    $chenhong[] = $schoolName.'C值：'.$value;
+
+                    $chenhong[] = '全区总人数：'.$scoreStatisticsData['count']['totalCount'];
+                    $chenhong[] = '全区E值：'.$eValue['exam']['total'][$itemName][$key];
+
+
+                    $chenhong[] = '=======================end=================';*/
+
                     if($key == 'totalScore') {
-                        $dValue['exam']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['schoolAverageScore'][$schoolName][$key] - $averageScoreData['amountAverageScore']) / sqrt(((($scoreStatisticsData['schoolCount'][$schoolName]['totalCount']-1) * pow($value ,2)) + (($scoreStatisticsData['count']['totalCount']-1) * pow($eValue['exam']['total'][$itemName][$key] ,2))) / ($scoreStatisticsData['schoolCount'][$schoolName]['totalCount'] + $scoreStatisticsData['count']['totalCount'] - 2)), 2, '.', '');
+                        $dValue['exam']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['examAverageScore'][$itemName]['schoolScore'][$schoolName][$key] - $scoreStatisticsData['examAverageScore'][$itemName]['total'][$key]) / sqrt(((($scoreStatisticsData['schoolCount'][$schoolName]['totalCount']-1) * pow($value ,2)) + (($scoreStatisticsData['count']['totalCount']-1) * pow($eValue['exam']['total'][$itemName][$key] ,2))) / ($scoreStatisticsData['schoolCount'][$schoolName]['totalCount'] + $scoreStatisticsData['count']['totalCount'] - 2)), 2, '.', '');
                     } elseif($key == 'excellentScore'){
-                        $dValue['exam']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['schoolAverageScore'][$schoolName][$key] - $averageScoreData['amountAverageScore']) / sqrt(((($scoreStatisticsData['schoolCount'][$schoolName]['excellentCount']-1) * pow($value ,2)) + (($scoreStatisticsData['count']['excellentCount']-1) * pow($eValue['total'][$itemName][$key] ,2))) / ($scoreStatisticsData['schoolCount'][$schoolName]['excellentCount'] + $scoreStatisticsData['count']['excellentCount'] - 2)), 2, '.', '');
+                        $dValue['exam']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['examAverageScore'][$itemName]['schoolScore'][$schoolName][$key] - $scoreStatisticsData['examAverageScore'][$itemName]['total'][$key]) / sqrt(((($scoreStatisticsData['schoolCount'][$schoolName]['excellentCount']-1) * pow($value ,2)) + (($scoreStatisticsData['count']['excellentCount']-1) * pow($eValue['total'][$itemName][$key] ,2))) / ($scoreStatisticsData['schoolCount'][$schoolName]['excellentCount'] + $scoreStatisticsData['count']['excellentCount'] - 2)), 2, '.', '');
                     } elseif($key == 'passScore'){
-                        $dValue['exam']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['schoolAverageScore'][$schoolName][$key] - $averageScoreData['amountAverageScore']) / sqrt(((($scoreStatisticsData['schoolCount'][$schoolName]['passCount']-1) * pow($value ,2)) + (($scoreStatisticsData['count']['passCount']-1) * pow($eValue['total'][$itemName][$key] ,2))) / ($scoreStatisticsData['schoolCount'][$schoolName]['passCount'] + $scoreStatisticsData['count']['passCount'] - 2)), 2, '.', '');
+                        $dValue['exam']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['examAverageScore'][$itemName]['schoolScore'][$schoolName][$key] - $scoreStatisticsData['examAverageScore'][$itemName]['total'][$key]) / sqrt(((($scoreStatisticsData['schoolCount'][$schoolName]['passCount']-1) * pow($value ,2)) + (($scoreStatisticsData['count']['passCount']-1) * pow($eValue['total'][$itemName][$key] ,2))) / ($scoreStatisticsData['schoolCount'][$schoolName]['passCount'] + $scoreStatisticsData['count']['passCount'] - 2)), 2, '.', '');
                     } elseif($key == 'failScore'){
-                        $dValue['exam']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['schoolAverageScore'][$schoolName][$key] - $averageScoreData['amountAverageScore']) / sqrt(((($scoreStatisticsData['schoolCount'][$schoolName]['failCount']-1) * pow($value ,2)) + (($scoreStatisticsData['count']['failCount']-1) * pow($eValue['total'][$itemName][$key] ,2))) / ($scoreStatisticsData['schoolCount'][$schoolName]['failCount'] + $scoreStatisticsData['count']['failCount'] - 2)), 2, '.', '');
+                        $dValue['exam']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['examAverageScore'][$itemName]['schoolScore'][$schoolName][$key] - $scoreStatisticsData['examAverageScore'][$itemName]['total'][$key]) / sqrt(((($scoreStatisticsData['schoolCount'][$schoolName]['failCount']-1) * pow($value ,2)) + (($scoreStatisticsData['count']['failCount']-1) * pow($eValue['total'][$itemName][$key] ,2))) / ($scoreStatisticsData['schoolCount'][$schoolName]['failCount'] + $scoreStatisticsData['count']['failCount'] - 2)), 2, '.', '');
                     }
                 }
             }
         }
-        
-        /*var_export($chenhong);
-        var_export('=================end==============');
-        var_export('=================chenhong print==============');*/
-        /*foreach ($cValue['type']['schoolScore'] as $schoolName => $schoolList) {
+
+        foreach ($cValue['type']['schoolScore'] as $schoolName => $schoolList) {
             foreach ($schoolList as $itemName => $itemList) {
                 foreach ($itemList as $key => $value) {
-                    $dValue['type']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['typeAverageScore'][$itemName]['schoolScore'][$schoolName]['total']['totalScore'] - $value) / sqrt(((pow($scoreStatisticsData['schoolCount'][$schoolName]['totalCount'] * $value ,2)) + (pow($scoreStatisticsData['count']['totalCount'] * $eValue['total'] ,2) ) / ($scoreStatisticsData['schoolCount'][$schoolName]['totalCount'] + $scoreStatisticsData['count']['totalCount'] - 2))), 2, '.', '');
+                    /*$chenhong[] = $schoolName.'的'.$itemName.'平均分：'.$scoreStatisticsData['examAverageScore'][$itemName]['schoolScore'][$schoolName][$key];
+                    $chenhong[] = '全区的'.$itemName.'总平均分：'.$scoreStatisticsData['examAverageScore'][$itemName]['total'][$key];
+
+                    $chenhong[] = $schoolName.'总人数：'.$scoreStatisticsData['schoolCount'][$schoolName]['totalCount'];
+                    $chenhong[] = '全区总人数：'.$scoreStatisticsData['count']['totalCount'];
+
+                    $chenhong[] = $schoolName.'C值：'.$value;
+
+                    $chenhong[] = '全区总人数：'.$scoreStatisticsData['count']['totalCount'];
+                    $chenhong[] = '全区E值：'.$eValue['exam']['total'][$itemName][$key];
+
+
+                    $chenhong[] = '=======================end=================';*/
+
+                    if($key == 'totalScore') {
+                        $dValue['type']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['typeAverageScore'][$itemName]['schoolScore'][$schoolName][$key] - $scoreStatisticsData['typeAverageScore'][$itemName]['total'][$key]) / sqrt(((($scoreStatisticsData['schoolCount'][$schoolName]['totalCount']-1) * pow($value ,2)) + (($scoreStatisticsData['count']['totalCount']-1) * pow($eValue['type']['total'][$itemName][$key] ,2))) / ($scoreStatisticsData['schoolCount'][$schoolName]['totalCount'] + $scoreStatisticsData['count']['totalCount'] - 2)), 2, '.', '');
+                    } elseif($key == 'excellentScore'){
+                        $dValue['type']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['typeAverageScore'][$itemName]['schoolScore'][$schoolName][$key] - $scoreStatisticsData['typeAverageScore'][$itemName]['total'][$key]) / sqrt(((($scoreStatisticsData['schoolCount'][$schoolName]['excellentCount']-1) * pow($value ,2)) + (($scoreStatisticsData['count']['excellentCount']-1) * pow($eValue['total'][$itemName][$key] ,2))) / ($scoreStatisticsData['schoolCount'][$schoolName]['excellentCount'] + $scoreStatisticsData['count']['excellentCount'] - 2)), 2, '.', '');
+                    } elseif($key == 'passScore'){
+                        $dValue['type']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['typeAverageScore'][$itemName]['schoolScore'][$schoolName][$key] - $scoreStatisticsData['typeAverageScore'][$itemName]['total'][$key]) / sqrt(((($scoreStatisticsData['schoolCount'][$schoolName]['passCount']-1) * pow($value ,2)) + (($scoreStatisticsData['count']['passCount']-1) * pow($eValue['total'][$itemName][$key] ,2))) / ($scoreStatisticsData['schoolCount'][$schoolName]['passCount'] + $scoreStatisticsData['count']['passCount'] - 2)), 2, '.', '');
+                    } elseif($key == 'failScore'){
+                        $dValue['type']['schoolScore'][$schoolName][$itemName][$key] = number_format(($scoreStatisticsData['typeAverageScore'][$itemName]['schoolScore'][$schoolName][$key] - $scoreStatisticsData['typeAverageScore'][$itemName]['total'][$key]) / sqrt(((($scoreStatisticsData['schoolCount'][$schoolName]['failCount']-1) * pow($value ,2)) + (($scoreStatisticsData['count']['failCount']-1) * pow($eValue['total'][$itemName][$key] ,2))) / ($scoreStatisticsData['schoolCount'][$schoolName]['failCount'] + $scoreStatisticsData['count']['failCount'] - 2)), 2, '.', '');
+                    }
                 }
             }
-        }*/
- 
+        }
 
         $data = array(
             'exam'        => $exam, // 考核范畴分数统计
@@ -1293,7 +1320,8 @@ class StudentData {
             $data['typeArea'] = $typeArea; // 区域考核层级分数统计
         }*/
 
-        /*var_export('===============data[dValue] start=================');
+        /*var_export($chenhong);
+        var_export('===============data[dValue] start=================');
         var_export($data['dValue']);
         var_export('===============data[dValue] end=================');
         var_export('===============data[cValue] start=================');
@@ -1367,33 +1395,40 @@ class StudentData {
             self::$schoolType = 'junior';
         }
 
-        $schoolObj = new \Admin\Model\SchoolData();
-        $schoolData = $schoolObj->getSchoolData(self::$schoolType);
+        // $schoolObj = new \Admin\Model\SchoolData();
+        // $schoolData = $schoolObj->getSchoolData(self::$schoolType);
 
-        $courseObj = new \Admin\Model\CourseData();
-        $courseData = $courseObj->getCourseData($date, $foldername);
+        // $courseObj = new \Admin\Model\CourseData();
+        // $courseData = $courseObj->getCourseData($date, $foldername);
 
-        self::$courseAmount = count($courseData);
+        // self::$courseAmount = count($courseData);
 
-        $rateObj = new \Admin\Model\ScoreRateData();
-        $scoreRateData = $rateObj->getScoreRateData(self::$queryCourse);
+        // $rateObj = new \Admin\Model\ScoreRateData();
+        // $scoreRateData = $rateObj->getScoreRateData(self::$queryCourse);
 
-        $detailTableObj = new \Admin\Model\DetailTableData();
-        $detailTableData = $detailTableObj->getDetailTableData($date, $foldername, $course);
+        // $detailTableObj = new \Admin\Model\DetailTableData();
+        // $detailTableData = $detailTableObj->getDetailTableData($date, $foldername, $course);
 
-        $courseAnalysisData = self::getCourseAnalysisData();
+        // $courseAnalysisData = self::getCourseAnalysisData();
 
-        $averageScoreData = self::getAverageData($schoolData);
+        // $averageScoreData = self::getAverageData($schoolData);
 
-        $studentCountRate = self::getStudentCountRateData($schoolData, $averageScoreData, $scoreRateData, $detailTableData);
+        // $studentCountRate = self::getStudentCountRateData($schoolData, $averageScoreData, $scoreRateData, $detailTableData);
 
-        $scoreStatisticsData = self::getScoreStatisticsData($schoolData, $scoreRateData, $detailTableData, $averageScoreData);
-        $scoreStatisticsRate = self::getScoreStatisticsRateData($schoolData, $detailTableData, $averageScoreData, $scoreStatisticsData, $studentCountRate);
+        // $scoreStatisticsData = self::getScoreStatisticsData($schoolData, $scoreRateData, $detailTableData, $averageScoreData);
+        // $scoreStatisticsRate = self::getScoreStatisticsRateData($schoolData, $detailTableData, $averageScoreData, $scoreStatisticsData, $studentCountRate);
 
         // $choiceQuestionsAnalysis = self::getChoiceQuestionsAnalysisData();
 
-        $dVauleData = self::getDVauleData($schoolData, $scoreRateData, $detailTableData, $averageScoreData, $scoreStatisticsData, $scoreStatisticsRate, $studentCountRate);
+        // $dVauleData = self::getDVauleData($schoolData, $scoreRateData, $detailTableData, $averageScoreData, $scoreStatisticsData, $scoreStatisticsRate, $studentCountRate);
 
+
+        $schoolObj = new \Admin\Model\ExcelData();
+        $schoolData = $schoolObj->getSchoolData(self::$schoolType);
+
+        var_export('===============scoreStatisticsData=================');
+        var_export($schoolData);
+        // var_export('===============love=================');        
         // var_export($scoreStatisticsData);
         // var_export('===============scoreStatisticsRate=================');
         // var_export($scoreStatisticsRate);

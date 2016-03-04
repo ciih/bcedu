@@ -19,7 +19,9 @@ class CreateWord {
     public function creatWordFile($date, $foldername, $course)
     {
 
-        $studentObj = new \Admin\Model\StudentData();
+        /*$studentObj = new \Admin\Model\StudentData();
+        $studentData = $studentObj->getStudentData($date, $foldername, $course);*/
+        $studentObj = new \Admin\Model\CallData();
         $studentData = $studentObj->getStudentData($date, $foldername, $course);
         // var_export($studentData);
         exit();

@@ -15,6 +15,10 @@ class ResultController extends Controller {
         $date = $_GET['date'];
         $foldername = $_GET['foldername'];
 
+
+        $excelObj = new \Admin\Model\ExcelData($date, $foldername);
+        $foldernameData = $excelObj->writeExamInfo();
+
         $courseObj = new \Admin\Model\CourseData();
         $courseData = $courseObj->getCourseData($date, $foldername);
 
