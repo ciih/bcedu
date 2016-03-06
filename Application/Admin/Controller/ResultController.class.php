@@ -16,11 +16,12 @@ class ResultController extends Controller {
         $foldername = $_GET['foldername'];
 
 
-        $excelObj = new \Admin\Model\ExcelData($date, $foldername);
-        $foldernameData = $excelObj->writeExamInfo();
+        $examInfoObj = new \Admin\Model\ExamInfoData($date, $foldername);
+        $examInfoObj->writeExamInfo();
+        $examInfoData = $examInfoObj->getExamInfoData();
 
-        $courseObj = new \Admin\Model\CourseData();
-        $courseData = $courseObj->getCourseData($date, $foldername);
+        $courseObj = new \Admin\Model\CourseData($examInfoData);
+        $courseData = $courseObj->getCourseData();
 
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');
@@ -46,8 +47,8 @@ class ResultController extends Controller {
         $foldername = $_GET['foldername'];
         $course = $_GET['course'];
 
-        $wordObj = new \Admin\Logic\CreateWord();
-        $wordObj->creatWordFile($date, $foldername, $course);
+        $wordObj = new \Admin\Logic\CreateWord($date, $foldername, $course);
+        $wordObj->creatWordFile();
 
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');

@@ -9,22 +9,47 @@ namespace Admin\Logic;
 use Think\Model;
 
 class CreateWord {
-   
+
+    /**
+     * 考试数据对象
+     * @var obj
+     */
+    protected static $examDataObj;
+
+    /**
+     * 获取考试课程列表
+     * @var string
+     */
+    protected static $courseList;
+
+    /**
+     * 构造
+     * @param $date 日期
+     * @param $foldername 文件夹名称（包含信息：学年、学期、年级、考试名称）
+     * @param $course 查询科目
+     */
+    function __construct($date, $foldername, $course)
+    {
+        $examInfoObj = new \Admin\Model\ExamInfoData($date, $foldername);
+        $examInfoData = $examInfoObj->getExamInfoData();
+
+        $courseObj = new \Admin\Model\CourseData($examInfoData);
+        self::$courseList = $courseObj->getCourseData();
+
+        self::$examDataObj = new \Admin\Model\ExcelData($examInfoData, $course);
+        
+        self::$examDataObj->getAllData();
+    }
 
     /**
      * 建立word文件
      * @param $foldername 标题
      * @param $course 科目
      */
-    public function creatWordFile($date, $foldername, $course)
+    public function creatWordFile()
     {
 
-        /*$studentObj = new \Admin\Model\StudentData();
-        $studentData = $studentObj->getStudentData($date, $foldername, $course);*/
-        $studentObj = new \Admin\Model\CallData();
-        $studentData = $studentObj->getStudentData($date, $foldername, $course);
-        // var_export($studentData);
-        exit();
+        $courseData = self::$courseList;
 
         $folderArr = explode("_" , $foldername);
 

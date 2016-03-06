@@ -9,107 +9,78 @@ namespace Admin\Model;
 use Think\Model;
 
 class DetailTableData {
-   
-    /**
-     * Excel表目录
-     * @var string
-     */
-    const EXCEL_DIR = '/Data';
 
     /**
-     * 日期目录
-     * @var string
+     * 考试信息
+     * @var array
      */
-    protected static $dateDir = '';
-
-    /**
-     * 主目录
-     * @var string
-     */
-    protected static $mainDir = '';
-
-    /**
-     * 文件前缀
-     * @var string
-     */
-    protected static $filenamePrefix = '';
+    protected static $examInfo;
 
     /**
      * 科目
      * @var string
      */
-    protected static $queryCourse = '';
+    protected static $course;
 
     /**
-     * 打开excel表
-     * @return string $objWorksheet 返回相应excel文件的工作薄
+     * 构造
+     * @param $examInfoData 文件夹名称（包含信息：学年、学期、年级、考试名称）
      */
-    private function openExcel($filename)
+    function __construct($examInfoData, $course)
     {
-        vendor("PHPExcel.PHPExcel.IOFactory");
-
-        $excelRoot = dirname(dirname(dirname(dirname(__FILE__))));
-
-        $dateDir = self::$dateDir;
-        $mainDir = iconv("utf-8", "gb2312", self::$mainDir);
-        $filename = iconv("utf-8", "gb2312", $filename);
-
-        $filePath = $excelRoot.self::EXCEL_DIR.'/'.$dateDir.'/'.$mainDir.'/'.$filename.'.xls';
-
-        $objPHPExcel = \PHPExcel_IOFactory::load($filePath);
-        $objWorksheet = $objPHPExcel->getSheet(0);
-
-        return $objWorksheet;
+        self::$examInfo = $examInfoData;
+        self::$course = $course;
     }
 
     /**
-     * 获取小学列表
+     * 获取双向明细表数据
      */
-    private function getData()
+    public function getDetailTableData()
     {
+        $filePath = self::$examInfo['rootDir'].self::$examInfo['uploadDate'].'/'.self::$examInfo['fullname'].'/';
+        $filename = self::$examInfo['fullname'].'.'.self::$course;
+        
+        $excelFile = new \Admin\Model\ExeclFile();
+        $excelData = $excelFile->openExcel($filePath, $filename);
 
-        $detailTableData = array(); // 明细表数据
+        $examScope = array(); // 考核范畴
+        $examScopeNumber = array(); // 考核范畴题号
+        $examScopeTotalScore = array(); // 考核范畴题分
+        $examCount = array(); // 考核范畴试题的数量
+        $examNumber = array(); //考核范畴题号
 
-        $data = array();  // 获取后的数据
-
-        $examType = array(); // 考试类型
-        $examTypeNumber = array(); // 考试类型题号
-        $examTypeScore = array(); // 考试类型题分
-        $examCount = array(); // 试题的数量
-        $examNumber = array(); //考试题号
-
-        $type = array(); // 考核层级要求项名称
-        $typeStartPos = 0; // 考核层级要求的起始位置
-        $typeNumber = array(); // 考核层级类型包含的题号
-        $typeScore = array(); // 考核层级类型分数
-        $typeScorePos = 0; // 考核层级类型分数位置
+        $examMold = array(); // 考核层级类型名称
+        $examMoldStartPos = 0; // 考核层级在文件的起始位置
+        $examMoldNumber = array(); // 考核层级类型所包含的题号
+        $examMoldTotalScore = array(); // 考核层级各类型分数
+        $examMoldScorePos = 0; // 考核层级各类型分数起始位置
+        $examMoldItemName = array('考核层级要求', '预估难度'); // 考核层级名称
 
         $score = array(); // 分数列表
         $totalScore = 0; // 总分
 
-        $filename = self::$filenamePrefix.'.'.self::$queryCourse;
+        $data = array();  // 获取数据后，解析时暂存数据
+        $detailTableData = array(); // 明细表数据
 
-        $detailTableFile = self::openExcel($filename);
-
-        foreach($detailTableFile->getRowIterator() as $kr => $row){
+        foreach($excelData->getRowIterator() as $kr => $row){
 
             $cellIterator = $row->getCellIterator();
 
             if($kr == 3) {
                 foreach($cellIterator as $kc => $cell){
-                    if($cell->getValue() == '考核层级要求') {
-                        $typeStartPos = $kc;
+                    if($cell->getValue() == $examMoldItemName[0]) {
+                        $examMoldStartPos = $kc;
                     }
-                    if($cell->getValue() == '预估难度') {
-                        $typeScorePos = $kc + 1;
+                    if($cell->getValue() == $examMoldItemName[1]) {
+                        $examMoldScorePos = $kc + 1;
                     }
                 }
             }
 
             if($kr == 5) {
                 foreach($cellIterator as $kc => $cell){
-                    if($kc >= $typeStartPos && !empty($cell->getValue())) {
-                        $type[] = $cell->getValue();
+                    if($kc >= $examMoldStartPos && !empty($cell->getValue())) {
+                        $examMold[] = $cell->getValue();
                     }
                 }
             }
@@ -117,7 +88,7 @@ class DetailTableData {
             if($kr > 6) {
                 foreach($cellIterator as $kc => $cell){
                     $data['item'][$kc-1][] = $cell->getValue();
-                    if ($typeScorePos == $kc) {
+                    if ($examMoldScorePos == $kc) {
                         $score[] = $cell->getValue();
                     }
                 }
@@ -131,9 +102,9 @@ class DetailTableData {
             $totalScore = $totalScore + $value;
         }
 
-        $examTypeData = array_unique(array_slice($data['item'][0],0,-3));
-        foreach ($examTypeData as $kf => $val) {
-            $examType[] = $val;
+        $examScopeData = array_unique(array_slice($data['item'][0],0,-3));
+        foreach ($examScopeData as $kf => $val) {
+            $examScope[] = $val;
         }
 
         $examCount = count(array_slice($data['item'][5],0,-3));
@@ -146,61 +117,43 @@ class DetailTableData {
             }
         }
 
-        for ($k = 0; $k < count($type); $k++) {
-            $arrType = array_slice($data['item'][$typeStartPos - 1 + $k],0,-3); 
-            foreach($arrType as $kd => $val){
-                if(!empty($val)) {
-                    $typeNumber[$type[$k]][] = $examNumber[$kd];
-                    $typeScore[$type[$k]] = $typeScore[$type[$k]] + $score[$kd];
-                }
-                else {
-                    $typeScore[$type[$k]] = $typeScore[$type[$k]] + 0;
-                }
-            } 
-        }
-
-        for ($l = 0; $l < count($examType); $l++) {
+        // 考核范畴各类型分数
+        for ($l = 0; $l < count($examScope); $l++) {
             $arr = array_slice($data['item'][0],0,-3); 
             foreach($arr as $ke => $val){
-                if($val == $examType[$l]) {
-                    $examTypeNumber[$examType[$l]][] = $examNumber[$ke];
-                    $examTypeScore[$examType[$l]] = $examTypeScore[$examType[$l]] + $score[$ke];
+                if($val == $examScope[$l]) {
+                    $examScopeNumber[$examScope[$l]][] = $examNumber[$ke];
+                    $examScopeTotalScore[$examScope[$l]] = $examScopeTotalScore[$examScope[$l]] + $score[$ke];
                 }
             }
         }
 
+        // 考核层级各类型分数
+        for ($k = 0; $k < count($examMold); $k++) {
+            $arrexamMold = array_slice($data['item'][$examMoldStartPos - 1 + $k],0,-3); 
+            foreach($arrexamMold as $kd => $val){
+                if(!empty($val)) {
+                    $examMoldNumber[$examMold[$k]][] = $examNumber[$kd];
+                    $examMoldTotalScore[$examMold[$k]] = $examMoldTotalScore[$examMold[$k]] + $score[$kd];
+                }
+                else {
+                    $examMoldTotalScore[$examMold[$k]] = $examMoldTotalScore[$examMold[$k]] + 0;
+                }
+            } 
+        }
+
         $detailTableData = array(
-            'course'     => self::$queryCourse,
-            'examName'   => $examType, // 考试范畴
-            'examNumber' => $examTypeNumber, // 考试范畴题号
-            'examScore'  => $examTypeScore, // 考试范畴总分
-            'typeName'   => $type, // 考试层级名称
-            'typeNumber' => $typeNumber, // 考试层级题号
-            'typeScore'  => $typeScore, // 考试层级总分
-            'totalScore' => $totalScore // 本科考试总分
+            'course'              => self::$course, // 当前科目
+            'examScopeName'       => $examScope, // 考试范畴
+            'examScopeNumber'     => $examScopeNumber, // 考试范畴题号
+            'examScopeTotalScore' => $examScopeTotalScore, // 考试范畴总分
+            'examMoldName'        => $examMold, // 考试层级名称
+            'examMoldNumber'      => $examMoldNumber, // 考试层级题号
+            'examMoldTotalScore'  => $examMoldTotalScore, // 考试层级总分
+            'totalScore'          => $totalScore // 本科考试总分
         );
 
         return $detailTableData;
-
-    }
-
-    /**
-     * 获取学校列表
-     * @param $data 分数
-     */
-    public function getDetailTableData($date, $foldername, $course)
-    {
-
-        self::$dateDir = $date;
-        self::$mainDir = $foldername;
-        self::$queryCourse = $course;
-
-        self::$filenamePrefix = implode('',explode("_" , $foldername));
-
-        $data = self::getData();
-
-        return $data;
-
     }
 
 }

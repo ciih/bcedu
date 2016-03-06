@@ -9,74 +9,39 @@ namespace Admin\Model;
 use Think\Model;
 
 class CourseData {
-   
-    /**
-     * Excel表目录
-     * @var string
-     */
-    const EXCEL_DIR = '/Data';
 
     /**
-     * 学科表名
-     * @var string
+     * 考试信息
+     * @var array
      */
-    const COURSE_NAME = '学科分析';
+    protected static $examInfo;
 
     /**
-     * 日期目录
-     * @var string
+     * 构造
+     * @param $examInfoData 文件夹名称（包含信息：学年、学期、年级、考试名称）
      */
-    protected static $dateDir = '';
-
-    /**
-     * 主目录
-     * @var string
-     */
-    protected static $mainDir = '';
-
-    /**
-     * 全区目录
-     * @var string
-     */
-    protected static $totalDir = '全区报表';
-
-    /**
-     * 打开excel表
-     * @return string $objWorksheet 返回相应excel文件的工作薄
-     */
-    private function openExcel()
+    function __construct($examInfoData)
     {
-        vendor("PHPExcel.PHPExcel.IOFactory");
-
-        $excelRoot = dirname(dirname(dirname(dirname(__FILE__))));
-
-        $dateDir = self::$dateDir;
-        $mainDir = iconv("utf-8", "gb2312", self::$mainDir);
-        $totalDir = iconv("utf-8", "gb2312", self::$totalDir);
-        $filename = iconv("utf-8", "gb2312", self::COURSE_NAME);
-
-
-        $filePath = $excelRoot.self::EXCEL_DIR.'/'.$dateDir.'/'.$mainDir.'/'.$totalDir.'/'.$filename.'.xls';
-
-        $objPHPExcel = \PHPExcel_IOFactory::load($filePath);
-        $objWorksheet = $objPHPExcel->getSheet(0);
-
-        return $objWorksheet;
+        self::$examInfo = $examInfoData;
     }
 
     /**
-     * 获取小学列表
+     * 获取考试科目数据
      */
-    private function getData()
+    public function getCourseData()
     {
-        $data = self::openExcel();
+        $filePath = self::$examInfo['rootDir'].self::$examInfo['uploadDate'].'/'.self::$examInfo['fullname'].'/'.self::$examInfo['mainDir'].'/';
+        $filename = '学科分析';
+
+        $excelFile = new \Admin\Model\ExeclFile();
+        $excelData = $excelFile->openExcel($filePath, $filename);
 
         $keys = array(); // 基本项标题
         $rets = array(); // 基本项内容
 
         $courseData = array(); // 学科
 
-        foreach($data->getRowIterator() as $kr => $row){
+        foreach($excelData->getRowIterator() as $kr => $row){
 
             $cellIterator = $row->getCellIterator();
             if($kr > 1) {
@@ -89,25 +54,7 @@ class CourseData {
         }
 
         return $courseData;
-
     }
-
-    /**
-     * 获取学校列表
-     * @param $data 分数
-     */
-    public function getCourseData($date, $foldername)
-    {
-
-        self::$dateDir = $date;
-        self::$mainDir = $foldername;
-
-        $data = self::getData();
-
-        return $data;
-
-    }
-
 }
 
 ?>

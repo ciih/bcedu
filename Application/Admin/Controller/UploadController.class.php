@@ -94,9 +94,12 @@ class UploadController extends Controller {
         $date = $_GET['date'];
         $foldername = $_GET['foldername'];
 
-        $courseData = new \Admin\Model\CourseData();
-        $course = $courseData->getCourseData($date, $foldername);
-        $courseCount = count($course);
+        $examInfoObj = new \Admin\Model\ExamInfoData($date, $foldername);
+        $examInfoData = $examInfoObj->getExamInfoData();
+
+        $courseObj = new \Admin\Model\CourseData($examInfoData);
+        $courseData = $courseObj->getCourseData();
+        $courseCount = count($courseData);
 
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');
@@ -107,7 +110,7 @@ class UploadController extends Controller {
         $this->assign('pagename', $pagename);
         $this->assign('date', $date);
         $this->assign('foldername', $foldername);
-        $this->assign('course', $course);
+        $this->assign('course', $courseData);
         $this->assign('courseCount', $courseCount);
 
         $this->display();
@@ -128,9 +131,14 @@ class UploadController extends Controller {
             $data[$i][] = $_POST['score_2_'.$i];
         }
 
-        $updateData = new \Admin\Model\ScoreRateData();
+        $examInfoObj = new \Admin\Model\ExamInfoData($date, $foldername);
+        $examInfoData = $examInfoObj->getExamInfoData();
 
-        $updateData->setScoreRateData($date, $foldername, $data);
+        $courseObj = new \Admin\Model\CourseData($examInfoData);
+        $courseData = $courseObj->getCourseData();
+
+        $updateData = new \Admin\Model\BaseScoreRateData();
+        $updateData->setBaseScoreRateData($examInfoData, $courseData, $data);
 
         header('Location: /admin/result?date='.$date.'&foldername='.$foldername);
     }
