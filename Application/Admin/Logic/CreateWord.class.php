@@ -11,16 +11,46 @@ use Think\Model;
 class CreateWord {
 
     /**
-     * 考试数据对象
-     * @var obj
-     */
-    protected static $examDataObj;
-
-    /**
      * 获取考试课程列表
      * @var string
      */
     protected static $courseList;
+
+    /**
+     * 获取学科分析
+     * @var array
+     */
+    protected static $courseAnalysisData;
+
+    /**
+     * 获取综合指标
+     * @var array
+     */
+    protected static $comprehensiveIndicatorsData;
+
+    /**
+     * 获取学生分数(小题分)
+     * @var array
+     */
+    protected static $studentScoreData;
+
+    /**
+     * 获取分数统计
+     * @var array
+     */
+    protected static $scoreStatisticsData;
+
+    /**
+     * 获取客观题统计
+     * @var array
+     */
+    protected static $choiceQuestionsAnalysisData;
+
+    /**
+     * 获取C/E/D值
+     * @var array
+     */
+    protected static $dVauleData;
 
     /**
      * 构造
@@ -36,9 +66,15 @@ class CreateWord {
         $courseObj = new \Admin\Model\CourseData($examInfoData);
         self::$courseList = $courseObj->getCourseData();
 
-        self::$examDataObj = new \Admin\Model\ExcelData($examInfoData, $course);
-        
-        self::$examDataObj->getAllData();
+        $examDataObj = new \Admin\Model\ExcelData($examInfoData, $course);
+        self::$courseAnalysisData = $examDataObj->getCourseAnalysisData();
+        self::$comprehensiveIndicatorsData = $examDataObj->getComprehensiveIndicatorsData();
+        self::$studentScoreData = $examDataObj->getStudentScoreData();
+        self::$scoreStatisticsData = $examDataObj->getScoreStatisticsData();
+        self::$choiceQuestionsAnalysisData = $examDataObj->getChoiceQuestionsAnalysisData();
+
+        $dVauleObj = new \Admin\Model\DVauleData(self::$studentScoreData, self::$scoreStatisticsData);
+        self::$dVauleData = $dVauleObj->getDVauleData();
     }
 
     /**

@@ -71,18 +71,6 @@ class ExcelData {
     protected static $itemScoreList;
 
     /**
-     * 获取考核范畴分数列表
-     * @var array
-     */
-    protected static $examScopeScoreList;
-
-    /**
-     * 获取考核层级分数列表
-     * @var array
-     */
-    protected static $examMoldScoreList;
-
-    /**
      * 获取学生所在学校列表
      * @var array
      */
@@ -123,6 +111,12 @@ class ExcelData {
      * @var string
      */
     protected static $itemScore = '小题分';
+
+    /**
+     * 选择题分析表名(未加科目)
+     * @var string
+     */
+    protected static $choiceQuestionsName = '小题分析';
 
     /**
      * 构造
@@ -374,15 +368,15 @@ class ExcelData {
             }
 
             foreach(self::$detailTableData['examScopeNumber'] as $itemName => $item){
-                self::$examScopeScoreList[$i][$itemName] = 0;
+                $examScopeScoreList[$i][$itemName] = 0;
                 foreach ($item as $itemScoreName) {
-                    self::$examScopeScoreList[$i][$itemName] = self::$examScopeScoreList[$i][$itemName] + self::$itemScoreList[$itemScoreName][$i];
+                    $examScopeScoreList[$i][$itemName] = $examScopeScoreList[$i][$itemName] + self::$itemScoreList[$itemScoreName][$i];
                 }
             }
             foreach(self::$detailTableData['examMoldNumber'] as $itemName => $item){
-                self::$examMoldScoreList[$i][$itemName] = 0;
+                $examMoldScoreList[$i][$itemName] = 0;
                 foreach ($item as $itemScoreName) {
-                    self::$examMoldScoreList[$i][$itemName] = self::$examMoldScoreList[$i][$itemName] + self::$itemScoreList[$itemScoreName][$i];
+                    $examMoldScoreList[$i][$itemName] = $examMoldScoreList[$i][$itemName] + self::$itemScoreList[$itemScoreName][$i];
                 }
             }
         }
@@ -403,11 +397,16 @@ class ExcelData {
         self::$totalSchoolCount = $totalSchoolCount;
 
         $studentScoreData = array(
-            'totalCount'        => $totalCount, // 全区优秀人数、及格人数、未及格人数
-            'totalSchoolCount'  => $totalSchoolCount, // 全校优秀人数、及格人数、未及格人数
-            'totalRate'         => $totalRate, // 全区优秀率、及格率、未及格率
-            'cumulativeCount'   => $cumulativeCount, // 全区累计优秀人数、累计及格人数、未及格人数
-            'cumulativeRate'    => $cumulativeRate, // 全区累计优秀率、累计及格率、未及格率
+            'baseScore'          => self::$baseScore, // 分数线
+            'examScopeScoreList' => $examScopeScoreList, // 全区学生考试范畴各小项分数
+            'examMoldScoreList'  => $examMoldScoreList, // 全区学生考试层级各小项分数
+            'studentScoreList'   => self::$studentScoreList, // 全区学生分数列表
+            'studentSchoolList'  => self::$studentSchoolList, // 全区学生所属学校列表
+            'totalCount'         => $totalCount, // 全区优秀人数、及格人数、未及格人数
+            'totalSchoolCount'   => $totalSchoolCount, // 全校优秀人数、及格人数、未及格人数
+            'totalRate'          => $totalRate, // 全区优秀率、及格率、未及格率
+            'cumulativeCount'    => $cumulativeCount, // 全区累计优秀人数、累计及格人数、未及格人数
+            'cumulativeRate'     => $cumulativeRate, // 全区累计优秀率、累计及格率、未及格率
         );
 
         return $studentScoreData;
@@ -418,14 +417,19 @@ class ExcelData {
      */
     public function getScoreStatisticsData()
     {
-        $examScore = array(); // 考核范畴统计
-        $typeScore = array(); // 考核层级统计
+        $examScopeTotalScore = array(); // 全区考核范畴各项目总分
+        $examScopeTotalAverageScore = array(); // 全区考核范畴各项目平均分
+        $examScopeSchoolTotalScore = array(); // 各学校考核范畴各项目总分
+        $examScopeSchoolAverageScore = array(); // 各学校考核范畴各项目平均分
+        $examScopeTotalRate = array(); // 全区考核范畴各项目得分率
+        $examScopeSchoolRate = array(); // 各学校考核范畴各项目得分率
 
-        $examAverageScore = array(); // 考核范畴统计
-        $typeAverageScore = array(); // 考核层级统计
-
-        $examScopeAverageScore = array(); // 考核范畴统计
-        $examMoldAverageScore = array(); // 考核层级统计
+        $examMoldTotalScore = array(); // 全区考核层级各项目总分
+        $examMoldTotalAverageScore = array(); // 全区考核层级各项目平均分
+        $examMoldSchoolTotalScore = array(); // 各学校考核层级各项目总分
+        $examMoldSchoolAverageScore = array(); // 各学校考核层级各项目平均分
+        $examMoldTotalRate = array(); // 全区考核层级各项目得分率
+        $examMoldSchoolRate = array(); // 各学校考核层级各项目得分率
 
         $scoreStatisticsData = array(); // 考试类型分数
 
@@ -441,10 +445,14 @@ class ExcelData {
             $examScopeTotalAverageScore[$itemName]['passScore'] = 0;
             $examScopeTotalAverageScore[$itemName]['failScore'] = 0;
 
+            $examScopeTotalRate[$itemName]['totalRate'] = 0;
+            $examScopeTotalRate[$itemName]['excellentRate'] = 0;
+            $examScopeTotalRate[$itemName]['passRate'] = 0;
+            $examScopeTotalRate[$itemName]['failRate'] = 0;
+
             foreach(self::$schoolList as $schoolName){
 
                 $examScopeSchoolTotalScore[$itemName][$schoolName]['totalScore'] = 0;
-
                 $examScopeSchoolTotalScore[$itemName][$schoolName]['excellentScore'] = 0;
                 $examScopeSchoolTotalScore[$itemName][$schoolName]['passScore'] = 0;
                 $examScopeSchoolTotalScore[$itemName][$schoolName]['failScore'] = 0;
@@ -453,6 +461,11 @@ class ExcelData {
                 $examScopeSchoolAverageScore[$itemName][$schoolName]['excellentScore'] = 0;
                 $examScopeSchoolAverageScore[$itemName][$schoolName]['passScore'] = 0;
                 $examScopeSchoolAverageScore[$itemName][$schoolName]['failScore'] = 0;
+
+                $examScopeSchoolRate[$itemName][$schoolName]['totalRate'] = 0;
+                $examScopeSchoolRate[$itemName][$schoolName]['excellentRate'] = 0;
+                $examScopeSchoolRate[$itemName][$schoolName]['passRate'] = 0;
+                $examScopeSchoolRate[$itemName][$schoolName]['failRate'] = 0;
             }
 
             foreach(self::$detailTableData['examScopeNumber'][$itemName] as $itemNum){
@@ -480,17 +493,25 @@ class ExcelData {
                 }
 
                 $examScopeTotalAverageScore[$itemName]['totalScore'] = number_format($examScopeTotalScore[$itemName]['totalScore'] / self::$totalCount['totalCount'], 2, '.', '');
-
                 $examScopeTotalAverageScore[$itemName]['excellentScore'] = number_format($examScopeTotalScore[$itemName]['excellentScore'] / self::$totalCount['excellentCount'], 2, '.', '');
                 $examScopeTotalAverageScore[$itemName]['passScore'] = number_format($examScopeTotalScore[$itemName]['passScore'] / self::$totalCount['passCount'], 2, '.', '');
                 $examScopeTotalAverageScore[$itemName]['failScore'] = number_format($examScopeTotalScore[$itemName]['failScore'] / self::$totalCount['failCount'], 2, '.', '');
 
+                $examScopeTotalRate[$itemName]['totalRate'] = number_format($examScopeTotalScore[$itemName]['totalScore'] / self::$totalCount['totalCount'] / self::$detailTableData['examScopeTotalScore'][$itemName], 2, '.', '');
+                $examScopeTotalRate[$itemName]['excellentRate'] = number_format($examScopeTotalScore[$itemName]['excellentScore'] / self::$totalCount['excellentCount'] / self::$detailTableData['examScopeTotalScore'][$itemName], 2, '.', '');
+                $examScopeTotalRate[$itemName]['passRate'] = number_format($examScopeTotalScore[$itemName]['passScore'] / self::$totalCount['passCount'] / self::$detailTableData['examScopeTotalScore'][$itemName], 2, '.', '');
+                $examScopeTotalRate[$itemName]['failRate'] = number_format($examScopeTotalScore[$itemName]['failScore'] / self::$totalCount['failCount'] / self::$detailTableData['examScopeTotalScore'][$itemName], 2, '.', '');
+
                 foreach ($examScopeSchoolTotalScore[$itemName] as $schoolName => $score) {
                     $examScopeSchoolAverageScore[$itemName][$schoolName]['totalScore'] = number_format($score['totalScore'] / self::$totalSchoolCount[$schoolName]['totalCount'], 2, '.', '');
-
                     $examScopeSchoolAverageScore[$itemName][$schoolName]['excellentScore'] = number_format($score['excellentScore'] / self::$totalSchoolCount[$schoolName]['excellentCount'], 2, '.', '');
                     $examScopeSchoolAverageScore[$itemName][$schoolName]['passScore'] = number_format($score['passScore'] / self::$totalSchoolCount[$schoolName]['passCount'], 2, '.', '');
                     $examScopeSchoolAverageScore[$itemName][$schoolName]['failScore'] = number_format($score['failScore'] / self::$totalSchoolCount[$schoolName]['failCount'], 2, '.', '');
+
+                    $examScopeSchoolRate[$itemName][$schoolName]['totalRate'] = number_format($score['totalScore'] / self::$totalSchoolCount[$schoolName]['totalCount'] / self::$detailTableData['examScopeTotalScore'][$itemName], 2, '.', '');
+                    $examScopeSchoolRate[$itemName][$schoolName]['excellentRate'] = number_format($score['excellentScore'] / self::$totalSchoolCount[$schoolName]['excellentCount'] / self::$detailTableData['examScopeTotalScore'][$itemName], 2, '.', '');
+                    $examScopeSchoolRate[$itemName][$schoolName]['passRate'] = number_format($score['passScore'] / self::$totalSchoolCount[$schoolName]['passCount'] / self::$detailTableData['examScopeTotalScore'][$itemName], 2, '.', '');
+                    $examScopeSchoolRate[$itemName][$schoolName]['failRate'] = number_format($score['failScore'] / self::$totalSchoolCount[$schoolName]['failCount'] / self::$detailTableData['examScopeTotalScore'][$itemName], 2, '.', '');
                 }
             }
         }
@@ -507,10 +528,14 @@ class ExcelData {
             $examMoldTotalAverageScore[$itemName]['passScore'] = 0;
             $examMoldTotalAverageScore[$itemName]['failScore'] = 0;
 
+            $examMoldTotalRate[$itemName]['totalRate'] = 0;
+            $examMoldTotalRate[$itemName]['excellentRate'] = 0;
+            $examMoldTotalRate[$itemName]['passRate'] = 0;
+            $examMoldTotalRate[$itemName]['failRate'] = 0;
+
             foreach(self::$schoolList as $schoolName){
 
                 $examMoldSchoolTotalScore[$itemName][$schoolName]['totalScore'] = 0;
-
                 $examMoldSchoolTotalScore[$itemName][$schoolName]['excellentScore'] = 0;
                 $examMoldSchoolTotalScore[$itemName][$schoolName]['passScore'] = 0;
                 $examMoldSchoolTotalScore[$itemName][$schoolName]['failScore'] = 0;
@@ -519,6 +544,11 @@ class ExcelData {
                 $examMoldSchoolAverageScore[$itemName][$schoolName]['excellentScore'] = 0;
                 $examMoldSchoolAverageScore[$itemName][$schoolName]['passScore'] = 0;
                 $examMoldSchoolAverageScore[$itemName][$schoolName]['failScore'] = 0;
+
+                $examMoldSchoolRate[$itemName][$schoolName]['totalRate'] = 0;
+                $examMoldSchoolRate[$itemName][$schoolName]['excellentRate'] = 0;
+                $examMoldSchoolRate[$itemName][$schoolName]['passRate'] = 0;
+                $examMoldSchoolRate[$itemName][$schoolName]['failRate'] = 0;
             }
 
             foreach(self::$detailTableData['examMoldNumber'][$itemName] as $itemNum){
@@ -551,12 +581,22 @@ class ExcelData {
                 $examMoldTotalAverageScore[$itemName]['passScore'] = number_format($examMoldTotalScore[$itemName]['passScore'] / self::$totalCount['passCount'], 2, '.', '');
                 $examMoldTotalAverageScore[$itemName]['failScore'] = number_format($examMoldTotalScore[$itemName]['failScore'] / self::$totalCount['failCount'], 2, '.', '');
 
+                $examMoldTotalRate[$itemName]['totalRate'] = number_format($examMoldTotalScore[$itemName]['totalScore'] / self::$totalCount['totalCount'] / self::$detailTableData['examMoldTotalScore'][$itemName], 2, '.', '');
+                $examMoldTotalRate[$itemName]['excellentRate'] = number_format($examMoldTotalScore[$itemName]['excellentScore'] / self::$totalCount['excellentCount'] / self::$detailTableData['examMoldTotalScore'][$itemName], 2, '.', '');
+                $examMoldTotalRate[$itemName]['passRate'] = number_format($examMoldTotalScore[$itemName]['passScore'] / self::$totalCount['passCount'] / self::$detailTableData['examMoldTotalScore'][$itemName], 2, '.', '');
+                $examMoldTotalRate[$itemName]['failRate'] = number_format($examMoldTotalScore[$itemName]['failScore'] / self::$totalCount['failCount'] / self::$detailTableData['examMoldTotalScore'][$itemName], 2, '.', '');
+
                 foreach ($examMoldSchoolTotalScore[$itemName] as $schoolName => $score) {
                     $examMoldSchoolAverageScore[$itemName][$schoolName]['totalScore'] = number_format($score['totalScore'] / self::$totalSchoolCount[$schoolName]['totalCount'], 2, '.', '');
 
                     $examMoldSchoolAverageScore[$itemName][$schoolName]['excellentScore'] = number_format($score['excellentScore'] / self::$totalSchoolCount[$schoolName]['excellentCount'], 2, '.', '');
                     $examMoldSchoolAverageScore[$itemName][$schoolName]['passScore'] = number_format($score['passScore'] / self::$totalSchoolCount[$schoolName]['passCount'], 2, '.', '');
                     $examMoldSchoolAverageScore[$itemName][$schoolName]['failScore'] = number_format($score['failScore'] / self::$totalSchoolCount[$schoolName]['failCount'], 2, '.', '');
+
+                    $examMoldSchoolRate[$itemName][$schoolName]['totalRate'] = number_format($score['totalScore'] / self::$totalSchoolCount[$schoolName]['totalCount'] / self::$detailTableData['examMoldTotalScore'][$itemName], 2, '.', '');
+                    $examMoldSchoolRate[$itemName][$schoolName]['excellentRate'] = number_format($score['excellentScore'] / self::$totalSchoolCount[$schoolName]['excellentCount'] / self::$detailTableData['examMoldTotalScore'][$itemName], 2, '.', '');
+                    $examMoldSchoolRate[$itemName][$schoolName]['passRate'] = number_format($score['passScore'] / self::$totalSchoolCount[$schoolName]['passCount'] / self::$detailTableData['examMoldTotalScore'][$itemName], 2, '.', '');
+                    $examMoldSchoolRate[$itemName][$schoolName]['failRate'] = number_format($score['failScore'] / self::$totalSchoolCount[$schoolName]['failCount'] / self::$detailTableData['examMoldTotalScore'][$itemName], 2, '.', '');
                 }
             }
         }
@@ -566,148 +606,95 @@ class ExcelData {
             'examScopeTotalAverageScore'   => $examScopeTotalAverageScore, // 全区考核范畴各项目平均分
             'examScopeSchoolTotalScore'    => $examScopeSchoolTotalScore, // 各学校考核范畴各项目总分
             'examScopeSchoolAverageScore'  => $examScopeSchoolAverageScore, // 各学校考核范畴各项目平均分
+            'examScopeTotalRate'           => $examScopeTotalRate, // 全区考核范畴各项目得分率
+            'examScopeSchoolRate'          => $examScopeSchoolRate, // 各学校考核范畴各项目得分率
             'examMoldTotalScore'           => $examMoldTotalScore, // 全区考核层级各项目总分
             'examMoldTotalAverageScore'    => $examMoldTotalAverageScore, // 全区考核层级各项目平均分
             'examMoldSchoolTotalScore'     => $examMoldSchoolTotalScore, // 各学校考核层级各项目总分
             'examMoldSchoolAverageScore'   => $examMoldSchoolAverageScore, // 各学校考核层级各项目平均分
+            'examMoldTotalRate'            => $examMoldTotalRate, // 全区考核层级各项目得分率
+            'examMoldSchoolRate'           => $examMoldSchoolRate, // 各学校考核层级各项目得分率
         );
 
         return $scoreStatisticsData;
     }
 
     /**
-     * 获取分数率统计
+     * 获取客观题统计
      */
-    private function getScoreStatisticsRateData()
+    public function getChoiceQuestionsAnalysisData()
     {
+        $filePath = self::$basePath.self::$examInfo['mainDir'].'/'.self::$course.'/';
+        $filename = self::$choiceQuestionsName;
 
-        $scoreStatisticsRateData = array(); // 分数率数据
-        $rate = array('totalRate','excellentRate','passRate','failRate');
-        $count = array('totalCount','excellentCount','passCount','failCount');
-        $score = array('totalScore','excellentScore','passScore','failScore');
+        $excelData = self::$excelFile->openExcel($filePath, $filename);
 
-        $examRate = array(); // 考核范畴
-        $typeRate = array(); // 考核层级
+        $keys = array();
+        $rets = array();
 
-        foreach($detailTableData['examName'] as $name){
-            for($i = 0; $i < count($scoreStatisticsData['examScore'][$name]['total']); $i++) {
-                $examRate[$name]['total'][$rate[$i]] = number_format($scoreStatisticsData['examScore'][$name]['total'][$score[$i]] / $scoreStatisticsData['count'][$count[$i]] / $detailTableData['examScore'][$name], 2, '.', '');
-            }
+        $num = 0;
+        
+        $choiceQuestionsAnalysisData = array(); // 分数数据
 
-            foreach($scoreStatisticsData['examScore'][$name]['schoolScore'] as $key => $schoolScore){
+        foreach($excelData->getRowIterator() as $kr => $row){
 
-                for($j = 0; $j < count($schoolScore); $j++) {
-                    $examRate[$name]['schoolScore'][$key][$rate[$j]] = number_format($schoolScore[$score[$j]] / $scoreStatisticsData['schoolCount'][$key][$count[$j]] / $detailTableData['examScore'][$name], 2, '.', '');
+            $cellIterator = $row->getCellIterator();
+
+            if ($kr == 1){
+                foreach($cellIterator as $kc => $cell){
+                    $keys[] = $cell->getValue();
                 }
+            }
+            else {
+                foreach($cellIterator as $kc => $cell){
+                    $rets[$keys[$kc]][] = $cell->getValue();
+                }       
             }
         }
 
-        foreach($detailTableData['typeName'] as $name){
-            for($i = 0; $i < count($scoreStatisticsData['typeScore'][$name]['total']); $i++) {
-                $typeRate[$name]['total'][$rate[$i]] = number_format($scoreStatisticsData['typeScore'][$name]['total'][$score[$i]] / $scoreStatisticsData['count'][$count[$i]] / $detailTableData['typeScore'][$name], 2, '.', '');
-            }
-
-            foreach($scoreStatisticsData['typeScore'][$name]['schoolScore'] as $key => $schoolScore){
-
-                for($j = 0; $j < count($schoolScore); $j++) {
-                    $typeRate[$name]['schoolScore'][$key][$rate[$j]] = number_format($schoolScore[$score[$j]] / $scoreStatisticsData['schoolCount'][$key][$count[$j]] / $detailTableData['typeScore'][$name], 2, '.', '');
+        for ($i = 0; $i < count($rets['题号']); $i++) { 
+            if($rets['答案'][$i] == 'A' || $rets['答案'][$i] == 'B' || $rets['答案'][$i] == 'C' || $rets['答案'][$i] == 'D'){
+                $choiceQuestionsAnalysisData[$num][$keys[0]] = $rets['题号'][$i];
+                $choiceQuestionsAnalysisData[$num][$keys[2]] = $rets['答案'][$i];
+                $choiceQuestionsAnalysisData[$num][$keys[3]] = $rets['人数'][$i];
+                $choiceQuestionsAnalysisData[$num][$keys[6]] = number_format($rets['平均分'][$i], 2, '.', '');
+                $choiceQuestionsAnalysisData[$num][$keys[7]] = number_format($rets['标准差'][$i], 2, '.', '');
+                $choiceQuestionsAnalysisData[$num][$keys[8]] = number_format($rets['得分率'][$i], 2, '.', '');
+                $choiceQuestionsAnalysisData[$num][$keys[11]] = number_format($rets['难度'][$i], 2, '.', '');
+                if($choiceQuestionsAnalysisData[$num][$keys[11]] > 0.9){
+                    $choiceQuestionsAnalysisData[$num]['难度评价标准'] = '容易';
                 }
+                elseif($choiceQuestionsAnalysisData[$num][$keys[11]] > 0.7 && $choiceQuestionsAnalysisData[$num][$keys[11]] <= 0.9){
+                    $choiceQuestionsAnalysisData[$num]['难度评价标准'] = '较易';
+                }
+                elseif($choiceQuestionsAnalysisData[$num][$keys[11]] > 0.4 && $choiceQuestionsAnalysisData[$num][$keys[11]] <= 0.7){
+                    $choiceQuestionsAnalysisData[$num]['难度评价标准'] = '中等';
+                }
+                elseif($choiceQuestionsAnalysisData[$num][$keys[11]] <= 0.4){
+                    $choiceQuestionsAnalysisData[$num]['难度评价标准'] = '偏难';
+                }
+                $choiceQuestionsAnalysisData[$num][$keys[12]] = number_format($rets['区分度'][$i], 2, '.', '');
+                if($choiceQuestionsAnalysisData[$num][$keys[12]] >= 0.4){
+                    $choiceQuestionsAnalysisData[$num]['区分度评价标准'] = '区分度较高';
+                }
+                elseif($choiceQuestionsAnalysisData[$num][$keys[12]] >= 0.3 && $choiceQuestionsAnalysisData[$num][$keys[12]] <= 0.39){
+                    $choiceQuestionsAnalysisData[$num]['区分度评价标准'] = '区分度中等';
+                }
+                elseif($choiceQuestionsAnalysisData[$num][$keys[12]] >= 0.2 && $choiceQuestionsAnalysisData[$num][$keys[12]] <= 0.29){
+                    $choiceQuestionsAnalysisData[$num]['区分度评价标准'] = '区分度一般';
+                }
+                elseif($choiceQuestionsAnalysisData[$num][$keys[12]] < 0.2){
+                    $choiceQuestionsAnalysisData[$num]['区分度评价标准'] = '区分度较低';
+                }
+                $choiceQuestionsAnalysisData[$num][$keys[14]] = number_format($rets['选A率%'][$i], 2, '.', '');
+                $choiceQuestionsAnalysisData[$num][$keys[16]] = number_format($rets['选B率%'][$i], 2, '.', '');
+                $choiceQuestionsAnalysisData[$num][$keys[18]] = number_format($rets['选C率%'][$i], 2, '.', '');
+                $choiceQuestionsAnalysisData[$num][$keys[20]] = number_format($rets['选D率%'][$i], 2, '.', '');
+                $num++;
             }
         }
 
-        if($schoolData['schoolType'] != 'high') {
-            $areaScore = array(); // 区域学校分数率统计
-            $areaExamRate = array(); // 区域学校考核范畴
-            $areaTypeRate = array(); // 区域学校考核层级
-            $areaAverageScore = array();
-
-            foreach ($scoreStatisticsData['examScore'] as $key => $item) {
-                for ($i = 0; $i < count($schoolData['schoolArea']); $i++) {
-                    $areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['totalScore'] = 0;
-                    $areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['excellentScore'] = 0;
-                    $areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['passScore'] = 0;
-                    $areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['failScore'] = 0;
-                    foreach ($schoolData['schoolList'][$schoolData['schoolArea'][$i]] as $name) {
-                        foreach ($averageScoreData['schoolName'] as $j => $value) {
-                            if($value == $name) {
-                                $areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['totalScore'] = $areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['totalScore'] + $item['schoolScore'][$name]['totalScore'];
-                                $areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['excellentScore'] = $areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['excellentScore'] + $item['schoolScore'][$name]['excellentScore'];
-                                $areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['passScore'] = $areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['passScore'] + $item['schoolScore'][$name]['passScore'];
-                                $areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['failScore'] = $areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['failScore'] + $item['schoolScore'][$name]['failScore'];
-                            }
-                        }
-                    }
-                    $areaExamRate[$schoolData['schoolArea'][$i]]['exam'][$key]['totalRate'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['totalScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]] / $detailTableData['examScore'][$key], 2, '.', '');
-                    $areaExamRate[$schoolData['schoolArea'][$i]]['exam'][$key]['excellentRate'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['excellentScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]] / $detailTableData['examScore'][$key], 2, '.', '');
-                    $areaExamRate[$schoolData['schoolArea'][$i]]['exam'][$key]['passRate'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['passScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]] / $detailTableData['examScore'][$key], 2, '.', '');
-                    $areaExamRate[$schoolData['schoolArea'][$i]]['exam'][$key]['failRate'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['failScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]] / $detailTableData['examScore'][$key], 2, '.', '');
-
-                    $areaAverageScore[$schoolData['schoolArea'][$i]]['exam'][$key]['totalScore'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['totalScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]], 2, '.', '');
-                    $areaAverageScore[$schoolData['schoolArea'][$i]]['exam'][$key]['excellentScore'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['excellentScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]], 2, '.', '');
-                    $areaAverageScore[$schoolData['schoolArea'][$i]]['exam'][$key]['passScore'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['passScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]], 2, '.', '');
-                    $areaAverageScore[$schoolData['schoolArea'][$i]]['exam'][$key]['failScore'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['exam'][$key]['failScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]], 2, '.', '');
-                }
-            }
-
-            foreach ($scoreStatisticsData['typeScore'] as $key => $item) {
-                for ($i = 0; $i < count($schoolData['schoolArea']); $i++) {
-                    $areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['totalScore'] = 0;
-                    $areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['excellentScore'] = 0;
-                    $areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['passScore'] = 0;
-                    $areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['failScore'] = 0;
-                    foreach ($schoolData['schoolList'][$schoolData['schoolArea'][$i]] as $name) {
-                        foreach ($averageScoreData['schoolName'] as $j => $value) {
-                            if($value == $name) {
-                                $areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['totalScore'] = $areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['totalScore'] + $item['schoolScore'][$name]['totalScore'];
-                                $areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['excellentScore'] = $areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['excellentScore'] + $item['schoolScore'][$name]['excellentScore'];
-                                $areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['passScore'] = $areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['passScore'] + $item['schoolScore'][$name]['passScore'];
-                                $areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['failScore'] = $areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['failScore'] + $item['schoolScore'][$name]['failScore'];
-                            }
-                        }
-                    }
-                    $areaTypeRate[$schoolData['schoolArea'][$i]]['type'][$key]['totalRate'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['totalScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]] / $detailTableData['typeScore'][$key], 2, '.', '');
-                    $areaTypeRate[$schoolData['schoolArea'][$i]]['type'][$key]['excellentRate'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['excellentScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]] / $detailTableData['typeScore'][$key], 2, '.', '');
-                    $areaTypeRate[$schoolData['schoolArea'][$i]]['type'][$key]['passRate'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['passScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]] / $detailTableData['typeScore'][$key], 2, '.', '');
-                    $areaTypeRate[$schoolData['schoolArea'][$i]]['type'][$key]['failRate'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['failScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]] / $detailTableData['typeScore'][$key], 2, '.', '');
-
-
-                    $areaAverageScore[$schoolData['schoolArea'][$i]]['type'][$key]['totalScore'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['totalScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]], 2, '.', '');
-                    $areaAverageScore[$schoolData['schoolArea'][$i]]['type'][$key]['excellentScore'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['excellentScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]], 2, '.', '');
-                    $areaAverageScore[$schoolData['schoolArea'][$i]]['type'][$key]['passScore'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['passScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]], 2, '.', '');
-                    $areaAverageScore[$schoolData['schoolArea'][$i]]['type'][$key]['failScore'] = number_format($areaScore[$schoolData['schoolArea'][$i]]['type'][$key]['failScore'] / $averageScoreData['areaStudentCount'][$schoolData['schoolArea'][$i]], 2, '.', '');
-                }
-            }
-        }
-
-        $scoreStatisticsRateData = array(
-            'examRate'        => $examRate, // 考核范畴分数统计
-            'typeRate'        => $typeRate, // 考核层级分数统计
-        );
-
-        if($schoolData['schoolType'] != 'high') {
-            $scoreStatisticsRateData['areaExamRate'] = $areaExamRate;
-            $scoreStatisticsRateData['areaTypeRate'] = $areaTypeRate; // 区域考核层级得分率统计
-            $scoreStatisticsRateData['areaScore'] = $areaScore; // 区域考考核范畴、考核层级分数统计
-            $scoreStatisticsRateData['areaAverageScore'] = $areaAverageScore; // 区域考核范畴、考核层级平均分统计
-        }
-
-        return $scoreStatisticsRateData;
-    }
-
-    /**
-     * 验证数据
-     */
-    public function getAllData()
-    {
-        $data1 = self::getStudentScoreData();
-        $data2 = self::getScoreStatisticsData();
-        // var_export('============$baseScore=================');
-        // var_export(self::$baseScore);
-        var_export('===========$getStudentScoreData==================');
-        var_export($data1);
-        var_export('===========$getScoreStatisticsData==================');
-        var_export($data2);
-        exit();
+        return $choiceQuestionsAnalysisData;
     }
 }
 
