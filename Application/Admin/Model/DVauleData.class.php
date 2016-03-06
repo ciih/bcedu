@@ -11,6 +11,18 @@ use Think\Model;
 class DVauleData {
 
     /**
+     * 获取学校列表
+     * @var array
+     */
+    protected static $schoolList;
+
+    /**
+     * 获取双向明细表数据
+     * @var array
+     */
+    protected static $detailTableData;
+
+    /**
      * 获取学生分数(小题分)
      * @var array
      */
@@ -31,10 +43,13 @@ class DVauleData {
     /**
      * 构造
      */
-    function __construct($studentScoreData, $scoreStatisticsData)
+    function __construct($schoolList, $detailTableData, $studentScoreData, $scoreStatisticsData)
     {
-        self::$studentScoreData = $studentScoreData;
+        self::$detailTableData     = $detailTableData;
+        self::$studentScoreData    = $studentScoreData;
         self::$scoreStatisticsData = $scoreStatisticsData;
+
+        self::$schoolList = $schoolList;
     }
 
     /**
@@ -68,35 +83,47 @@ class DVauleData {
 
         $dVauleData = array(); // C/E/D值数据
 
-        // $examScopeTotalNumerator['totalScore'] = 0;
-        // $examScopeTotalNumerator['excellentScore'] = 0;
-        // $examScopeTotalNumerator['passScore'] = 0;
-        // $examScopeTotalNumerator['failScore'] = 0;
+        foreach (self::$detailTableData['examScopeName'] as $name) {
+            $examScopeTotalNumerator[$name]['totalScore'] = 0;
+            $examScopeTotalNumerator[$name]['excellentScore'] = 0;
+            $examScopeTotalNumerator[$name]['passScore'] = 0;
+            $examScopeTotalNumerator[$name]['failScore'] = 0;
+
+            foreach (self::$schoolList as $schoolName) {
+                $examScopeSchoolNumerator[$name][$schoolName]['totalScore'] = 0;
+                $examScopeSchoolNumerator[$name][$schoolName]['excellentScore'] = 0;
+                $examScopeSchoolNumerator[$name][$schoolName]['passScore'] = 0;
+                $examScopeSchoolNumerator[$name][$schoolName]['failScore'] = 0;
+            }
+        }
+
+
 
         // $examMoldTotalNumerator['totalScore'] = 0;
         // $examMoldTotalNumerator['excellentScore'] = 0;
         // $examMoldTotalNumerator['passScore'] = 0;
         // $examMoldTotalNumerator['failScore'] = 0;
 
-        foreach ($examScopeScoreList as $num => $listItem) {
-            foreach ($listItem as $examScopeName => $score) {
-                $examScopeTotalNumerator[$examScopeName]['totalScore'] = number_format($examScopeTotalNumerator[$examScopeName]['totalScore'] + pow($score - $examScopeTotalAverageScore[$examScopeName]['totalScore'] , 2), 2, '.', '');
-                $examScopeSchoolNumerator[$examScopeName][$studentSchoolList[$num]]['totalScore'] = number_format($examScopeTotalNumerator[$examScopeName][$studentSchoolList[$num]]['totalScore'] + pow($score - $examScopeSchoolAverageScore[$examScopeName][$studentSchoolList[$num]]['totalScore'] , 2), 2, '.', '');
+        foreach ($studentScoreList as $num => $studentScore) {
+            foreach (self::$detailTableData['examScopeName'] as $examScopeName) {
+                $examScopeTotalNumerator[$examScopeName]['totalScore'] = $examScopeTotalNumerator[$examScopeName]['totalScore'] + pow($examScopeScoreList[$num][$examScopeName] - $examScopeTotalAverageScore[$examScopeName]['totalScore'] , 2);
+                $examScopeSchoolNumerator[$examScopeName][$studentSchoolList[$num]]['totalScore'] = $examScopeSchoolNumerator[$examScopeName][$studentSchoolList[$num]]['totalScore'] + pow($examScopeScoreList[$num][$examScopeName] - $examScopeSchoolAverageScore[$examScopeName][$studentSchoolList[$num]]['totalScore'] , 2);
+                
                 if($studentScoreList[$num] >= $baseScore['excellentScore']) {
-                    $examScopeTotalNumerator[$examScopeName]['excellentScore'] = number_format($examScopeTotalNumerator[$examScopeName]['excellentScore'] + pow($score - $examScopeTotalAverageScore[$examScopeName]['excellentScore'] , 2), 2, '.', '');
-                    $examScopeSchoolNumerator[$examScopeName][$studentSchoolList[$num]]['excellentScore'] = number_format($examScopeTotalNumerator[$examScopeName]['excellentScore'] + pow($score - $examScopeSchoolAverageScore[$examScopeName][$studentSchoolList[$num]]['excellentScore'] , 2), 2, '.', '');
+                    $examScopeTotalNumerator[$examScopeName]['excellentScore'] = $examScopeTotalNumerator[$examScopeName]['excellentScore'] + pow($examScopeScoreList[$num][$examScopeName] - $examScopeTotalAverageScore[$examScopeName]['excellentScore'] , 2);
+                    $examScopeSchoolNumerator[$examScopeName][$studentSchoolList[$num]]['excellentScore'] = $examScopeSchoolNumerator[$examScopeName][$studentSchoolList[$num]]['excellentScore'] + pow($examScopeScoreList[$num][$examScopeName] - $examScopeSchoolAverageScore[$examScopeName][$studentSchoolList[$num]]['excellentScore'] , 2);
                 } elseif($studentScoreList[$num] >= $baseScore['passScore'] && $studentScoreList[$num] < $baseScore['excellentScore']) {
-                    $examScopeTotalNumerator[$examScopeName]['passScore'] = number_format($examScopeTotalNumerator[$examScopeName]['passScore'] + pow($score - $examScopeTotalAverageScore[$examScopeName]['passScore'] , 2), 2, '.', '');
-                    $examScopeSchoolNumerator[$examScopeName][$studentSchoolList[$num]]['passScore'] = number_format($examScopeTotalNumerator[$examScopeName]['passScore'] + pow($score - $examScopeSchoolAverageScore[$examScopeName][$studentSchoolList[$num]]['passScore'] , 2), 2, '.', '');
+                    $examScopeTotalNumerator[$examScopeName]['passScore'] = $examScopeTotalNumerator[$examScopeName]['passScore'] + pow($score - $examScopeTotalAverageScore[$examScopeName]['passScore'] , 2);
+                    $examScopeSchoolNumerator[$examScopeName][$studentSchoolList[$num]]['passScore'] = $examScopeSchoolNumerator[$examScopeName][$studentSchoolList[$num]]['passScore'] + pow($examScopeScoreList[$num][$examScopeName] - $examScopeSchoolAverageScore[$examScopeName][$studentSchoolList[$num]]['passScore'] , 2);
                 } else {
-                    $examScopeTotalNumerator[$examScopeName]['failScore'] = number_format($examScopeTotalNumerator[$examScopeName]['failScore'] + pow($score - $examScopeTotalAverageScore[$examScopeName]['failScore'] , 2), 2, '.', '');
-                    $examScopeSchoolNumerator[$examScopeName][$studentSchoolList[$num]]['failScore'] = number_format($examScopeTotalNumerator[$examScopeName]['failScore'] + pow($score - $examScopeSchoolAverageScore[$examScopeName][$studentSchoolList[$num]]['failScore'] , 2), 2, '.', '');
+                    $examScopeTotalNumerator[$examScopeName]['failScore'] = $examScopeTotalNumerator[$examScopeName]['failScore'] + pow($score - $examScopeTotalAverageScore[$examScopeName]['failScore'] , 2);
+                    $examScopeSchoolNumerator[$examScopeName][$studentSchoolList[$num]]['failScore'] = $examScopeSchoolNumerator[$examScopeName][$studentSchoolList[$num]]['failScore'] + pow($examScopeScoreList[$num][$examScopeName] - $examScopeSchoolAverageScore[$examScopeName][$studentSchoolList[$num]]['failScore'] , 2);
                 }
             }
         }
 
         $dVauleData = array(
-            'examScopeTotalNumerator'        => $examScopeTotalNumerator, // 考核范畴分数统计
+            // 'examScopeTotalNumerator'        => $examScopeTotalNumerator, // 考核范畴分数统计
             'examScopeSchoolNumerator'        => $examScopeSchoolNumerator, // 考核层级分数统计
             /*'cValue'      => $cValue, // 对比组标准差统计
             'eValue'      => $eValue, // 对照组标准差统计

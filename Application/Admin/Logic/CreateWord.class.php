@@ -11,10 +11,22 @@ use Think\Model;
 class CreateWord {
 
     /**
+     * 获取学校列表
+     * @var array
+     */
+    protected static $schoolList;
+
+    /**
      * 获取考试课程列表
      * @var string
      */
     protected static $courseList;
+
+    /**
+     * 获取分数率
+     * @var array
+     */
+    protected static $baseScoreRate;
 
     /**
      * 获取学科分析
@@ -63,17 +75,26 @@ class CreateWord {
         $examInfoObj = new \Admin\Model\ExamInfoData($date, $foldername);
         $examInfoData = $examInfoObj->getExamInfoData();
 
+        $schoolListObj = new \Admin\Model\SchoolListData();
+        self::$schoolList = $schoolListObj->getSchoolData($examInfoData['schoolType']);
+
+        $baseScoreRateData = new \Admin\Model\BaseScoreRateData();
+        self::$baseScoreRate = $baseScoreRateData->getBaseScoreRateData($course);
+
         $courseObj = new \Admin\Model\CourseData($examInfoData);
         self::$courseList = $courseObj->getCourseData();
 
-        $examDataObj = new \Admin\Model\ExcelData($examInfoData, $course);
+        $detailTableObj = new \Admin\Model\DetailTableData($examInfoData, $course);
+        $detailTableData = $detailTableObj->getDetailTableData();
+
+        $examDataObj = new \Admin\Model\ExcelData($examInfoData, self::$schoolList, self::$baseScoreRate, self::$courseList, $detailTableData, $course);
         self::$courseAnalysisData = $examDataObj->getCourseAnalysisData();
         self::$comprehensiveIndicatorsData = $examDataObj->getComprehensiveIndicatorsData();
         self::$studentScoreData = $examDataObj->getStudentScoreData();
         self::$scoreStatisticsData = $examDataObj->getScoreStatisticsData();
         self::$choiceQuestionsAnalysisData = $examDataObj->getChoiceQuestionsAnalysisData();
 
-        $dVauleObj = new \Admin\Model\DVauleData(self::$studentScoreData, self::$scoreStatisticsData);
+        $dVauleObj = new \Admin\Model\DVauleData(self::$schoolList, $detailTableData, self::$studentScoreData, self::$scoreStatisticsData);
         self::$dVauleData = $dVauleObj->getDVauleData();
     }
 

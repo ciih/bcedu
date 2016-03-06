@@ -124,23 +124,19 @@ class ExcelData {
      * @param $foldername 文件夹名称（包含信息：学年、学期、年级、考试名称）
      * @param $course 查询科目
      */
-    function __construct($examInfoData, $course)
+    function __construct($examInfoData, $schoolList, $baseScoreRate, $courseList, $detailTableData, $course)
     {
         self::$examInfo = $examInfoData;
         self::$basePath = self::$examInfo['rootDir'].self::$examInfo['uploadDate'].'/'.self::$examInfo['fullname'].'/';
         self::$course = $course;
 
-        $schoolListObj = new \Admin\Model\SchoolListData();
-        self::$schoolList = $schoolListObj->getSchoolData(self::$examInfo['schoolType']);
+        self::$schoolList = $schoolList;
 
-        $baseScoreRateData = new \Admin\Model\BaseScoreRateData();
-        self::$baseScoreRate = $baseScoreRateData->getBaseScoreRateData(self::$course);
+        self::$baseScoreRate = $baseScoreRate;
 
-        $courseObj = new \Admin\Model\CourseData(self::$examInfo);
-        self::$courseList = $courseObj->getCourseData();
+        self::$courseList = $courseList;
 
-        $detailTableObj = new \Admin\Model\DetailTableData(self::$examInfo, self::$course);
-        self::$detailTableData = $detailTableObj->getDetailTableData();
+        self::$detailTableData = $detailTableData;
 
         self::$baseScore['excellentScore'] = self::$detailTableData['totalScore'] * (self::$baseScoreRate[0] / 100);
         self::$baseScore['passScore'] = self::$detailTableData['totalScore'] * (self::$baseScoreRate[1] / 100);
