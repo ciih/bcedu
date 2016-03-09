@@ -17,6 +17,12 @@ class CourseData {
     protected static $examInfo;
 
     /**
+     * 学科表名
+     * @var string
+     */
+    protected static $courseAnalysisName = '学科分析';
+
+    /**
      * 构造
      * @param $examInfoData 文件夹名称（包含信息：学年、学期、年级、考试名称）
      */
@@ -31,7 +37,7 @@ class CourseData {
     public function getCourseData()
     {
         $filePath = self::$examInfo['rootDir'].self::$examInfo['uploadDate'].'/'.self::$examInfo['fullname'].'/'.self::$examInfo['mainDir'].'/';
-        $filename = '学科分析';
+        $filename = self::$courseAnalysisName;
 
         $excelFile = new \Admin\Model\ExeclFile();
         $excelData = $excelFile->openExcel($filePath, $filename);

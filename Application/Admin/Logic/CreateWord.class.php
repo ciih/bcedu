@@ -11,28 +11,46 @@ use Think\Model;
 class CreateWord {
 
     /**
+     * 科目
+     * @var string
+     */
+    protected static $course;
+
+    /**
+     * 考试信息
+     * @var array
+     */
+    protected static $examInfoData;
+
+    /**
      * 获取学校列表
      * @var array
      */
-    protected static $schoolList;
+    protected static $schoolInfoData;
 
     /**
      * 获取考试课程列表
      * @var string
      */
-    protected static $courseList;
+    protected static $courseListData;
 
     /**
      * 获取分数率
      * @var array
      */
-    protected static $baseScoreRate;
+    protected static $baseScoreRateData;
 
     /**
      * 获取学科分析
      * @var array
      */
     protected static $courseAnalysisData;
+
+    /**
+     * 获取科目双向细目表
+     * @var array
+     */
+    protected static $detailTableData;
 
     /**
      * 获取综合指标
@@ -59,7 +77,7 @@ class CreateWord {
     protected static $choiceQuestionsAnalysisData;
 
     /**
-     * 获取C/E/D值
+     * 获取D值
      * @var array
      */
     protected static $dVauleData;
@@ -72,29 +90,49 @@ class CreateWord {
      */
     function __construct($date, $foldername, $course)
     {
+        // 获取考试数据目录
         $examInfoObj = new \Admin\Model\ExamInfoData($date, $foldername);
-        $examInfoData = $examInfoObj->getExamInfoData();
+        self::$examInfoData = $examInfoObj->getExamInfoData();
 
-        $schoolListObj = new \Admin\Model\SchoolListData();
-        self::$schoolList = $schoolListObj->getSchoolData($examInfoData['schoolType']);
+        // 获取当前查询科目
+        self::$course = $course;
 
-        $baseScoreRateData = new \Admin\Model\BaseScoreRateData();
-        self::$baseScoreRate = $baseScoreRateData->getBaseScoreRateData($course);
+        // 获取学校列表
+        $schoolInfoObj = new \Admin\Model\SchoolInfoData();
+        self::$schoolInfoData = $schoolInfoObj->getSchoolData(self::$examInfoData['schoolType']);
 
-        $courseObj = new \Admin\Model\CourseData($examInfoData);
-        self::$courseList = $courseObj->getCourseData();
+        // 获取当前科目得分率
+        $baseScoreRateObj = new \Admin\Model\BaseScoreRateData();
+        self::$baseScoreRateData = $baseScoreRateObj->getBaseScoreRateData(self::$course);
 
-        $detailTableObj = new \Admin\Model\DetailTableData($examInfoData, $course);
-        $detailTableData = $detailTableObj->getDetailTableData();
+        // 获取所有科目列表
+        $courseObj = new \Admin\Model\CourseData(self::$examInfoData);
+        self::$courseListData = $courseObj->getCourseData();
 
-        $examDataObj = new \Admin\Model\ExcelData($examInfoData, self::$schoolList, self::$baseScoreRate, self::$courseList, $detailTableData, $course);
+        // 获取双向明细表数据(考核范畴、考核层级)
+        $detailTableObj = new \Admin\Model\DetailTableData(self::$examInfoData, self::$course);
+        self::$detailTableData = $detailTableObj->getDetailTableData();
+
+        // 获取成绩数据
+        $examDataObj = new \Admin\Model\ExcelData(self::$examInfoData, self::$schoolInfoData, self::$baseScoreRateData, self::$courseListData, self::$detailTableData, self::$course);
+
+        // 获取课程分析数据(难度、区分度、信度)
         self::$courseAnalysisData = $examDataObj->getCourseAnalysisData();
+
+        // 获取综合指标数据(学校人数、平均分、最高分、最低分)
         self::$comprehensiveIndicatorsData = $examDataObj->getComprehensiveIndicatorsData();
+
+        // 获取小题分数据(考核范畴、考核层级各学生分数；学生分数列表；学生所属学校列表；全区、各学校人数统计；人数百分比、累计百分比)
         self::$studentScoreData = $examDataObj->getStudentScoreData();
+
+        // 获取课程分数统计数据(全区、各学校考核范畴各项目分数；全区、各学校考核层级各项目分数)
         self::$scoreStatisticsData = $examDataObj->getScoreStatisticsData();
+
+        // 获取客观题统计
         self::$choiceQuestionsAnalysisData = $examDataObj->getChoiceQuestionsAnalysisData();
 
-        $dVauleObj = new \Admin\Model\DVauleData(self::$schoolList, $detailTableData, self::$studentScoreData, self::$scoreStatisticsData);
+        // 获取课程分析数据
+        $dVauleObj = new \Admin\Model\DVauleData(self::$schoolInfoData, self::$detailTableData, self::$studentScoreData, self::$scoreStatisticsData);
         self::$dVauleData = $dVauleObj->getDVauleData();
     }
 
