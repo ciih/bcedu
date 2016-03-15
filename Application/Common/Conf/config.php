@@ -5,7 +5,7 @@ return array(
 	'DB_HOST'   => 'chenhong.bcedu.com',
 	'DB_NAME'   => 'bcedu_test',
 	'DB_USER'   => 'root',
-	'DB_PWD'    => '',
+	'DB_PWD'    => 'YeEDjUMLZCvyWRLp',
 	'DB_PORT'   => '3306',
 	'DB_PREFIX' => 'bc_',
 

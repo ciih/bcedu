@@ -1,30 +1,56 @@
 <div class="content-section">
 	<div class="detail-hd clearfix">
-		<div class="title"><span class="glyphicon glyphicon-star"></span>小学</div>
+		<div class="title"><span class="glyphicon glyphicon-star"></span><?php echo $schoolType ?></div>
 		<div class="school-classify">
+			<div class="dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">学年<span class="caret"></span></button>
+				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+					<?php
+					foreach ($schoolYear as $value) {
+					?>
+					<li><a href="#"><?php echo $value ?></a></li>
+					<?php
+					}
+					?>
+				</ul>
+			</div>
+			<div class="dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">学期<span class="caret"></span></button>
+				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+					<?php
+					foreach ($schoolterm as $value) {
+					?>
+					<li><a href="#"><?php echo $value ?></a></li>
+					<?php
+					}
+					?>
+				</ul>
+			</div>
 			<div class="dropdown">
 				<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">年级<span class="caret"></span></button>
 				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-					<li><a href="#">一年级</a></li>
-					<li><a href="#">二年级</a></li>
-					<li><a href="#">三年级</a></li>
-					<li><a href="#">四年级</a></li>
-					<li><a href="#">五年级</a></li>
-					<li><a href="#">六年级</a></li>
+					<?php
+					foreach ($grade as $value) {
+					?>
+					<li><a href="#"><?php echo $value ?></a></li>
+					<?php
+					}
+					?>
 				</ul>
 			</div>
 			<div class="dropdown">
-				<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">班级<span class="caret"></span></button>
+				<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">考试名称<span class="caret"></span></button>
 				<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-					<li><a href="#">一班</a></li>
-					<li><a href="#">二班</a></li>
-					<li><a href="#">三班</a></li>
-					<li><a href="#">四班</a></li>
-					<li><a href="#">五班</a></li>
+					<?php
+					foreach ($examName as $value) {
+					?>
+					<li><a href="#"><?php echo $value ?></a></li>
+					<?php
+					}
+					?>
 				</ul>
 			</div>
 			<button type="button" class="btn btn-primary btn-search">查询</button>
-			<button type="button" class="btn btn-warning btn-download">下载</button>
 		</div>
 	</div>
 	<div class="detail-bd">

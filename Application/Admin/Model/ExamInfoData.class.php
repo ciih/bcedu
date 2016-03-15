@@ -43,12 +43,6 @@ class ExamInfoData {
     protected static $schoolType;
 
     /**
-     * 学科分析.xls(获取考试科目信息)
-     * @var string
-     */
-    const COURSE_NAME = '学科分析';
-
-    /**
      * 构造
      * @param $date 日期
      * @param $foldername 文件夹名称（包含信息：学年、学期、年级、考试名称）
@@ -64,31 +58,32 @@ class ExamInfoData {
      * 根据文件夹分析出学年、学期、年级、考试名称，并入库
      * @param string $foldername 文件夹名
      */
-    public function writeExamInfo()
+    public function writeExamInfo($courseData)
     {
         $foldernameData = self::getExamInfoData();
         $fullname = $foldernameData['fullname'];
         $uploadDate = self::$uploadDate;
         $examInfoData = M('exam');
-        $examInfo = $examInfoData->where("fullname='$fullname'")->find();
+        // $examInfo = $examInfoData->where("fullname='$fullname'")->find();
         $data = array(); // 写入数据信息
         if(!$examInfo){
-            $data['schoolYear'] = $foldernameData['schoolYear'];
-            $data['schoolTerm'] = $foldernameData['schoolTerm'];
+            $data['schooltype'] = self::$schoolType;
+            $data['schoolyear'] = $foldernameData['schoolYear'];
+            $data['schoolterm'] = $foldernameData['schoolTerm'];
             $data['grade']      = $foldernameData['grade'];
-            $data['examName']   = $foldernameData['examName'];
+            $data['examname']   = $foldernameData['examName'];
             $data['fullname']   = $foldernameData['fullname'];
-            $data['uploadDate'] = $uploadDate;
+            $data['uploaddate'] = $uploadDate;
+            $data['courselist'] = implode(',',$courseData);
             $examInfoData->data($data)->add();
         } else {
-            $data['uploadDate'] = $uploadDate;
+            $data['uploaddate'] = $uploadDate;
             $examInfoData->where("fullname='$fullname'")->setField($data);
         }
     }
 
     /**
-     * 分析文件夹信息，根据文件夹分析出学年、学期、年级、考试名称，并入库
-     * @param string $foldername 文件夹名
+     * 得到考试相关信息
      */
     public function getExamInfoData()
     {

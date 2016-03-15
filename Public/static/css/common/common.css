@@ -3,6 +3,11 @@ body {
 	background: url(../../img/bg.png) repeat 0 0 #f4f4f4;
 }
 
+/* bootstrap modify */
+.dropdown .name {
+	margin-right: 5px;
+}
+
 /* topbar */
 .topbar {
     width: 100%;
@@ -122,9 +127,9 @@ body {
 }
 
 /* .detail-section */
-.detail-section {
+/*.detail-section {
 	padding-top: 30px;
-}
+}*/
 .detail-section .row {
 	position: relative;
 	margin-bottom: 24px;
@@ -208,11 +213,14 @@ body {
 	height: 72px;
 }
 .pic-list li .txt {
+	overflow: hidden;
 	padding: 0 10px;
 	width: 208px;
 	height: 32px;
 	line-height: 32px;
 	text-align: center;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 /* table-section */

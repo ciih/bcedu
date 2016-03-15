@@ -17,11 +17,12 @@ class ResultController extends Controller {
 
 
         $examInfoObj = new \Admin\Model\ExamInfoData($date, $foldername);
-        $examInfoObj->writeExamInfo();
         $examInfoData = $examInfoObj->getExamInfoData();
 
         $courseObj = new \Admin\Model\CourseData($examInfoData);
         $courseData = $courseObj->getCourseData();
+
+        $examInfoObj->writeExamInfo($courseData);
 
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');
@@ -57,6 +58,7 @@ class ResultController extends Controller {
 
         $this->assign('date', $date);
         $this->assign('course', $course);
+        $this->assign('examname', $foldername);
 
         $this->assign('username', $username);
 
@@ -69,10 +71,10 @@ class ResultController extends Controller {
             redirectUrl('admin');
         }
 
-        $date = $_GET['date'];
+        $examname = $_GET['examname'];
         $course = $_GET['course'];
 
-        header('Location: /Word/'.$date.'/'.$course.'.docx');
+        header('Location: /Data/Word/'.$examname.'/'.$course.'.docx');
     }
 
 }

@@ -404,15 +404,15 @@ class ExcelData {
 
         $studentScoreData = array(
             'baseScore'          => $baseScore, // 分数线
-            'examScopeScoreList' => $examScopeScoreList, // 全区学生考试范畴各小项分数
-            'examMoldScoreList'  => $examMoldScoreList, // 全区学生考试层级各小项分数
-            'studentScoreList'   => $studentScoreList, // 全区学生分数列表
-            'studentSchoolList'  => $studentSchoolList, // 全区学生所属学校列表
             'totalCount'         => $totalCount, // 全区优秀人数、及格人数、未及格人数
             'totalSchoolCount'   => $totalSchoolCount, // 全校优秀人数、及格人数、未及格人数
             'totalRate'          => $totalRate, // 全区优秀率、及格率、未及格率
             'cumulativeCount'    => $cumulativeCount, // 全区累计优秀人数、累计及格人数、未及格人数
             'cumulativeRate'     => $cumulativeRate, // 全区累计优秀率、累计及格率、未及格率
+            'examScopeScoreList' => $examScopeScoreList, // 全区学生考试范畴各小项分数
+            'examMoldScoreList'  => $examMoldScoreList, // 全区学生考试层级各小项分数
+            'studentScoreList'   => $studentScoreList, // 全区学生分数列表
+            'studentSchoolList'  => $studentSchoolList, // 全区学生所属学校列表
         );
 
         return $studentScoreData;

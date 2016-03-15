@@ -1,39 +1,29 @@
-<div id="middleschool-section" class="row section">
+<?php
+	foreach($middleAreaName as $number => $area){
+?>
+<div <?php if($number == 0) { ?>id="middleschool-section"<?php } ?> class="row section">
 	<div class="classify-hd">
-		<div class="title"><span class="glyphicon glyphicon-star"></span>初中</div>
+		<div class="title"><span class="glyphicon glyphicon-star"></span>初中 - <?php echo $area ?></div>
 	</div>
 	<div class="classify-bd">
 		<ul class="pic-list">
+			<?php
+				foreach($middleSchoolList as $name => $schoolarea){
+				if($area == $schoolarea){
+			?>
 			<li>
-				<a href="/home/edu?page=score_analysis&type=middle&school=24zhong&grade=m7" target="_blank">
+				<a href="/home/scoreanalysis?type=middle&schoolname=<?php echo urlencode($name) ?>" target="_blank" title="<?php echo $name ?>">
 					<div class="pic"><img src="../Public/static/img/default_school.png" /></div>
-					<div class="txt">第二十四中学</div>
+					<div class="txt"><?php echo $name ?></div>
 				</a>
 			</li>
-			<li>
-				<a href="/home/edu?page=score_analysis&type=middle&school=93zhong&grade=m7" target="_blank">
-					<div class="pic"><img src="../Public/static/img/default_school.png" /></div>
-					<div class="txt">第九十三中学</div>
-				</a>
-			</li>
-			<li>
-				<a href="/home/edu?page=score_analysis&type=middle&school=78zhong&grade=m7" target="_blank">
-					<div class="pic"><img src="../Public/static/img/default_school.png" /></div>
-					<div class="txt">第七十八中学</div>
-				</a>
-			</li>
-			<li>
-				<a href="/home/edu?page=score_analysis&type=middle&school=77zhong&grade=m7" target="_blank">
-					<div class="pic"><img src="../Public/static/img/default_school.png" /></div>
-					<div class="txt">第七十七中学</div>
-				</a>
-			</li>
-			<li>
-				<a href="/home/edu?page=score_analysis&type=middle&school=35zhong&grade=m7" target="_blank">
-					<div class="pic"><img src="../Public/static/img/default_school.png" /></div>
-					<div class="txt">第三十五中学</div>
-				</a>
-			</li>
+			<?php
+				}
+				}
+			?>
 		</ul>
 	</div>
 </div>
+<?php
+	}
+?>

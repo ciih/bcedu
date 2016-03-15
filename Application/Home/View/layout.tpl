@@ -28,4 +28,7 @@
 <foreach name="loadJs" item="js" >
     <script src="<%$js%>"></script>
 </foreach>
+<foreach name="loadPageJs" item="js" >
+    <script src="<%$js%>"></script>
+</foreach>
 </html>

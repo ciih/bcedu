@@ -30,13 +30,46 @@ return array(
             'js_head' => array(),
             'js_foot' => array()
         ),
-        'edu' => array(
+        /*'edu' => array(
             'css' => array(
                 __ROOT__.'/Public/static/css/common/common.css',
                 __ROOT__.'/Public/static/css/app/detail.css'
             ),
             'js_head' => array(),
-            'js_foot' => array()
+            'js_foot' => array(
+                __ROOT__.'/Public/static/js/edu/edu.js'
+            )
+        ),*/
+        'detail' => array(
+            'css' => array(
+                __ROOT__.'/Public/static/css/common/common.css',
+                __ROOT__.'/Public/static/css/app/detail.css'
+            ),
+            'js_head' => array(),
+            'js_foot' => array(
+                __ROOT__.'/Public/static/js/detail/detail.js'
+            )
+        ),
+        'scoreanalysis' => array(
+            'js_foot' => array(
+                __ROOT__.'/Public/static/js/detail/scoreanalysis.js'
+            )
+        ),
+        'baseanalysis' => array(
+            'js_foot' => array(
+                __ROOT__.'/Public/static/js/detail/baseanalysis.js'
+            )
+        ),
+        'deepanalysis' => array(
+            'js_foot' => array(
+                __ROOT__.'/Public/static/js/detail/deepanalysis.js'
+            )
+        ),
+        'valueadded' => array(
+            'js_foot' => array(
+                __ROOT__.'/Public/static/js/lib/highcharts/highcharts-custom.js',
+                __ROOT__.'/Public/static/js/detail/valueadded.js'
+            )
         ),
         'admin_index' => array(
             'css' => array(

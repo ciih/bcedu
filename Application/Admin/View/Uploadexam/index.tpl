@@ -1,7 +1,7 @@
 <layout name="layout" />
 
 <div class="col-xs-12">
-	<form id="form-xls" name="form-xls" action="/admin/upload/file" method="post" enctype="multipart/form-data">
+	<form id="form-xls" name="form-xls" action="/admin/uploadexam/file" method="post" enctype="multipart/form-data">
 	<div class="col-md-5 col-md-offset-4">
 		<div class="portlet box blue">
 			<div class="portlet-title">

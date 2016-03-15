@@ -5,19 +5,19 @@
 	<div class="classify-bd">
 		<ul class="pic-list">
 			<li>
-				<a href="/home/edu?page=score_analysis&type=junior&school=junior&grade=j4" target="_blank">
+				<a href="/home/scoreanalysis?type=junior&schoolname=小学" target="_blank">
 					<div class="pic"><img src="../Public/static/img/default_school.png" /></div>
 					<div class="txt">小学</div>
 				</a>
 			</li>
 			<li>
-				<a href="/home/edu?page=score_analysis&type=middle&school=middle&grade=m7" target="_blank">
+				<a href="/home/scoreanalysis?type=middle&schoolname=初中" target="_blank">
 					<div class="pic"><img src="../Public/static/img/default_school.png" /></div>
 					<div class="txt">初中</div>
 				</a>
 			</li>
 			<li>
-				<a href="/home/edu?page=score_analysis&type=high&school=high&grade=h1" target="_blank">
+				<a href="/home/scoreanalysis?type=high&schoolname=高中" target="_blank">
 					<div class="pic"><img src="../Public/static/img/default_school.png" /></div>
 					<div class="txt">高中</div>
 				</a>

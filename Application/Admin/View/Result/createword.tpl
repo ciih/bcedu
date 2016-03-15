@@ -11,7 +11,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td><a href="/admin/result/linkword?date=<%$date%>&course=<%$course%>" class="btn blue" target="_blank">下载报告</a></td>
+					<td><a href="/admin/result/linkword?examname=<%$examname%>&course=<%$course%>" class="btn blue" target="_blank">下载报告</a></td>
 				</tr>
 			</tbody>
 		</table>

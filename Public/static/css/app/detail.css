@@ -70,19 +70,87 @@
 	margin-right: 6px;
 	color: #8cd5ed;
 }
-.detail-hd .school-classify {
+
+/* school-classify */
+.school-classify {
 	float: right;
 	margin-top: 28px;
 }
-.detail-hd .school-classify .dropdown {
+.school-classify .dropdown {
 	float: left;
 	margin-right: 10px;
 }
-.detail-hd .school-classify .btn-search,
-.detail-hd .school-classify .btn-download {
+.school-classify .btn-search,
+.school-classify .btn-download {
 	margin-right: 10px;
+}
+
+/* detail-bd */
+.detail-bd .classify-hd {
+	overflow: hidden;
+	margin: 0 auto;
+	width: 91%;
+	border-bottom: 1px solid #dadada;
+}
+.detail-bd .classify-hd .glyphicon {
+    top: 3px;
+    margin-right: 6px;
+    color: #8cd5ed;
+}
+.detail-bd .classify-hd .title {
+	overflow: hidden;
+	float: left;
+	padding-left: 32px;
+	width: 232px;
+	height: 86px;
+	line-height: 86px;
+	font-size: 18px;
+	color: #9d9d9d;
+	text-shadow: 0 1px 0 #fff;
+}
+.detail-bd .classify-bd {
+	margin: 0 auto;
+	width: 86%;
+}
+.detail-bd .classify-bd .pic-list {
+	margin-right: -25px;
+	padding-top: 20px;
+}
+.detail-bd .classify-bd .pic-list li {
+	margin-right: 36px;
 }
 .detail-bd .loading {
 	margin: 20% auto;
 	width: 80%;
+}
+
+/* examinfo-list */
+.examinfo-list {
+	margin: 0 auto;
+	padding-top: 50px;
+    width: 92%;
+}
+.examinfo-list ul {
+	margin-right: -50px;
+}
+.examinfo-list li {
+	display: inline;
+	float: left;
+	margin-right: 42px;
+	width: 120px;
+	height: 220px;
+	text-align: center;
+}
+.examinfo-list li img {
+	display: block;
+	width: 120px;
+	height: 120px;
+}
+
+.detail-bd .table-section {
+	display: none;
+}
+
+.detail-bd .highcharts-section {
+	padding: 40px 20px;
 }

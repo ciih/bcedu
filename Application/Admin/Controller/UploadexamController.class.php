@@ -2,7 +2,7 @@
 namespace Admin\Controller;
 use Think\Controller;
 
-class UploadController extends Controller {
+class UploadexamController extends Controller {
     public function index(){
 
         if (!session('?username')) {
@@ -78,7 +78,8 @@ class UploadController extends Controller {
         if(count($failfiles) > 0) {// 上传错误提示错误信息
             $this->error('上传文件解压失败，请返回重新上传！');
         } else {
-            header('Location: /admin/upload/score?date='.$uploadDate.'&foldername='.$foldername);
+            unlink($filePath);  // remove temp file
+            header('Location: /admin/uploadexam/score?date='.$uploadDate.'&foldername='.$foldername);
         }
     }
 

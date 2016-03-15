@@ -22,7 +22,7 @@ class IndexController extends Controller {
 
 		if(!empty($data)) {
 			session('username',$data[0]['username']);
-			$this->redirect('/admin/upload');
+			$this->redirect('/admin/uploadexam');
 		} else {
 			$this->redirect('/admin');
 		}

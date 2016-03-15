@@ -80,7 +80,7 @@ class CreateWord {
      * 获取D值
      * @var array
      */
-    protected static $dVauleData;
+    protected static $dValueData;
 
     /**
      * 构造
@@ -132,8 +132,8 @@ class CreateWord {
         self::$choiceQuestionsAnalysisData = $examDataObj->getChoiceQuestionsAnalysisData();
 
         // 获取课程分析数据
-        $dVauleObj = new \Admin\Model\DVauleData(self::$schoolInfoData, self::$detailTableData, self::$studentScoreData, self::$scoreStatisticsData);
-        self::$dVauleData = $dVauleObj->getDVauleData();
+        $dValueObj = new \Admin\Model\DValueData(self::$schoolInfoData, self::$detailTableData, self::$studentScoreData, self::$scoreStatisticsData);
+        self::$dValueData = $dValueObj->getDValueData();
     }
 
     /**
@@ -144,21 +144,15 @@ class CreateWord {
     public function creatWordFile()
     {
 
-        $courseData = self::$courseList;
-
-        $folderArr = explode("_" , $foldername);
-
-        $courseTitle = implode('', $folderArr);
-
-        if($course != '数学(理)' && $course != '数学(文)') {
-            $courseName = str_split($course, 3);
+        if(self::$course != '数学(理)' && self::$course != '数学(文)') {
+            $courseName = str_split(self::$course, 3);
         }
-        elseif($course == '数学(理)') {
+        elseif(self::$course == '数学(理)') {
             $courseName[] = '数';
             $courseName[] = '学';
             $courseName[] = '(理)';
         }
-        elseif($course == '数学(文)') {
+        elseif(self::$course == '数学(文)') {
             $courseName[] = '数';
             $courseName[] = '学';
             $courseName[] = '(文)';
@@ -183,8 +177,7 @@ class CreateWord {
         $PHPWord->setDefaultFontName('楷体_GB2312');
         $PHPWord->setDefaultFontSize(14);
 
-        $wordSaveDate = $date;
-        $wordSaveDir = dirname(dirname(dirname(dirname(__FILE__))))."/Word/".$wordSaveDate."/";
+        $wordSaveDir = dirname(dirname(dirname(dirname(__FILE__))))."/Data/Word/".iconv("utf-8", "gb2312", self::$examInfoData['fullname'])."/";
 
         if (!file_exists($wordSaveDir))
         {
@@ -204,9 +197,9 @@ class CreateWord {
         $contentStyleFont = array('spacing'=>40, 'size'=>12);
         $contentStyleParagraph = array('spacing'=>60);
 
-        $tableTitleStyleFont = array('bold'=>true, 'size'=>9);
-        $tableStyleParagraph = array('align'=>'center');
+        $tableTitleStyleFont = array('size'=>10);
 
+        $choiceQuestionsContentStyleFont = array('spacing'=>180, 'size'=>12);
 
         $styleTable = array(
             'borderTopSize'=>6,
@@ -254,10 +247,11 @@ class CreateWord {
             'size'=>12
         ); 
 
+
         $PHPWord->addTableStyle('myTableStyle', $styleTable, $styleFirstRow);
 
         $section->addTextBreak(2);
-        $section->addText($courseTitle, $coverStyleFont, $coverStyleParagraph);
+        $section->addText(self::$examInfoData['fullname'], $coverStyleFont, $coverStyleParagraph);
         $section->addText('考试水平评价及教学质量分析报告', $coverStyleFont, $coverStyleParagraph);
         $section->addTextBreak(4);
 
@@ -265,25 +259,28 @@ class CreateWord {
             $section->addText($courseName[$i], $coverStyleFont, $coverStyleParagraph);
         }
 
-        $section->addTextBreak(10);
+        if(self::$course != '数学(理)' && self::$course != '数学(文)') {
+            $section->addTextBreak(12);
+        } else {
+            $section->addTextBreak(8);
+        }
 
         $section->addText('1.总体', $subTitleStyleFont, $subTitleStyleParagraph);
-        $section->addText('     1)本次语文科目考试共涉及'.count($studentData['averageScore']['schoolName']).'所学校，共计'.$studentData['averageScore']['amountStudentCount'].'人', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('     2) 该试卷总分为'.$studentData['detailTable']['totalScore'].'分，平均分为'.$studentData['averageScore']['amountAverageScore'].'分。', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('     3)试卷难度为'.$studentData['courseAnalysis']['difficulty'].'，区分度为'.$studentData['courseAnalysis']['distinguish'].'，信度为'.$studentData['courseAnalysis']['reliability'].'；', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('     4)数据表明试卷难度'.$studentData['courseAnalysis']['difficultyTxt'].'，且区分度'.$studentData['courseAnalysis']['distinguishTxt'].'，信度'.$studentData['courseAnalysis']['reliabilityTxt'].'。', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('     5)根据此次考试('.$studentData['courseAnalysis']['course'].'学科)所确定的优秀率、及格率，确定各水平线：', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('             1、优秀水平：>='.($studentData['scoreRate'][0]*100).'%', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('             2、及格水平：>='.($studentData['scoreRate'][1]*100).'%', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('             3、未及格：   <'.($studentData['scoreRate'][1]*100).'%', $contentStyleFont, $contentStyleParagraph);
+        $section->addText('     1)本次'.self::$course.'科目考试共涉及'.count(self::$schoolInfoData['schoolList']).'所学校，共计'.self::$comprehensiveIndicatorsData['totalStudentCount'].'人', $contentStyleFont, $contentStyleParagraph);
+        $section->addText('     2) 该试卷总分为'.self::$detailTableData['totalScore'].'分，平均分为'.self::$comprehensiveIndicatorsData['totalAverageScore'].'分。', $contentStyleFont, $contentStyleParagraph);
+        $section->addText('     3)试卷难度为'.self::$courseAnalysisData['difficulty'].'，区分度为'.self::$courseAnalysisData['distinguish'].'，信度为'.self::$courseAnalysisData['reliability'].'；', $contentStyleFont, $contentStyleParagraph);
+        $section->addText('     4)数据表明试卷难度'.self::$courseAnalysisData['difficultyTxt'].'，且区分度'.self::$courseAnalysisData['distinguishTxt'].'，信度'.self::$courseAnalysisData['reliabilityTxt'].'。', $contentStyleFont, $contentStyleParagraph);
+        $section->addText('     5)根据此次考试('.self::$course.'学科)所确定的优秀率、及格率，确定各水平线：', $contentStyleFont, $contentStyleParagraph);
+        $section->addText('             1、优秀水平：>='.(self::$baseScoreRateData[0]).'%', $contentStyleFont, $contentStyleParagraph);
+        $section->addText('             2、及格水平：>='.(self::$baseScoreRateData[1]).'%', $contentStyleFont, $contentStyleParagraph);
+        $section->addText('             3、未及格：   <'.(self::$baseScoreRateData[1]).'%', $contentStyleFont, $contentStyleParagraph);
         $section->addText('         本报告的评价对象为实际参加该次语文学科的考生。以下将根据考生在不同知识范畴、能力层级的作答表现，分析不同区域学校以及不同水平考生的水平。', $contentStyleFont, $contentStyleParagraph);
 
-        $section->addTextBreak(15);
+        $section->addTextBreak(17);
 
         $section->addText('2.全体及不同水平组考生分析', $subTitleStyleFont, $subTitleStyleParagraph);
         $section->addText('2.1总体水平概况分析', $subSmallTitleStyleFont);
-        $section->addText('表2.1 语文学科全区不同水平组考生的人数及所占百分比(%)', $tableTitleStyleFont, $tableStyleParagraph);
-
+        $section->addText('表2.1 '.self::$course.'学科全区不同水平组考生的人数及所占百分比(%)', $tableTitleStyleFont, $tableStyleParagraph);
 
         // Add tableTJRS（统计人数）
         $tableTJRS = $section->addTable('myTableStyle'); 
@@ -301,36 +298,34 @@ class CreateWord {
         $tableTJRS->addRow(300); 
          
         $tableTJRS->addCell(2200)->addText('优秀', $cellGreenStyleFont, $cellStyle); 
-        $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['count']['excellentCount'], $cellGreenStyleFont, $cellStyle); 
-        $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['rate']['excellentRate'], $cellGreenStyleFont, $cellStyle); 
-        $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['cumulativeCount']['excellentCount'], $cellGreenStyleFont, $cellStyle); 
-        $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['cumulativeRate']['excellentRate'], $cellGreenStyleFont, $cellStyle); 
+        $tableTJRS->addCell(2200)->addText(self::$studentScoreData['totalCount']['excellentCount'], $cellGreenStyleFont, $cellStyle); 
+        $tableTJRS->addCell(2200)->addText(self::$studentScoreData['totalRate']['excellentRate'], $cellGreenStyleFont, $cellStyle); 
+        $tableTJRS->addCell(2200)->addText(self::$studentScoreData['cumulativeCount']['excellentCount'], $cellGreenStyleFont, $cellStyle); 
+        $tableTJRS->addCell(2200)->addText(self::$studentScoreData['cumulativeRate']['excellentRate'], $cellGreenStyleFont, $cellStyle); 
          
         // Add row设置行高 
         $tableTJRS->addRow(300); 
          
         $tableTJRS->addCell(2200)->addText('及格', $cellRedStyleFont, $cellStyle); 
-        $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['count']['passCount'], $cellRedStyleFont, $cellStyle); 
-        $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['rate']['passRate'], $cellRedStyleFont, $cellStyle); 
-        $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['cumulativeCount']['passCount'], $cellRedStyleFont, $cellStyle); 
-        $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['cumulativeRate']['passRate'], $cellRedStyleFont, $cellStyle);
+        $tableTJRS->addCell(2200)->addText(self::$studentScoreData['totalCount']['passCount'], $cellRedStyleFont, $cellStyle); 
+        $tableTJRS->addCell(2200)->addText(self::$studentScoreData['totalRate']['passRate'], $cellRedStyleFont, $cellStyle); 
+        $tableTJRS->addCell(2200)->addText(self::$studentScoreData['cumulativeCount']['passCount'], $cellRedStyleFont, $cellStyle); 
+        $tableTJRS->addCell(2200)->addText(self::$studentScoreData['cumulativeRate']['passRate'], $cellRedStyleFont, $cellStyle);
         
         // Add row设置行高 
         $tableTJRS->addRow(300); 
          
         $tableTJRS->addCell(2200)->addText('未及格', $cellPurpleStyleFont, $cellStyle); 
-        $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['count']['failCount'], $cellPurpleStyleFont, $cellStyle); 
-        $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['rate']['failRate'], $cellPurpleStyleFont, $cellStyle); 
-        $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['cumulativeCount']['failCount'], $cellPurpleStyleFont, $cellStyle); 
-        $tableTJRS->addCell(2200)->addText($studentData['studentCountRate']['cumulativeRate']['failRate'], $cellPurpleStyleFont, $cellStyle);
+        $tableTJRS->addCell(2200)->addText(self::$studentScoreData['totalCount']['failCount'], $cellPurpleStyleFont, $cellStyle); 
+        $tableTJRS->addCell(2200)->addText(self::$studentScoreData['totalRate']['failRate'], $cellPurpleStyleFont, $cellStyle); 
+        $tableTJRS->addCell(2200)->addText(self::$studentScoreData['cumulativeCount']['failCount'], $cellPurpleStyleFont, $cellStyle); 
+        $tableTJRS->addCell(2200)->addText(self::$studentScoreData['cumulativeRate']['failRate'], $cellPurpleStyleFont, $cellStyle);
 
         $section->addTextBreak();
 
         $section->addText('         表1.1的数据表明：', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('         1)  本次考试共有'.$studentData['studentCountRate']['count']['excellentCount'].'名考生达到优秀水平，占全体考生的'.$studentData['studentCountRate']['rate']['excellentRate'].'%。共有'.$studentData['studentCountRate']['count']['passCount'].'名考生达到及格水平，占全体考生的'.$studentData['studentCountRate']['rate']['passRate'].'%。累计比例为'.$studentData['studentCountRate']['cumulativeRate']['passRate'].'%', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('         2)  本次考试共有'.$studentData['studentCountRate']['count']['failCount'].'名考生未达到及格水平，比例为'.$studentData['studentCountRate']['rate']['failRate'].'%。', $contentStyleFont, $contentStyleParagraph);
-    
-
+        $section->addText('         1)  本次考试共有'.self::$studentScoreData['totalCount']['excellentCount'].'名考生达到优秀水平，占全体考生的'.self::$studentScoreData['totalRate']['excellentRate'].'%。共有'.self::$studentScoreData['totalCount']['passCount'].'名考生达到及格水平，占全体考生的'.self::$studentScoreData['totalRate']['passRate'].'%。累计比例为'.self::$studentScoreData['cumulativeRate']['passRate'].'%', $contentStyleFont, $contentStyleParagraph);
+        $section->addText('         2)  本次考试共有'.self::$studentScoreData['totalCount']['failCount'].'名考生未达到及格水平，比例为'.self::$studentScoreData['totalRate']['failRate'].'%。', $contentStyleFont, $contentStyleParagraph);
         $section->addText('2.2 全体及不用水平组考生各知识范畴水平分析', $subSmallTitleStyleFont);
         $section->addText('表2.2全体及不同水平组考生各知识范畴得分率比较', $tableTitleStyleFont, $tableStyleParagraph);
 
@@ -347,109 +342,92 @@ class CreateWord {
         $tableZSFC->addCell(1600)->addText('及格', $cellGreenStyleFont, $cellStyle); 
         $tableZSFC->addCell(1600)->addText('未及格', $cellRedStyleFont, $cellStyle); 
 
-        $examTotalRate = array();
-        $examExcellentRate = array();
-        $examPassRate = array();
-        $examFailRate = array();
+        $examScopeList = self::$scoreStatisticsData['examScopeTotalRate'];
+        $examScopeScore = self::$detailTableData['examScopeTotalScore'];
 
-        $examExcellentRateCount = array();
-        $examExcellentRateDiffCount = array('知识范畴',0);
-        $examPassRateCount = array();
-        $examPassRateDiffCount = array('知识范畴',0);
-        $examFailRateCount = array();
-        $examFailRateDiffCount = array('知识范畴',0);
-
-        $examNameCount = $studentData['detailTable']['examName'];
-        $typeNameCount = $studentData['detailTable']['typeName'];
-
-        foreach ($studentData['scoreStatisticsRate']['exam'] as $key => $name) {
+        foreach ($examScopeList as $examScopeName => $scorerRate) {
             $tableZSFC->addRow(300); 
              
-            $tableZSFC->addCell(2500)->addText($key, $cellStyleFont, $cellStyle); 
-            $tableZSFC->addCell(1600)->addText($studentData['detailTable']['examScore'][$key], $cellStyleFont, $cellStyle); 
-            $tableZSFC->addCell(1600)->addText($name['total']['totalRate'], $cellStyleFont, $cellStyle); 
-            $tableZSFC->addCell(1600)->addText($name['total']['excellentRate'], $cellBlueStyleFont, $cellStyle); 
-            $tableZSFC->addCell(1600)->addText($name['total']['passRate'], $cellGreenStyleFont, $cellStyle); 
-            $tableZSFC->addCell(1600)->addText($name['total']['failRate'], $cellRedStyleFont, $cellStyle);
+            $tableZSFC->addCell(2500)->addText($examScopeName, $cellStyleFont, $cellStyle); 
+            $tableZSFC->addCell(1600)->addText($examScopeScore[$examScopeName], $cellStyleFont, $cellStyle); 
+            $tableZSFC->addCell(1600)->addText($scorerRate['totalRate'], $cellStyleFont, $cellStyle); 
+            $tableZSFC->addCell(1600)->addText($scorerRate['excellentRate'], $cellBlueStyleFont, $cellStyle); 
+            $tableZSFC->addCell(1600)->addText($scorerRate['passRate'], $cellGreenStyleFont, $cellStyle); 
+            $tableZSFC->addCell(1600)->addText($scorerRate['failRate'], $cellRedStyleFont, $cellStyle);
 
-            $examTotalRate[$key] = $name['total']['totalRate'];
-            $examExcellentRate[$key] = $name['total']['excellentRate'];
-            $examPassRate[$key] = $name['total']['passRate'];
-            $examFailRate[$key] = $name['total']['failRate'];
-
-            if($name['total']['excellentRate'] <= $name['total']['totalRate']) {
-                $examExcellentRateCount[] = $key;
+            $examScopeTotalRate[$examScopeName] = $scorerRate['totalRate'];
+            if($scorerRate['excellentRate'] > $scorerRate['totalRate']) {
+                $examScopeTotalExcellentRateCount++;
+                $examScopeExcellentRateDiffCount[$examScopeName] = $scorerRate['excellentRate'] - $scorerRate['totalRate'];
             }
-            else {
-                $examDiffScore = $name['total']['excellentRate'] - $name['total']['totalRate'];
-                if($examExcellentRateDiffCount[1] < $examDiffScore) {
-                    $examExcellentRateDiffCount[0] = $key;
-                    $examExcellentRateDiffCount[1] = $examDiffScore;
-                }
+            if($scorerRate['passRate'] > $scorerRate['totalRate']) {
+                $examScopeTotalpassRateCount++;
             }
-
-            if($name['total']['passRate'] <= $name['total']['totalRate']) {
-                $examPassRateCount[] = $key;
+            if($scorerRate['failRate'] < $scorerRate['totalRate']) {
+                $examScopeTotalfailRateCount++;
+                $examScopefailRateDiffCount[$examScopeName] = $scorerRate['totalRate'] - $scorerRate['failRate'];
             }
-            else {
-                $examDiffScore = $name['total']['passRate'] - $name['total']['totalRate'];
-                if($examPassRateDiffCount[1] < $examDiffScore) {
-                    $examPassRateDiffCount[0] = $key;
-                    $examPassRateDiffCount[1] = $examDiffScore;
-                }
-            }
-
-            if($name['total']['failRate'] > $name['total']['totalRate']) {
-                $examFailRateCount[] = $key;
-            }
-            else {
-                $examDiffScore = $name['total']['totalRate'] - $name['total']['failRate'];
-                if($examFailRateDiffCount[1] < $examDiffScore) {
-                    $examFailRateDiffCount[0] = $key;
-                    $examFailRateDiffCount[1] = $examDiffScore;
-                }
-            }
-
         }
 
-        arsort($examTotalRate);
-        arsort($examExcellentRate);
-        arsort($examPassRate);
-        arsort($examFailRate);
-
-        $section->addTextBreak(4);
-
-        $examNameList = implode('、', $studentData['detailTable']['examName']);
-        $examNameScore = implode('分、', $studentData['detailTable']['examScore']);
-        // $examNameScore = substr($examNameScore, 0, -1).'分';
-        $examNameScore = $examNameScore.'分';
-        arsort($studentData['detailTable']['examScore']);
-
+        $section->addTextBreak();
 
         $section->addText('     由以上图表的数据分析表明：', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('     1）  本科目考试此次共包含'.count($studentData['detailTable']['examName']).'个知识范畴('.$examNameList.')，所占比值分别为'.$examNameScore.'。其中，'.array_keys($studentData['detailTable']['examScore'])[0].'该知识范畴所占比重最大(详见图2.1)。', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('     2）  根据全体考生作答表现可知，得分率最高为'.array_keys($examTotalRate)[0].'('.$examTotalRate[array_keys($examTotalRate)[0]].')；其次为'.array_keys($examTotalRate)[1].'('.$examTotalRate[array_keys($examTotalRate)[1]].');最低的为'.array_keys($examTotalRate)[count($examTotalRate)-1].'，得分率为'.$examTotalRate[array_keys($examTotalRate)[count($examTotalRate)-1]].'。', $contentStyleFont, $contentStyleParagraph);
-        if(count($examExcellentRateCount) > 0){
-            $txt = '部分高于';
+    
+        if(count(self::$detailTableData['examScopeName']) <= 6) {
+            foreach (self::$detailTableData['examScopeName'] as $key => $name) {
+                if($key < 5) {
+                    $examScopeTxt = $examScopeTxt.$name.'('.$examScopeScore[$name].'分)、';
+                }
+                if($key == 5) {
+                    $examScopeTxt = $examScopeTxt.$name.'('.$examScopeScore[$name].'分)。';
+                }
+            }
+        } else {
+            foreach (self::$detailTableData['examScopeName'] as $key => $name) {
+                if($key < 5) {
+                    $examScopeTxt = $examScopeTxt.$name.'('.$examScopeScore[$name].'分)、';
+                }
+                if($key == 5) {
+                    $examScopeTxt = $examScopeTxt.$name.'('.$examScopeScore[$name].'分)等。';
+                }
+            }
         }
-        else {
+
+        arsort($examScopeScore);
+        arsort($examScopeTotalRate);
+        arsort($examScopeExcellentRateDiffCount);
+        arsort($examScopefailRateDiffCount);
+
+        $section->addText('     1）  本科目考试此次共包含'.count(self::$detailTableData['examScopeName']).'个知识范畴，包括：'.$examScopeTxt.'其中，'.array_keys($examScopeScore)[0].'('.array_values($examScopeScore)[0].'分)该知识范畴所占比重最大。', $contentStyleFont, $contentStyleParagraph);
+
+        $section->addText('     2）  根据全体考生作答表现可知，得分率最高为'.array_keys($examScopeTotalRate)[0].'('.array_values($examScopeTotalRate)[0].')；其次为'.array_keys($examScopeTotalRate)[1].'('.array_values($examScopeTotalRate)[1].');最低的为'.array_keys($examScopeTotalRate)[count($examScopeTotalRate)-1].'，得分率为'.array_values($examScopeTotalRate)[count($examScopeTotalRate)-1].'。', $contentStyleFont, $contentStyleParagraph);
+
+        if($examScopeTotalExcellentRateCount == count(self::$detailTableData['examScopeName'])){
             $txt = '均高于';
         }
-        $section->addText('     3）  该科达到优秀水平考生的各知识范畴的得分率'.$txt.'全体考生平均水平(详见图2.2)；其中'.$examExcellentRateDiffCount[0].'高于全体水平最多，得分率相差'.$examExcellentRateDiffCount[1].'。', $contentStyleFont, $contentStyleParagraph);
-        if(count($examPassRateCount) > 0){
+        else {
             $txt = '部分高于';
         }
-        else {
+
+        $section->addText('     3）  该科达到优秀水平考生的各知识范畴的得分率'.$txt.'全体考生平均水平；其中'.array_keys($examScopeExcellentRateDiffCount)[0].'高于全体水平最多，得分率相差'.array_values($examScopeExcellentRateDiffCount)[0].'。', $contentStyleFont, $contentStyleParagraph);
+
+        if($examScopeTotalpassRateCount == count(self::$detailTableData['examScopeName'])){
             $txt = '均高于';
         }
+        else {
+            $txt = '部分高于';
+        }
+
         $section->addText('     4）  达到及格水平考生的各知识范畴的得分率'.$txt.'全区平均水平。', $contentStyleFont, $contentStyleParagraph);
-        if(count($examFailRateCount) > 0){
-            $txt = '部分低于';
-        }
-        else {
+
+        if($examScopeTotalfailRateCount == count(self::$detailTableData['examScopeName'])){
             $txt = '均低于';
         }
-        $section->addText('     5） 未及格考生水平组的各知识范畴得分率'.$txt.'全区平均水平；其中'.$examFailRateDiffCount[0].'低于全体水平最多，得分率相差'.$examFailRateDiffCount[1].'。', $contentStyleFont, $contentStyleParagraph);
+        else {
+            $txt = '部分低于';
+        }
+
+        $section->addText('     5） 未及格考生水平组的各知识范畴得分率'.$txt.'全区平均水平；其中'.array_keys($examScopefailRateDiffCount)[0].'低于全体水平最多，得分率相差'.array_values($examScopefailRateDiffCount)[0].'。', $contentStyleFont, $contentStyleParagraph);
 
 
         $section->addText('2.3全体及不用水平组考生各能力层级水平分析', $subSmallTitleStyleFont);
@@ -468,110 +446,94 @@ class CreateWord {
         $tableNLCJ->addCell(1600)->addText('及格', $cellGreenStyleFont, $cellStyle); 
         $tableNLCJ->addCell(1600)->addText('未及格', $cellRedStyleFont, $cellStyle); 
 
-        $typeTotalRate = array();
-        $typeExcellentRate = array();
-        $typePassRate = array();
-        $typeFailRate = array();
+        $examMoldList = self::$scoreStatisticsData['examMoldTotalRate'];
+        $examMoldScore = self::$detailTableData['examMoldTotalScore'];
 
-        $typeExcellentRateCount = array();
-        $typeExcellentRateDiffCount = array('能力层级',0);
-        $typePassRateCount = array();
-        $typePassRateDiffCount = array('能力层级',0);
-        $typeFailRateCount = array();
-        $typeFailRateDiffCount = array('能力层级',0);
-
-        foreach ($studentData['scoreStatisticsRate']['type'] as $key => $name) {
+        foreach ($examMoldList as $examMoldName => $scorerRate) {
             $tableNLCJ->addRow(300); 
              
-            $tableNLCJ->addCell(2500)->addText($key, $cellStyleFont, $cellStyle); 
-            $tableNLCJ->addCell(1600)->addText($studentData['detailTable']['typeScore'][$key], $cellStyleFont, $cellStyle); 
-            $tableNLCJ->addCell(1600)->addText($name['total']['totalRate'], $cellStyleFont, $cellStyle); 
-            $tableNLCJ->addCell(1600)->addText($name['total']['excellentRate'], $cellBlueStyleFont, $cellStyle); 
-            $tableNLCJ->addCell(1600)->addText($name['total']['passRate'], $cellGreenStyleFont, $cellStyle); 
-            $tableNLCJ->addCell(1600)->addText($name['total']['failRate'], $cellRedStyleFont, $cellStyle);
+            $tableNLCJ->addCell(2500)->addText($examMoldName, $cellStyleFont, $cellStyle); 
+            $tableNLCJ->addCell(1600)->addText($examMoldScore[$examMoldName], $cellStyleFont, $cellStyle); 
+            $tableNLCJ->addCell(1600)->addText($scorerRate['totalRate'], $cellStyleFont, $cellStyle); 
+            $tableNLCJ->addCell(1600)->addText($scorerRate['excellentRate'], $cellBlueStyleFont, $cellStyle); 
+            $tableNLCJ->addCell(1600)->addText($scorerRate['passRate'], $cellGreenStyleFont, $cellStyle); 
+            $tableNLCJ->addCell(1600)->addText($scorerRate['failRate'], $cellRedStyleFont, $cellStyle);
 
-            $typeTotalRate[$key] = $name['total']['totalRate'];
-            $typeExcellentRate[$key] = $name['total']['excellentRate'];
-            $typePassRate[$key] = $name['total']['passRate'];
-            $typeFailRate[$key] = $name['total']['failRate'];
-
-            if($name['total']['excellentRate'] <= $name['total']['totalRate']) {
-                $typeExcellentRateCount[] = $key;
+            $examMoldTotalRate[$examMoldName] = $scorerRate['totalRate'];
+            if($scorerRate['excellentRate'] > $scorerRate['totalRate']) {
+                $examMoldTotalExcellentRateCount++;
+                $examMoldExcellentRateDiffCount[$examMoldName] = $scorerRate['excellentRate'] - $scorerRate['totalRate'];
             }
-            else {
-                $typeDiffScore = $name['total']['excellentRate'] - $name['total']['totalRate'];
-                if($typeExcellentRateDiffCount[1] < $typeDiffScore) {
-                    $typeExcellentRateDiffCount[0] = $key;
-                    $typeExcellentRateDiffCount[1] = $typeDiffScore;
-                }
+            if($scorerRate['passRate'] > $scorerRate['totalRate']) {
+                $examMoldTotalpassRateCount++;
             }
-
-            if($name['total']['passRate'] <= $name['total']['totalRate']) {
-                $typePassRateCount[] = $key;
-            }
-            else {
-                $typeDiffScore = $name['total']['passRate'] - $name['total']['totalRate'];
-                if($typePassRateDiffCount[1] < $typeDiffScore) {
-                    $typePassRateDiffCount[0] = $key;
-                    $typePassRateDiffCount[1] = $typeDiffScore;
-                }
-            }
-
-            if($name['total']['failRate'] > $name['total']['totalRate']) {
-                $typeFailRateCount[] = $key;
-            }
-            else {
-                $typeDiffScore = $name['total']['totalRate'] - $name['total']['failRate'];
-                if($typeFailRateDiffCount[1] < $typeDiffScore) {
-                    $typeFailRateDiffCount[0] = $key;
-                    $typeFailRateDiffCount[1] = $typeDiffScore;
-                }
+            if($scorerRate['failRate'] < $scorerRate['totalRate']) {
+                $examMoldTotalfailRateCount++;
+                $examMoldfailRateDiffCount[$examMoldName] = $scorerRate['totalRate'] - $scorerRate['failRate'];
             }
         }
 
-        arsort($typeTotalRate);
-        arsort($typeExcellentRate);
-        arsort($typePassRate);
-        arsort($typeFailRate);
-
-        $section->addTextBreak(4);
-
-        $typeNameList = implode('、', $studentData['detailTable']['typeName']);
-        $typeNameScore = implode('分、', $studentData['detailTable']['typeScore']);
-        // $typeNameScore = substr($typeNameScore, 0, -1).'分';
-        $typeNameScore = $typeNameScore.'分';
-        arsort($studentData['detailTable']['tpeScore']);
-
+        $section->addTextBreak();
 
         $section->addText('     由以上图表的数据分析表明：', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('     1）  本科目考试此次共包含'.count($studentData['detailTable']['typeName']).'能力层级('.$typeNameList.')，所占比值分别为'.$typeNameScore.'。其中，'.array_keys($studentData['detailTable']['typeScore'])[0].'该能力层级所占比重最大(详见图2.3)。', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('     2）  根据全体考生作答表现可知，得分率最高为'.array_keys($typeTotalRate)[0].'('.$typeTotalRate[array_keys($typeTotalRate)[0]].')；其次为'.array_keys($typeTotalRate)[1].'('.$typeTotalRate[array_keys($typeTotalRate)[1]].');最低的为'.array_keys($typeTotalRate)[count($typeTotalRate)-1].'，得分率为'.$typeTotalRate[array_keys($typeTotalRate)[count($typeTotalRate)-1]].'。', $contentStyleFont, $contentStyleParagraph);
-        if(count($typeExcellentRateCount) > 0){
-            $txt = '部分高于';
+    
+        if(count(self::$detailTableData['examMoldName']) <= 6) {
+            foreach (self::$detailTableData['examMoldName'] as $key => $name) {
+                if($key < 5) {
+                    $examMoldTxt = $examMoldTxt.$name.'('.$examMoldScore[$name].'分)、';
+                }
+                if($key == 5) {
+                    $examMoldTxt = $examMoldTxt.$name.'('.$examMoldScore[$name].'分)。';
+                }
+            }
+        } else {
+            foreach (self::$detailTableData['examMoldName'] as $key => $name) {
+                if($key < 5) {
+                    $examMoldTxt = $examMoldTxt.$name.'('.$examMoldScore[$name].'分)、';
+                }
+                if($key == 5) {
+                    $examMoldTxt = $examMoldTxt.$name.'('.$examMoldScore[$name].'分)等。';
+                }
+            }
         }
-        else {
+
+        arsort($examMoldScore);
+        arsort($examMoldTotalRate);
+        arsort($examMoldExcellentRateDiffCount);
+        arsort($examMoldfailRateDiffCount);
+
+        $section->addText('     1）  本科目考试此次共包含'.count(self::$detailTableData['examMoldName']).'个能力层级，包括：'.$examMoldTxt.'其中，'.array_keys($examMoldScore)[0].'('.array_values($examMoldScore)[0].'分)该能力层级所占比重最大。', $contentStyleFont, $contentStyleParagraph);
+
+        $section->addText('     2）  根据全体考生作答表现可知，得分率最高为'.array_keys($examMoldTotalRate)[0].'('.array_values($examMoldTotalRate)[0].')；其次为'.array_keys($examMoldTotalRate)[1].'('.array_values($examMoldTotalRate)[1].');最低的为'.array_keys($examMoldTotalRate)[count($examMoldTotalRate)-1].'，得分率为'.array_values($examMoldTotalRate)[count($examMoldTotalRate)-1].'。', $contentStyleFont, $contentStyleParagraph);
+
+        if($examMoldTotalExcellentRateCount == count(self::$detailTableData['examMoldName'])){
             $txt = '均高于';
         }
-        $section->addText('     3）  该科达到优秀水平考生的各能力层级的得分率'.$txt.'全体考生平均水平(详见图2.4)；其中'.$typeExcellentRateDiffCount[0].'高于全体水平最多，得分率相差'.$typeExcellentRateDiffCount[1].'。', $contentStyleFont, $contentStyleParagraph);
-        if(count($typePassRateCount) > 0){
+        else {
             $txt = '部分高于';
         }
-        else {
+
+        $section->addText('     3）  该科达到优秀水平考生的各能力层级的得分率'.$txt.'全体考生平均水平；其中'.array_keys($examMoldExcellentRateDiffCount)[0].'高于全体水平最多，得分率相差'.array_values($examMoldExcellentRateDiffCount)[0].'。', $contentStyleFont, $contentStyleParagraph);
+
+        if($examMoldTotalpassRateCount == count(self::$detailTableData['examMoldName'])){
             $txt = '均高于';
         }
+        else {
+            $txt = '部分高于';
+        }
+
         $section->addText('     4）  达到及格水平考生的各能力层级的得分率'.$txt.'全区平均水平。', $contentStyleFont, $contentStyleParagraph);
-        if(count($typeFailRateCount) > 0){
-            $txt = '部分低于';
-        }
-        else {
+
+        if($examMoldTotalfailRateCount == count(self::$detailTableData['examMoldName'])){
             $txt = '均低于';
         }
-        $section->addText('     5） 未及格考生水平组的各能力层级得分率'.$txt.'全区平均水平；其中'.$typeFailRateDiffCount[0].'低于全体水平最多，得分率相差'.$typeFailRateDiffCount[1].'。', $contentStyleFont, $contentStyleParagraph);
+        else {
+            $txt = '部分低于';
+        }
 
-        $section->addText('3.各校得分率分析比较', $subTitleStyleFont, $subTitleStyleParagraph);
-        $section->addText('3.1 各校知识范畴得分率比较分析', $subSmallTitleStyleFont);
-        $section->addText('表3.1 各校对比全区知识范畴得分率对比表', $tableTitleStyleFont, $tableStyleParagraph);
+        $section->addText('     5） 未及格考生水平组的各能力层级得分率'.$txt.'全区平均水平；其中'.array_keys($examMoldfailRateDiffCount)[0].'低于全体水平最多，得分率相差'.array_values($examMoldfailRateDiffCount)[0].'。', $contentStyleFont, $contentStyleParagraph);
 
+        $section->addTextBreak();
 
         // Add tableSchoolZSFC（学校知识范畴）
         $tableSchoolZSFC = $section->addTable('myTableStyle'); 
@@ -586,6 +548,340 @@ class CreateWord {
         $tableSchoolZSFC->addCell(1600)->addText('优秀', $cellBlueStyleFont, $cellStyle); 
         $tableSchoolZSFC->addCell(1600)->addText('及格', $cellGreenStyleFont, $cellStyle); 
         $tableSchoolZSFC->addCell(1600)->addText('未及格', $cellRedStyleFont, $cellStyle); 
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
+            foreach (self::$detailTableData['examScopeName'] as $key => $examScopeName) {
+                if($key != count(self::$detailTableData['examScopeName']) - 1) {
+                    $cellStyleValue = '';
+                } else {
+                    $cellStyleValue = $cellStyleLast;
+                }
+                $tableSchoolZSFC->addRow(300); 
+                
+                $tableSchoolZSFC->addCell(2500, $cellStyleValue)->addText($schoolName, $cellStyleFont, $cellStyle); 
+                $tableSchoolZSFC->addCell(2500, $cellStyleValue)->addText($examScopeName, $cellStyleFont, $cellStyle); 
+
+                $tableSchoolZSFC->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate'], $cellStyleFont, $cellStyle);
+
+                if(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['totalRate'] == 0 || self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['totalRate'] == self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
+                    $cellStyleFontColor = $cellStyleFont;
+                } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['totalRate'] > self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
+                    $cellStyleFontColor = $cellRedStyleFont;
+                } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['totalRate'] < self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
+                    $cellStyleFontColor = $cellGreenStyleFont;
+                }
+
+                if(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['totalScore'] >= 0.5) {
+                    $dValueTxt = '(+++)';
+                } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['totalScore'] >= 0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['totalScore'] < 0.5) {
+                    $dValueTxt = '(+)';
+                } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['totalScore'] <= -0.5) {
+                    $dValueTxt = '(---)';
+                } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['totalScore'] <= -0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['totalScore'] > -0.5) {
+                    $dValueTxt = '(-)';
+                } else {
+                    $dValueTxt = '';
+                }
+                $tableSchoolZSFC->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['totalRate'].$dValueTxt, $cellStyleFontColor, $cellStyle);
+
+                if(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['excellentRate'] == 0 || self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['excellentRate'] == self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
+                    $cellStyleFontColor = $cellStyleFont;
+                } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['excellentRate'] > self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
+                    $cellStyleFontColor = $cellRedStyleFont;
+                } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['excellentRate'] < self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
+                    $cellStyleFontColor = $cellGreenStyleFont;
+                }
+                
+                if(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['excellentScore'] >= 0.5) {
+                    $dValueTxt = '(+++)';
+                } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['excellentScore'] >= 0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['excellentScore'] < 0.5) {
+                    $dValueTxt = '(+)';
+                } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['excellentScore'] <= -0.5) {
+                    $dValueTxt = '(---)';
+                } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['excellentScore'] <= -0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['excellentScore'] > -0.5) {
+                    $dValueTxt = '(-)';
+                } else {
+                    $dValueTxt = '';
+                }
+                $tableSchoolZSFC->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['excellentRate'].$dValueTxt, $cellStyleFontColor, $cellStyle); 
+
+                if(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['passRate'] == 0 || self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['passRate'] == self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
+                    $cellStyleFontColor = $cellStyleFont;
+                } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['passRate'] > self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
+                    $cellStyleFontColor = $cellRedStyleFont;
+                } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['passRate'] < self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
+                    $cellStyleFontColor = $cellGreenStyleFont;
+                }
+                
+                if(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['passScore'] >= 0.5) {
+                    $dValueTxt = '(+++)';
+                } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['passScore'] >= 0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['passScore'] < 0.5) {
+                    $dValueTxt = '(+)';
+                } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['passScore'] <= -0.5) {
+                    $dValueTxt = '(---)';
+                } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['passScore'] <= -0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['passScore'] > -0.5) {
+                    $dValueTxt = '(-)';
+                } else {
+                    $dValueTxt = '';
+                }
+                $tableSchoolZSFC->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['passRate'].$dValueTxt, $cellStyleFontColor, $cellStyle); 
+
+                if(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['failRate'] == 0 || self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['failRate'] == self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
+                    $cellStyleFontColor = $cellStyleFont;
+                } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['failRate'] > self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
+                    $cellStyleFontColor = $cellRedStyleFont;
+                } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['failRate'] < self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
+                    $cellStyleFontColor = $cellGreenStyleFont;
+                }
+                
+                if(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['failScore'] >= 0.5) {
+                    $dValueTxt = '(+++)';
+                } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['failScore'] >= 0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['failScore'] < 0.5) {
+                    $dValueTxt = '(+)';
+                } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['failScore'] <= -0.5) {
+                    $dValueTxt = '(---)';
+                } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['failScore'] <= -0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['failScore'] > -0.5) {
+                    $dValueTxt = '(-)';
+                } else {
+                    $dValueTxt = '';
+                }
+                $tableSchoolZSFC->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['failRate'].$dValueTxt, $cellStyleFontColor, $cellStyle);
+            }
+        }
+
+        $section->addText('     表3.1的数据表明：', $contentStyleFont, $contentStyleParagraph);
+        $section->addText('     不同学校全体及不同水平组考生各知识范畴作答表现存在差异，具体如下：', $contentStyleFont, $contentStyleParagraph);
+
+
+
+        $section->addTextBreak();
+
+
+        // Add tableSchoolNLCJ（学校能力层级）
+        $tableSchoolNLCJ = $section->addTable('myTableStyle'); 
+
+        // Add row设置行高 
+        $tableSchoolNLCJ->addRow(300); 
+         
+        $tableSchoolNLCJ->addCell(2500)->addText('学校', $cellStyleFont, $cellStyle); 
+        $tableSchoolNLCJ->addCell(2500)->addText('能力层级', $cellStyleFont, $cellStyle); 
+        $tableSchoolNLCJ->addCell(1600)->addText('全区', $cellStyleFont, $cellStyle); 
+        $tableSchoolNLCJ->addCell(1600)->addText('全体', $cellStyleFont, $cellStyle); 
+        $tableSchoolNLCJ->addCell(1600)->addText('优秀', $cellBlueStyleFont, $cellStyle); 
+        $tableSchoolNLCJ->addCell(1600)->addText('及格', $cellGreenStyleFont, $cellStyle); 
+        $tableSchoolNLCJ->addCell(1600)->addText('未及格', $cellRedStyleFont, $cellStyle); 
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
+            foreach (self::$detailTableData['examMoldName'] as $key => $examMoldName) {
+                if($key != count(self::$detailTableData['examMoldName']) - 1) {
+                    $cellStyleValue = '';
+                } else {
+                    $cellStyleValue = $cellStyleLast;
+                }
+                $tableSchoolNLCJ->addRow(300); 
+                
+                $tableSchoolNLCJ->addCell(2500, $cellStyleValue)->addText($schoolName, $cellStyleFont, $cellStyle); 
+                $tableSchoolNLCJ->addCell(2500, $cellStyleValue)->addText($examMoldName, $cellStyleFont, $cellStyle);
+                $tableSchoolNLCJ->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate'], $cellStyleFont, $cellStyle);
+
+                if(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['totalRate'] == 0 || self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['totalRate'] == self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
+                    $cellStyleFontColor = $cellStyleFont;
+                } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['totalRate'] > self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
+                    $cellStyleFontColor = $cellRedStyleFont;
+                } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['totalRate'] < self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
+                    $cellStyleFontColor = $cellGreenStyleFont;
+                }
+
+                if(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['totalScore'] >= 0.5) {
+                    $dValueTxt = '(+++)';
+                } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['totalScore'] >= 0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['totalScore'] < 0.5) {
+                    $dValueTxt = '(+)';
+                } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['totalScore'] <= -0.5) {
+                    $dValueTxt = '(---)';
+                } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['totalScore'] <= -0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['totalScore'] > -0.5) {
+                    $dValueTxt = '(-)';
+                } else {
+                    $dValueTxt = '';
+                }
+                $tableSchoolNLCJ->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['totalRate'].$dValueTxt, $cellStyleFontColor, $cellStyle);
+
+                if(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['excellentRate'] == 0 || self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['excellentRate'] == self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
+                    $cellStyleFontColor = $cellStyleFont;
+                } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['excellentRate'] > self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
+                    $cellStyleFontColor = $cellRedStyleFont;
+                } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['excellentRate'] < self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
+                    $cellStyleFontColor = $cellGreenStyleFont;
+                }
+                
+                if(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['excellentScore'] >= 0.5) {
+                    $dValueTxt = '(+++)';
+                } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['excellentScore'] >= 0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['excellentScore'] < 0.5) {
+                    $dValueTxt = '(+)';
+                } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['excellentScore'] <= -0.5) {
+                    $dValueTxt = '(---)';
+                } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['excellentScore'] <= -0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['excellentScore'] > -0.5) {
+                    $dValueTxt = '(-)';
+                } else {
+                    $dValueTxt = '';
+                }
+                $tableSchoolNLCJ->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['excellentRate'].$dValueTxt, $cellStyleFontColor, $cellStyle); 
+
+                if(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['passRate'] == 0 || self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['passRate'] == self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
+                    $cellStyleFontColor = $cellStyleFont;
+                } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['passRate'] > self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
+                    $cellStyleFontColor = $cellRedStyleFont;
+                } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['passRate'] < self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
+                    $cellStyleFontColor = $cellGreenStyleFont;
+                }
+                
+                if(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['passScore'] >= 0.5) {
+                    $dValueTxt = '(+++)';
+                } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['passScore'] >= 0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['passScore'] < 0.5) {
+                    $dValueTxt = '(+)';
+                } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['passScore'] <= -0.5) {
+                    $dValueTxt = '(---)';
+                } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['passScore'] <= -0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['passScore'] > -0.5) {
+                    $dValueTxt = '(-)';
+                } else {
+                    $dValueTxt = '';
+                }
+                $tableSchoolNLCJ->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['passRate'].$dValueTxt, $cellStyleFontColor, $cellStyle); 
+
+                if(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['failRate'] == 0 || self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['failRate'] == self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
+                    $cellStyleFontColor = $cellStyleFont;
+                } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['failRate'] > self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
+                    $cellStyleFontColor = $cellRedStyleFont;
+                } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['failRate'] < self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
+                    $cellStyleFontColor = $cellGreenStyleFont;
+                }
+                
+                if(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['failScore'] >= 0.5) {
+                    $dValueTxt = '(+++)';
+                } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['failScore'] >= 0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['failScore'] < 0.5) {
+                    $dValueTxt = '(+)';
+                } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['failScore'] <= -0.5) {
+                    $dValueTxt = '(---)';
+                } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['failScore'] <= -0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['failScore'] > -0.5) {
+                    $dValueTxt = '(-)';
+                } else {
+                    $dValueTxt = '';
+                }
+                $tableSchoolNLCJ->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['failRate'].$dValueTxt, $cellStyleFontColor, $cellStyle);
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        $section->addTextBreak(2);
+
+
+        $section->addText('4.全体考生客观题水平分析', $subTitleStyleFont, $subTitleStyleParagraph);
+        $section->addText('表4.1 全区考生语文科目客观题分析表', $tableTitleStyleFont, $tableStyleParagraph);
+
+        // Add tableKGT（客观题水平分析）
+        $tableKGT = $section->addTable('myTableStyle'); 
+
+        // Add row设置行高 
+        $tableKGT->addRow(300); 
+         
+        $tableKGT->addCell(1600)->addText('题号', $cellStyleFont, $cellStyle); 
+        $tableKGT->addCell(1600)->addText('答案', $cellStyleFont, $cellStyle); 
+        $tableKGT->addCell(1600)->addText('人数', $cellStyleFont, $cellStyle); 
+        $tableKGT->addCell(1600)->addText('平均分', $cellStyleFont, $cellStyle); 
+        $tableKGT->addCell(1600)->addText('标准差', $cellStyleFont, $cellStyle); 
+        $tableKGT->addCell(1600)->addText('得分率', $cellStyleFont, $cellStyle); 
+        $tableKGT->addCell(1600)->addText('难度', $cellStyleFont, $cellStyle); 
+        $tableKGT->addCell(1600)->addText('区分度', $cellStyleFont, $cellStyle); 
+        $tableKGT->addCell(1600)->addText('选A率%', $cellStyleFont, $cellStyle); 
+        $tableKGT->addCell(1600)->addText('选B率%', $cellStyleFont, $cellStyle); 
+        $tableKGT->addCell(1600)->addText('选C率%', $cellStyleFont, $cellStyle); 
+        $tableKGT->addCell(1600)->addText('选D率%', $cellStyleFont, $cellStyle); 
+
+        $kgtRate = array();
+
+        for ($i = 0; $i < count(self::$choiceQuestionsAnalysisData); $i++) { 
+            foreach (self::$choiceQuestionsAnalysisData[$i] as $key => $name) {
+                if($key == '选A率%' || $key == '选B率%' || $key == '选C率%' || $key == '选D率%') {
+                    $kgtRate[$i][] = $name;
+                }
+            }
+            arsort($kgtRate[$i]);
+        }
+
+        for ($i = 0; $i < count(self::$choiceQuestionsAnalysisData); $i++) { 
+            $tableKGT->addRow(300);
+            foreach (self::$choiceQuestionsAnalysisData[$i] as $key => $name) { 
+                if($key != '难度评价标准' && $key != '区分度评价标准') {
+                    if($key == '平均分') {
+                        $tableKGT->addCell(1200)->addText($name, $cellPurpleStyleFont, $cellStyle);
+                    } elseif($key == '选A率%' || $key == '选B率%' || $key == '选C率%' || $key == '选D率%') {
+                        if($name == array_values($kgtRate[$i])[0]) {
+                            $tableKGT->addCell(1200)->addText($name, $cellRedStyleFont, $cellStyle);
+                        } else {
+                            $tableKGT->addCell(1200)->addText($name, $cellStyleFont, $cellStyle);
+                        }
+                    } else {
+                        $tableKGT->addCell(1200)->addText($name, $cellStyleFont, $cellStyle);
+                    }
+                }
+            }
+        }
+
+        $section->addText('     注：区分度评价标准:>0.4区分度较高;0.3~0.39 区分度中等;0.2~0.29 区分度一般;<0.2区分度较低', $tableTitleStyleFont);
+        $section->addText('         难度评价标准:  >0.9容易;0.7~0.9较易;0.4~0.7中等;<0.4偏难;', $tableTitleStyleFont);
+
+        $section->addText('表2.0的数据表明', $contentStyleFont);
+
+        for ($i = 0; $i < count(self::$choiceQuestionsAnalysisData); $i++) {
+            if($kgtRate[$i][array_keys($kgtRate[$i])[1]] > 17) {
+                if(array_keys($kgtRate[$i])[1] == 0) {
+                    $item = 'A';
+                }
+                elseif(array_keys($kgtRate[$i])[1] == 1) {
+                    $item = 'B';
+                }
+                elseif(array_keys($kgtRate[$i])[1] == 2) {
+                    $item = 'C';
+                }
+                elseif(array_keys($kgtRate[$i])[1] == 3) {
+                    $item = 'D';
+                }
+                $txt = '，选项'.$item.'的干扰性最强达到了'.$kgtRate[$i][array_keys($kgtRate[$i])[1]].'%';
+            }
+            else{
+                $txt = '';
+            }
+            if($i / 2 == 0){
+                $section->addText('     '.($i+1).'）'.self::$choiceQuestionsAnalysisData[$i]['题号'].'：该题难度'.self::$choiceQuestionsAnalysisData[$i]['难度评价标准'].'('.self::$choiceQuestionsAnalysisData[$i]['难度'].')，'.self::$choiceQuestionsAnalysisData[$i]['区分度评价标准'].'('.self::$choiceQuestionsAnalysisData[$i]['区分度'].')，有'.self::$choiceQuestionsAnalysisData[$i]['选'.self::$choiceQuestionsAnalysisData[$i]['答案'].'率%'].'%的学生选择了正确答案('.self::$choiceQuestionsAnalysisData[$i]['答案'].')，得分率>'.self::$choiceQuestionsAnalysisData[$i]['得分率'].'%'.$txt, $choiceQuestionsContentStyleFont);
+            }
+            else {
+                $section->addText('     '.($i+1).'）'.self::$choiceQuestionsAnalysisData[$i]['题号'].'：该题从难度上讲属于'.self::$choiceQuestionsAnalysisData[$i]['难度评价标准'].'('.self::$choiceQuestionsAnalysisData[$i]['难度'].')，'.self::$choiceQuestionsAnalysisData[$i]['区分度评价标准'].'('.self::$choiceQuestionsAnalysisData[$i]['区分度'].')，正确答案('.self::$choiceQuestionsAnalysisData[$i]['答案'].')的选择率达到了'.self::$choiceQuestionsAnalysisData[$i]['选'.self::$choiceQuestionsAnalysisData[$i]['答案'].'率%'].'%，其余选项的选择率都低于'.$kgtRate[$i][array_keys($kgtRate[$i])[1]].'%'.$txt, $choiceQuestionsContentStyleFont);
+            }
+        }
+
+
+        
+        $section = \PHPWord_IOFactory::createWriter($PHPWord, 'Word2007');
+        $section->save($wordSaveDir.iconv("utf-8", "gb2312", self::$course).'.docx');
+
+        /*
 
         $examSchoolTotalRate = array();
         $examSchoolExcellentRate = array();
@@ -1175,10 +1471,10 @@ class CreateWord {
             else {
                 $section->addText('     '.($i+1).'）'.$studentData['choiceQuestionsAnalysis'][$i]['题号'].'：该题从难度上讲属于'.$studentData['choiceQuestionsAnalysis'][$i]['难度评价标准'].'('.$studentData['choiceQuestionsAnalysis'][$i]['难度'].')，'.$studentData['choiceQuestionsAnalysis'][$i]['区分度评价标准'].'('.$studentData['choiceQuestionsAnalysis'][$i]['区分度'].')，正确答案('.$studentData['choiceQuestionsAnalysis'][$i]['答案'].')的选择率达到了'.$studentData['choiceQuestionsAnalysis'][$i]['选'.$studentData['choiceQuestionsAnalysis'][$i]['答案'].'率%'].'%，其余选项的选择率都低于'.$kgtRate[$i][array_keys($kgtRate[$i])[1]].'%'.$txt, $contentStyleFont);
             }
-        }
+        }*/
         
-        $section = \PHPWord_IOFactory::createWriter($PHPWord, 'Word2007');
-        $section->save($wordSaveDir.iconv("utf-8", "gb2312", $course).'.docx');
+        /*$section = \PHPWord_IOFactory::createWriter($PHPWord, 'Word2007');
+        $section->save($wordSaveDir.iconv("utf-8", "gb2312", $course).'.docx');*/
 
     }
 

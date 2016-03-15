@@ -7,10 +7,18 @@
 
 		<if condition="strtolower(CONTROLLER_NAME) neq 'result'">
 
-		<li <eq name="pagename" value="upload"> class="active open" </eq>>
-			<a href="/admin/upload">
+		<li <eq name="pagename" value="uploadexam"> class="active open" </eq>>
+			<a href="/admin/uploadexam">
 				<i class="icon-th"></i>
 				<span class="title">上传考试成绩</span>
+				<span class="selected"></span>
+			</a>
+		</li>
+
+		<li <eq name="pagename" value="uploadpdf"> class="active open" </eq>>
+			<a href="/admin/uploadpdf">
+				<i class="icon-edit"></i>
+				<span class="title">上传基础数据分析</span>
 				<span class="selected"></span>
 			</a>
 		</li>
@@ -45,7 +53,7 @@
 		<if condition="strtolower(CONTROLLER_NAME) eq 'result'">
 
 		<li>
-			<a href="/admin/upload">
+			<a href="/admin/uploadexam">
 				<i class="icon-reply"></i> 
 				<span class="title">返回上传成绩页</span>
 			</a>
