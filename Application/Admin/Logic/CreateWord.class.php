@@ -174,7 +174,8 @@ class CreateWord {
         );
 
 
-        $PHPWord->setDefaultFontName('楷体_GB2312');
+        $PHPWord->setDefaultFontName('微软雅黑');
+        // $PHPWord->setDefaultFontName('楷体_GB2312');
         $PHPWord->setDefaultFontSize(14);
 
         $wordSaveDir = dirname(dirname(dirname(dirname(__FILE__))))."/Data/Word/".iconv("utf-8", "gb2312", self::$examInfoData['fullname'])."/";
@@ -197,9 +198,13 @@ class CreateWord {
         $contentStyleFont = array('spacing'=>40, 'size'=>12);
         $contentStyleParagraph = array('spacing'=>60);
 
-        $tableTitleStyleFont = array('size'=>10);
+        $tableTitleStyleFont = array('size'=>9);
+        $tableStyleParagraph = array('align'=>'center');
 
-        $choiceQuestionsContentStyleFont = array('spacing'=>180, 'size'=>12);
+        $tableCommentStyleFont = array('size'=>9);
+
+        $choiceQuestionsContentStyleFont = array('size'=>12);
+        $choiceQuestionsContentStyleParagraph = array('spacing'=>80);
 
         $styleTable = array(
             'borderTopSize'=>6,
@@ -535,6 +540,10 @@ class CreateWord {
 
         $section->addTextBreak();
 
+        $section->addText('3.各校得分率分析比较', $subTitleStyleFont, $subTitleStyleParagraph);
+        $section->addText('3.1 各校知识范畴得分率比较分析', $subSmallTitleStyleFont);
+        $section->addText('表3.1 各校对比全区知识范畴得分率对比表', $tableTitleStyleFont, $tableStyleParagraph);
+
         // Add tableSchoolZSFC（学校知识范畴）
         $tableSchoolZSFC = $section->addTable('myTableStyle'); 
 
@@ -547,7 +556,9 @@ class CreateWord {
         $tableSchoolZSFC->addCell(1600)->addText('全体', $cellStyleFont, $cellStyle); 
         $tableSchoolZSFC->addCell(1600)->addText('优秀', $cellBlueStyleFont, $cellStyle); 
         $tableSchoolZSFC->addCell(1600)->addText('及格', $cellGreenStyleFont, $cellStyle); 
-        $tableSchoolZSFC->addCell(1600)->addText('未及格', $cellRedStyleFont, $cellStyle); 
+        $tableSchoolZSFC->addCell(1600)->addText('未及格', $cellRedStyleFont, $cellStyle);
+
+        $schoolNameNumber = floor(count(self::$detailTableData['examScopeName']) / 2);
 
         foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
             foreach (self::$detailTableData['examScopeName'] as $key => $examScopeName) {
@@ -556,31 +567,44 @@ class CreateWord {
                 } else {
                     $cellStyleValue = $cellStyleLast;
                 }
-                $tableSchoolZSFC->addRow(300); 
+                $tableSchoolZSFC->addRow(300);
                 
-                $tableSchoolZSFC->addCell(2500, $cellStyleValue)->addText($schoolName, $cellStyleFont, $cellStyle); 
+                if($schoolNameNumber == $key) {
+                    $tableSchoolZSFC->addCell(2500, $cellStyleValue)->addText($schoolName, $cellStyleFont, $cellStyle); 
+                } else {
+                    $tableSchoolZSFC->addCell(2500, $cellStyleValue)->addText('', $cellStyleFont, $cellStyle); 
+                }
+
                 $tableSchoolZSFC->addCell(2500, $cellStyleValue)->addText($examScopeName, $cellStyleFont, $cellStyle); 
 
                 $tableSchoolZSFC->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate'], $cellStyleFont, $cellStyle);
+
+                $totalRateRecord[$examScopeName] = self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']; // 统计全区得分率情况
 
                 if(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['totalRate'] == 0 || self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['totalRate'] == self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
                     $cellStyleFontColor = $cellStyleFont;
                 } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['totalRate'] > self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
                     $cellStyleFontColor = $cellRedStyleFont;
+                    $schoolTotalRateRecord[$schoolName] = $schoolTotalRateRecord[$schoolName] + 1; // 统计全校得分率记录
                 } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['totalRate'] < self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
                     $cellStyleFontColor = $cellGreenStyleFont;
                 }
 
                 if(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['totalScore'] >= 0.5) {
                     $dValueTxt = '(+++)';
+                    $schoolTotalDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['totalScore'] >= 0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['totalScore'] < 0.5) {
                     $dValueTxt = '(+)';
+                    $schoolTotalDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['totalScore'] <= -0.5) {
                     $dValueTxt = '(---)';
+                    $schoolTotalDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['totalScore'] <= -0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['totalScore'] > -0.5) {
                     $dValueTxt = '(-)';
+                    $schoolTotalDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } else {
                     $dValueTxt = '';
+                    $schoolTotalDValueRecord[$schoolName][$examScopeName] = 0; // 统计有D值的记录
                 }
                 $tableSchoolZSFC->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['totalRate'].$dValueTxt, $cellStyleFontColor, $cellStyle);
 
@@ -588,20 +612,26 @@ class CreateWord {
                     $cellStyleFontColor = $cellStyleFont;
                 } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['excellentRate'] > self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
                     $cellStyleFontColor = $cellRedStyleFont;
+                    $schoolExcellentRateRecord[$schoolName] = $schoolExcellentRateRecord[$schoolName] + 1; // 统计全校得分率记录
                 } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['excellentRate'] < self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
                     $cellStyleFontColor = $cellGreenStyleFont;
                 }
                 
                 if(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['excellentScore'] >= 0.5) {
                     $dValueTxt = '(+++)';
+                    $schoolExcellentDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['excellentScore'] >= 0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['excellentScore'] < 0.5) {
                     $dValueTxt = '(+)';
+                    $schoolExcellentDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['excellentScore'] <= -0.5) {
                     $dValueTxt = '(---)';
+                    $schoolExcellentDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['excellentScore'] <= -0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['excellentScore'] > -0.5) {
                     $dValueTxt = '(-)';
+                    $schoolTotalDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } else {
                     $dValueTxt = '';
+                    $schoolExcellentDValueRecord[$schoolName][$examScopeName] = 0; // 统计有D值的记录
                 }
                 $tableSchoolZSFC->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['excellentRate'].$dValueTxt, $cellStyleFontColor, $cellStyle); 
 
@@ -609,20 +639,26 @@ class CreateWord {
                     $cellStyleFontColor = $cellStyleFont;
                 } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['passRate'] > self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
                     $cellStyleFontColor = $cellRedStyleFont;
+                    $schoolPassRateRecord[$schoolName] = $schoolPassRateRecord[$schoolName] + 1; // 统计全校得分率记录
                 } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['passRate'] < self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
                     $cellStyleFontColor = $cellGreenStyleFont;
                 }
                 
                 if(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['passScore'] >= 0.5) {
                     $dValueTxt = '(+++)';
+                    $schoolPassDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['passScore'] >= 0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['passScore'] < 0.5) {
                     $dValueTxt = '(+)';
+                    $schoolPassDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['passScore'] <= -0.5) {
                     $dValueTxt = '(---)';
+                    $schoolPassDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['passScore'] <= -0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['passScore'] > -0.5) {
                     $dValueTxt = '(-)';
+                    $schoolPassDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } else {
                     $dValueTxt = '';
+                    $schoolPassDValueRecord[$schoolName][$examScopeName] = 0; // 统计有D值的记录
                 }
                 $tableSchoolZSFC->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['passRate'].$dValueTxt, $cellStyleFontColor, $cellStyle); 
 
@@ -630,32 +666,378 @@ class CreateWord {
                     $cellStyleFontColor = $cellStyleFont;
                 } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['failRate'] > self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
                     $cellStyleFontColor = $cellRedStyleFont;
+                    $schoolFailRateRecord[$schoolName] = $schoolFailRateRecord[$schoolName] + 1; // 统计全校得分率记录
                 } elseif(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['failRate'] < self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
                     $cellStyleFontColor = $cellGreenStyleFont;
                 }
                 
                 if(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['failScore'] >= 0.5) {
                     $dValueTxt = '(+++)';
+                    $schoolFailDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['failScore'] >= 0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['failScore'] < 0.5) {
                     $dValueTxt = '(+)';
+                    $schoolFailDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['failScore'] <= -0.5) {
                     $dValueTxt = '(---)';
+                    $schoolFailDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['failScore'] <= -0.2 && self::$dValueData['examScopeTotalDValue'][$examScopeName][$schoolName]['failScore'] > -0.5) {
                     $dValueTxt = '(-)';
+                    $schoolFailDValueRecord[$schoolName][$examScopeName] = 1; // 统计有D值的记录
                 } else {
                     $dValueTxt = '';
+                    $schoolFailDValueRecord[$schoolName][$examScopeName] = 0; // 统计有D值的记录
                 }
                 $tableSchoolZSFC->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['failRate'].$dValueTxt, $cellStyleFontColor, $cellStyle);
             }
         }
 
+        $section->addTextBreak();
+
         $section->addText('     表3.1的数据表明：', $contentStyleFont, $contentStyleParagraph);
         $section->addText('     不同学校全体及不同水平组考生各知识范畴作答表现存在差异，具体如下：', $contentStyleFont, $contentStyleParagraph);
 
+        arsort($totalRateRecord);
+
+        $section->addText('         1）   不同学校全体及不同水平组考生在'.array_keys($totalRateRecord)[0].'知识范畴作答表现好，得分率为'.(array_values($totalRateRecord)[0] * 100).'%；在'.array_keys($totalRateRecord)[count($totalRateRecord)-1].'表现相对较低为'.(array_values($totalRateRecord)[count($totalRateRecord)-1] * 100).'%。', $contentStyleFont, $contentStyleParagraph);
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) { 
+            arsort($schoolTotalDValueRecord[$schoolName]);
+            $num = 0;
+            // $schoolD1Txt[$schoolName] = $schoolD1Txt[$schoolName].'的';
+            foreach ($schoolTotalDValueRecord[$schoolName] as $key => $value) {
+                if($value == 1 && $num == 0) {
+                    if(array_values($schoolTotalDValueRecord[$schoolName])[1] == 1) {
+                        $schoolD1Txt[$schoolName] = $schoolD1Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolD1Txt[$schoolName] = $schoolD1Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 1) {
+                    if(array_values($schoolTotalDValueRecord[$schoolName])[2] == 1) {
+                        $schoolD1Txt[$schoolName] = $schoolD1Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolD1Txt[$schoolName] = $schoolD1Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 2) {
+                    if(array_values($schoolTotalDValueRecord[$schoolName])[3] == 1) {
+                        $schoolD1Txt[$schoolName] = $schoolD1Txt[$schoolName].$key.'等';
+                    } else {
+                        $schoolD1Txt[$schoolName] = $schoolD1Txt[$schoolName].$key;
+                    }
+                }
+                $num++;
+            }
+        }
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
+            if($schoolTotalRateRecord[$schoolName] == count(self::$detailTableData['examScopeName']) && array_values($schoolTotalDValueRecord[$schoolName])[0] > 0) {
+                $schoolName11[] = $schoolName;
+            } elseif($schoolTotalRateRecord[$schoolName] < count(self::$detailTableData['examScopeName']) && array_values($schoolTotalDValueRecord[$schoolName])[0] > 0) {
+                $schoolName12[] = $schoolName;
+            } else {
+                $schoolName13[] = $schoolName;
+            }
+        }
+
+        if(count($schoolName11) > 1) {
+            foreach ($schoolName11 as $key => $name) {
+                if($key < count($schoolName11) - 1) {
+                    $schoolName11List = $schoolName11List.$name.'、';
+                } else {
+                    $schoolName11List = $schoolName11List.$name;
+                }
+            }
+            $examScopeSecondTxt = $examScopeSecondTxt.$schoolName11List.'考生各知识范畴的得分率均高于全区考生得分率，经效果量检验，';
+            foreach ($schoolName11 as $key => $name) {
+                if($key < count($schoolName11) - 1) {
+                    $examScopeSecondTxt = $examScopeSecondTxt.$name.$schoolD1Txt[$name].'；';
+                } else {
+                    $examScopeSecondTxt = $examScopeSecondTxt.$name.$schoolD1Txt[$name];
+                }
+                
+            }
+            $examScopeSecondTxt = $examScopeSecondTxt.'具有实际意义上的差异显著性。';
+        } elseif(count($schoolName11) == 1) {
+            $examScopeSecondTxt = $examScopeSecondTxt.$schoolName11[0].'考生各知识范畴的得分率均高于全区考生得分率，经效果量检验，';
+            $examScopeSecondTxt = $examScopeSecondTxt.'该校'.$schoolD1Txt[$schoolName11[0]].'具有实际意义上的差异显著性。';
+        }
+
+        if(count($schoolName12) > 1) {
+            foreach ($schoolName12 as $key => $name) {
+                if($key < count($schoolName12) - 1) {
+                    $schoolName12List = $schoolName12List.$name.'中的'.$schoolD1Txt[$name].'；';
+                } else {
+                    $schoolName12List = $schoolName12List.$name.'中的'.$schoolD1Txt[$name].'，';
+                }
+            }
+            $examScopeSecondTxt = $examScopeSecondTxt.$schoolName12List.'经效果量检验，具有实际意义上的差异显著性。';
+        } elseif(count($schoolName12) == 1) {
+            $schoolName12List = $schoolName12List.$schoolName12[0].'中的'.$schoolD1Txt[$schoolName12[0]];
+            $examScopeSecondTxt = $examScopeSecondTxt.$schoolName2List.'经效果量检验，具有实际意义上的差异显著性。';
+        }
+
+        if(count($schoolName11) == 0 && count($schoolName12) == 0 && count($schoolName13) > 0) {
+            $examScopeSecondTxt = $examScopeSecondTxt.'所有学校全体考生的各知识范畴经效果量检验，均不具有实际意义上的差异显著性。';
+        } elseif(count($schoolName13) > 0) {
+            $examScopeSecondTxt = $examScopeSecondTxt.'其他学校全体考生的各知识范畴经效果量检验，均不具有实际意义上的差异显著性。';
+        }
+
+        $section->addText('         2）   比较不同学校全体组考生各知识范畴的作答表现可知，'.$examScopeSecondTxt, $contentStyleFont, $contentStyleParagraph);
 
 
-        $section->addTextBreak();
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) { 
+            arsort($schoolExcellentDValueRecord[$schoolName]);
+            $num = 0;
+            // $schoolD2Txt[$schoolName] = $schoolD2Txt[$schoolName].'的';
+            foreach ($schoolExcellentDValueRecord[$schoolName] as $key => $value) {
+                if($value == 1 && $num == 0) {
+                    if(array_values($schoolExcellentDValueRecord[$schoolName])[1] == 1) {
+                        $schoolD2Txt[$schoolName] = $schoolD2Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolD2Txt[$schoolName] = $schoolD2Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 1) {
+                    if(array_values($schoolExcellentDValueRecord[$schoolName])[2] == 1) {
+                        $schoolD2Txt[$schoolName] = $schoolD2Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolD2Txt[$schoolName] = $schoolD2Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 2) {
+                    if(array_values($schoolTotalDValueRecord[$schoolName])[3] == 1) {
+                        $schoolD2Txt[$schoolName] = $schoolD2Txt[$schoolName].$key.'等';
+                    } else {
+                        $schoolD2Txt[$schoolName] = $schoolD2Txt[$schoolName].$key;
+                    }
+                }
+                $num++;
+            }
+        }
 
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) { 
+            foreach (self::$detailTableData['examScopeName'] as $key => $examScopeName) {
+                if($schoolExcellentDValueRecord[$schoolName][$examScopeName] == 1) {
+                    $schoolExcellentDValueCount[$schoolName] = $schoolExcellentDValueCount[$schoolName] + 1;
+                }
+            }
+        }
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
+            if($schoolExcellentRateRecord[$schoolName] == count(self::$detailTableData['examScopeName']) && $schoolExcellentDValueCount[$schoolName] == count(self::$detailTableData['examScopeName'])) {
+                $schoolName21[] = $schoolName;
+            } elseif($schoolExcellentRateRecord[$schoolName] == count(self::$detailTableData['examScopeName']) && $schoolExcellentDValueCount[$schoolName] > 0) {
+                $schoolName22[] = $schoolName;
+            } else {
+                $schoolName23[] = $schoolName;
+            }
+        }
+
+        if(count($schoolName21) > 1) {
+            foreach ($schoolName21 as $key => $name) {
+                if($key < count($schoolName21) - 1) {
+                    $schoolName21List = $schoolName21List.$name.'、';
+                } else {
+                    $schoolName21List = $schoolName21List.$name;
+                }
+            }
+            $examScopeThirdTxt = $examScopeThirdTxt.$schoolName21List.'考生各知识范畴的得分率均高于全区考生得分率，经效果量检验，';
+            $examScopeThirdTxt = $examScopeThirdTxt.'均具有实际意义上的显著性。';
+        } elseif(count($schoolName21) == 1) {
+            $examScopeThirdTxt = $examScopeThirdTxt.$schoolName21[0].'考生各知识范畴的得分率均高于全区考生得分率，经效果量检验，';
+            $examScopeThirdTxt = $examScopeThirdTxt.'该校均具有实际意义上的显著性。';
+        }
+
+        if(count($schoolName22) > 1) {
+            foreach ($schoolName22 as $key => $name) {
+                if($key < count($schoolName22) - 1) {
+                    $schoolName22List = $schoolName22List.$name.'中的'.$schoolD2Txt[$name].'；';
+                } else {
+                    $schoolName22List = $schoolName22List.$name.'中的'.$schoolD2Txt[$name].'，';
+                }
+            }
+            $examScopeThirdTxt = $examScopeThirdTxt.$schoolName22List.'经效果量检验，具有实际意义上的差异显著性。';
+        } elseif(count($schoolName22) == 1) {
+            $schoolName22List = $schoolName22List.$schoolName22[0].'中的'.$schoolD2Txt[$schoolName22[0]];
+            $examScopeThirdTxt = $examScopeThirdTxt.$schoolName22List.'经效果量检验，具有实际意义上的差异显著性。';
+        }
+
+        if(count($schoolName21) == 0 && count($schoolName22) == 0 && count($schoolName23) > 0) {
+            $examScopeThirdTxt = $examScopeThirdTxt.'所有学校全体考生的各知识范畴经效果量检验，均不具有实际意义上的差异显著性。';
+        } elseif(count($schoolName23) > 0) {
+            $examScopeThirdTxt = $examScopeThirdTxt.'其他学校全体考生的各知识范畴经效果量检验，均不具有实际意义上的差异显著性。';
+        }
+
+        $section->addText('         3）   比较不同学校优秀组考生各知识范畴的作答表现可知，'.$examScopeThirdTxt, $contentStyleFont, $contentStyleParagraph);
+
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) { 
+            arsort($schoolPassDValueRecord[$schoolName]);
+            $num = 0;
+            // $schoolD3Txt[$schoolName] = $schoolD3Txt[$schoolName].'的';
+            foreach ($schoolPassDValueRecord[$schoolName] as $key => $value) {
+                if($value == 1 && $num == 0) {
+                    if(array_values($schoolPassDValueRecord[$schoolName])[1] == 1) {
+                        $schoolD3Txt[$schoolName] = $schoolD3Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolD3Txt[$schoolName] = $schoolD3Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 1) {
+                    if(array_values($schoolPassDValueRecord[$schoolName])[2] == 1) {
+                        $schoolD3Txt[$schoolName] = $schoolD3Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolD3Txt[$schoolName] = $schoolD3Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 2) {
+                    if(array_values($schoolPassDValueRecord[$schoolName])[3] == 1) {
+                        $schoolD3Txt[$schoolName] = $schoolD3Txt[$schoolName].$key.'等';
+                    } else {
+                        $schoolD3Txt[$schoolName] = $schoolD3Txt[$schoolName].$key;
+                    }
+                }
+                $num++;
+            }
+        }
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
+            if($schoolPassRateRecord[$schoolName] == count(self::$detailTableData['examScopeName']) && array_values($schoolPassDValueRecord[$schoolName])[0] > 0) {
+                $schoolName31[] = $schoolName;
+            } elseif($schoolPassRateRecord[$schoolName] < count(self::$detailTableData['examScopeName']) && array_values($schoolPassDValueRecord[$schoolName])[0] > 0) {
+                $schoolName32[] = $schoolName;
+            } else {
+                $schoolName33[] = $schoolName;
+            }
+        }
+
+        if(count($schoolName31) > 1) {
+            foreach ($schoolName31 as $key => $name) {
+                if($key < count($schoolName31) - 1) {
+                    $schoolName31List = $schoolName31List.$name.'、';
+                } else {
+                    $schoolName31List = $schoolName31List.$name;
+                }
+            }
+            $examScopeFourTxt = $examScopeFourTxt.$schoolName31List.'考生各知识范畴的得分率均高于全区考生得分率，经效果量检验，';
+            foreach ($schoolName31 as $key => $name) {
+                if($key < count($schoolName31) - 1) {
+                    $examScopeFourTxt = $examScopeFourTxt.$name.$schoolD3Txt[$name].'；';
+                } else {
+                    $examScopeFourTxt = $examScopeFourTxt.$name.$schoolD3Txt[$name];
+                }
+                
+            }
+            $examScopeFourTxt = $examScopeFourTxt.'具有实际意义上的差异显著性。';
+        } elseif(count($schoolName31) == 1) {
+            $examScopeFourTxt = $examScopeFourTxt.$schoolName31[0].'考生各知识范畴的得分率均高于全区考生得分率，经效果量检验，';
+            $examScopeFourTxt = $examScopeFourTxt.'该校'.$schoolD3Txt[$schoolName31[0]].'具有实际意义上的差异显著性。';
+        }
+
+        if(count($schoolName32) > 1) {
+            foreach ($schoolName32 as $key => $name) {
+                if($key < count($schoolName32) - 1) {
+                    $schoolName32List = $schoolName32List.$name.'中的'.$schoolD3Txt[$name].'；';
+                } else {
+                    $schoolName32List = $schoolName32List.$name.'中的'.$schoolD3Txt[$name].'，';
+                }
+            }
+            $examScopeFourTxt = $examScopeFourTxt.$schoolName32List.'经效果量检验，具有实际意义上的差异显著性。';
+        } elseif(count($schoolName32) == 1) {
+            $schoolName32List = $schoolName32List.$schoolName32[0].'中的'.$schoolD3Txt[$schoolName32[0]];
+            $examScopeFourTxt = $examScopeFourTxt.$schoolName32List.'经效果量检验，具有实际意义上的差异显著性。';
+        }
+
+        if(count($schoolName31) == 0 && count($schoolName32) == 0 && count($schoolName33) > 0) {
+            $examScopeFourTxt = $examScopeFourTxt.'所有学校全体考生的各知识范畴经效果量检验，均不具有实际意义上的差异显著性。';
+        } elseif(count($schoolName33) > 0) {
+            $examScopeFourTxt = $examScopeFourTxt.'其他学校全体考生的各知识范畴经效果量检验，均不具有实际意义上的差异显著性。';
+        }
+
+        $section->addText('         4）   及格组中'.$examScopeFourTxt, $contentStyleFont, $contentStyleParagraph);
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) { 
+            arsort($schoolFailDValueRecord[$schoolName]);
+            $num = 0;
+            // $schoolD4Txt[$schoolName] = $schoolD4Txt[$schoolName].'的';
+            foreach ($schoolFailDValueRecord[$schoolName] as $key => $value) {
+                if($value == 1 && $num == 0) {
+                    if(array_values($schoolFailDValueRecord[$schoolName])[1] == 1) {
+                        $schoolD4Txt[$schoolName] = $schoolD4Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolD4Txt[$schoolName] = $schoolD4Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 1) {
+                    if(array_values($schoolFailDValueRecord[$schoolName])[2] == 1) {
+                        $schoolD4Txt[$schoolName] = $schoolD4Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolD4Txt[$schoolName] = $schoolD4Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 2) {
+                    if(array_values($schoolFailDValueRecord[$schoolName])[3] == 1) {
+                        $schoolD4Txt[$schoolName] = $schoolD4Txt[$schoolName].$key.'等';
+                    } else {
+                        $schoolD4Txt[$schoolName] = $schoolD4Txt[$schoolName].$key;
+                    }
+                }
+                $num++;
+            }
+        }
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
+            if($schoolFailDValueRecord[$schoolName] == count(self::$detailTableData['examScopeName']) && array_values($schoolFailDValueRecord[$schoolName])[0] > 0) {
+                $schoolName41[] = $schoolName;
+            } elseif($schoolFailDValueRecord[$schoolName] < count(self::$detailTableData['examScopeName']) && array_values($schoolFailDValueRecord[$schoolName])[0] > 0) {
+                $schoolName42[] = $schoolName;
+            } else {
+                $schoolName43[] = $schoolName;
+            }
+        }
+
+        if(count($schoolName41) > 1) {
+            foreach ($schoolName41 as $key => $name) {
+                if($key < count($schoolName41) - 1) {
+                    $schoolName41List = $schoolName41List.$name.'、';
+                } else {
+                    $schoolName41List = $schoolName41List.$name;
+                }
+            }
+            $examScopeFiveTxt = $examScopeFiveTxt.$schoolName41List.'考生各知识范畴的得分率均高于全区考生得分率，经效果量检验，';
+            foreach ($schoolName41 as $key => $name) {
+                if($key < count($schoolName41) - 1) {
+                    $examScopeFiveTxt = $examScopeFiveTxt.$name.$schoolD4Txt[$name].'；';
+                } else {
+                    $examScopeFiveTxt = $examScopeFiveTxt.$name.$schoolD4Txt[$name];
+                }
+                
+            }
+            $examScopeFiveTxt = $examScopeFiveTxt.'具有实际意义上的差异显著性。';
+        } elseif(count($schoolName41) == 1) {
+            $examScopeFiveTxt = $examScopeFiveTxt.$schoolName41[0].'考生各知识范畴的得分率均高于全区考生得分率，经效果量检验，';
+            $examScopeFiveTxt = $examScopeFiveTxt.'该校'.$schoolD4Txt[$schoolName41[0]].'具有实际意义上的差异显著性。';
+        }
+
+        if(count($schoolName42) > 1) {
+            foreach ($schoolName42 as $key => $name) {
+                if($key < count($schoolName42) - 1) {
+                    $schoolName42List = $schoolName42List.$name.'中的'.$schoolD4Txt[$name].'；';
+                } else {
+                    $schoolName42List = $schoolName42List.$name.'中的'.$schoolD4Txt[$name].'，';
+                }
+            }
+            $examScopeFiveTxt = $examScopeFiveTxt.$schoolName42List.'经效果量检验，具有实际意义上的差异显著性。';
+        } elseif(count($schoolName42) == 1) {
+            $schoolName42List = $schoolName42List.$schoolName42[0].'中的'.$schoolD4Txt[$schoolName42[0]];
+            $examScopeFiveTxt = $examScopeFiveTxt.$schoolName42List.'经效果量检验，具有实际意义上的差异显著性。';
+        }
+
+        if(count($schoolName41) == 0 && count($schoolName42) == 0 && count($schoolName43) > 0) {
+            $examScopeFiveTxt = $examScopeFiveTxt.'所有学校全体考生的各知识范畴经效果量检验，均不具有实际意义上的差异显著性。';
+        } elseif(count($schoolName43) > 0) {
+            $examScopeFiveTxt = $examScopeFiveTxt.'其他学校全体考生的各知识范畴经效果量检验，均不具有实际意义上的差异显著性。';
+        }
+
+        $section->addText('         5）   未及格组中'.$examScopeFiveTxt, $contentStyleFont, $contentStyleParagraph);
+
+        $section->addTextBreak(2);
+
+        $section->addText('3.2 各校不同能力层级得分率比较分析', $subSmallTitleStyleFont);
+        $section->addText('表3.2 各校对比全区能力层级得分率对比表', $tableTitleStyleFont, $tableStyleParagraph);
 
         // Add tableSchoolNLCJ（学校能力层级）
         $tableSchoolNLCJ = $section->addTable('myTableStyle'); 
@@ -671,6 +1053,8 @@ class CreateWord {
         $tableSchoolNLCJ->addCell(1600)->addText('及格', $cellGreenStyleFont, $cellStyle); 
         $tableSchoolNLCJ->addCell(1600)->addText('未及格', $cellRedStyleFont, $cellStyle); 
 
+        $schoolNameNumber = floor(count(self::$detailTableData['examMoldName']) / 2);
+
         foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
             foreach (self::$detailTableData['examMoldName'] as $key => $examMoldName) {
                 if($key != count(self::$detailTableData['examMoldName']) - 1) {
@@ -678,30 +1062,44 @@ class CreateWord {
                 } else {
                     $cellStyleValue = $cellStyleLast;
                 }
-                $tableSchoolNLCJ->addRow(300); 
+                $tableSchoolNLCJ->addRow(300);
                 
-                $tableSchoolNLCJ->addCell(2500, $cellStyleValue)->addText($schoolName, $cellStyleFont, $cellStyle); 
-                $tableSchoolNLCJ->addCell(2500, $cellStyleValue)->addText($examMoldName, $cellStyleFont, $cellStyle);
+                if($schoolNameNumber == $key) {
+                    $tableSchoolNLCJ->addCell(2500, $cellStyleValue)->addText($schoolName, $cellStyleFont, $cellStyle); 
+                } else {
+                    $tableSchoolNLCJ->addCell(2500, $cellStyleValue)->addText('', $cellStyleFont, $cellStyle); 
+                }
+                
+                $tableSchoolNLCJ->addCell(2500, $cellStyleValue)->addText($examMoldName, $cellStyleFont, $cellStyle); 
+
                 $tableSchoolNLCJ->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate'], $cellStyleFont, $cellStyle);
+
+                $examMoldTotalRateRecord[$examMoldName] = self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']; // 统计全区得分率情况
 
                 if(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['totalRate'] == 0 || self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['totalRate'] == self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
                     $cellStyleFontColor = $cellStyleFont;
                 } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['totalRate'] > self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
                     $cellStyleFontColor = $cellRedStyleFont;
+                    $schoolExamMoldTotalRateRecord[$schoolName] = $schoolExamMoldTotalRateRecord[$schoolName] + 1; // 统计全校得分率记录
                 } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['totalRate'] < self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
                     $cellStyleFontColor = $cellGreenStyleFont;
                 }
 
                 if(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['totalScore'] >= 0.5) {
                     $dValueTxt = '(+++)';
+                    $schoolExamMoldTotalDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['totalScore'] >= 0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['totalScore'] < 0.5) {
                     $dValueTxt = '(+)';
+                    $schoolExamMoldTotalDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['totalScore'] <= -0.5) {
                     $dValueTxt = '(---)';
+                    $schoolExamMoldTotalDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['totalScore'] <= -0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['totalScore'] > -0.5) {
                     $dValueTxt = '(-)';
+                    $schoolExamMoldTotalDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } else {
                     $dValueTxt = '';
+                    $schoolExamMoldTotalDValueRecord[$schoolName][$examMoldName] = 0; // 统计有D值的记录
                 }
                 $tableSchoolNLCJ->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['totalRate'].$dValueTxt, $cellStyleFontColor, $cellStyle);
 
@@ -709,20 +1107,26 @@ class CreateWord {
                     $cellStyleFontColor = $cellStyleFont;
                 } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['excellentRate'] > self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
                     $cellStyleFontColor = $cellRedStyleFont;
+                    $schoolExamMoldExcellentRateRecord[$schoolName] = $schoolExamMoldExcellentRateRecord[$schoolName] + 1; // 统计全校得分率记录
                 } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['excellentRate'] < self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
                     $cellStyleFontColor = $cellGreenStyleFont;
                 }
                 
                 if(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['excellentScore'] >= 0.5) {
                     $dValueTxt = '(+++)';
+                    $schoolExamMoldExcellentDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['excellentScore'] >= 0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['excellentScore'] < 0.5) {
                     $dValueTxt = '(+)';
+                    $schoolExamMoldExcellentDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['excellentScore'] <= -0.5) {
                     $dValueTxt = '(---)';
+                    $schoolExamMoldExcellentDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['excellentScore'] <= -0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['excellentScore'] > -0.5) {
                     $dValueTxt = '(-)';
+                    $schoolExamMoldExcellentDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } else {
                     $dValueTxt = '';
+                    $schoolExamMoldExcellentDValueRecord[$schoolName][$examMoldName] = 0; // 统计有D值的记录
                 }
                 $tableSchoolNLCJ->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['excellentRate'].$dValueTxt, $cellStyleFontColor, $cellStyle); 
 
@@ -730,20 +1134,26 @@ class CreateWord {
                     $cellStyleFontColor = $cellStyleFont;
                 } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['passRate'] > self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
                     $cellStyleFontColor = $cellRedStyleFont;
+                    $schoolExamMoldPassRateRecord[$schoolName] = $schoolExamMoldPassRateRecord[$schoolName] + 1; // 统计全校得分率记录
                 } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['passRate'] < self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
                     $cellStyleFontColor = $cellGreenStyleFont;
                 }
                 
                 if(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['passScore'] >= 0.5) {
                     $dValueTxt = '(+++)';
+                    $schoolExamMoldPassDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['passScore'] >= 0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['passScore'] < 0.5) {
                     $dValueTxt = '(+)';
+                    $schoolExamMoldPassDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['passScore'] <= -0.5) {
                     $dValueTxt = '(---)';
+                    $schoolExamMoldPassDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['passScore'] <= -0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['passScore'] > -0.5) {
                     $dValueTxt = '(-)';
+                    $schoolExamMoldPassDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } else {
                     $dValueTxt = '';
+                    $schoolExamMoldPassDValueRecord[$schoolName][$examMoldName] = 0; // 统计有D值的记录
                 }
                 $tableSchoolNLCJ->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['passRate'].$dValueTxt, $cellStyleFontColor, $cellStyle); 
 
@@ -751,43 +1161,375 @@ class CreateWord {
                     $cellStyleFontColor = $cellStyleFont;
                 } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['failRate'] > self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
                     $cellStyleFontColor = $cellRedStyleFont;
+                    $schoolExamMoldFailRateRecord[$schoolName] = $schoolExamMoldFailRateRecord[$schoolName] + 1; // 统计全校得分率记录
                 } elseif(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['failRate'] < self::$scoreStatisticsData['examMoldTotalRate'][$examMoldName]['totalRate']) {
                     $cellStyleFontColor = $cellGreenStyleFont;
                 }
                 
                 if(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['failScore'] >= 0.5) {
                     $dValueTxt = '(+++)';
+                    $schoolExamMoldFailDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['failScore'] >= 0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['failScore'] < 0.5) {
                     $dValueTxt = '(+)';
+                    $schoolExamMoldFailDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['failScore'] <= -0.5) {
                     $dValueTxt = '(---)';
+                    $schoolExamMoldFailDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } elseif(self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['failScore'] <= -0.2 && self::$dValueData['examMoldTotalDValue'][$examMoldName][$schoolName]['failScore'] > -0.5) {
                     $dValueTxt = '(-)';
+                    $schoolExamMoldFailDValueRecord[$schoolName][$examMoldName] = 1; // 统计有D值的记录
                 } else {
                     $dValueTxt = '';
+                    $schoolExamMoldFailDValueRecord[$schoolName][$examMoldName] = 0; // 统计有D值的记录
                 }
                 $tableSchoolNLCJ->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examMoldSchoolRate'][$examMoldName][$schoolName]['failRate'].$dValueTxt, $cellStyleFontColor, $cellStyle);
             }
         }
 
+        $section->addTextBreak();
+
+        $section->addText('     表3.2的数据表明：', $contentStyleFont, $contentStyleParagraph);
+        $section->addText('     不同学校全体及不同水平组考生各能力层级作答表现存在差异，具体如下：', $contentStyleFont, $contentStyleParagraph);
+
+        arsort($examMoldTotalRateRecord);
+
+        $section->addText('         1）   不同学校全体及不同水平组考生在'.array_keys($examMoldTotalRateRecord)[0].'能力层级作答表现好，得分率为'.(array_values($examMoldTotalRateRecord)[0] * 100).'%；在'.array_keys($examMoldTotalRateRecord)[count($examMoldTotalRateRecord)-1].'表现相对较低为'.(array_values($examMoldTotalRateRecord)[count($examMoldTotalRateRecord)-1] * 100).'%。', $contentStyleFont, $contentStyleParagraph);
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) { 
+            arsort($schoolExamMoldTotalDValueRecord[$schoolName]);
+            $num = 0;
+            // $schoolExamMoldD1Txt[$schoolName] = $schoolExamMoldD1Txt[$schoolName].'的';
+            foreach ($schoolExamMoldTotalDValueRecord[$schoolName] as $key => $value) {
+                if($value == 1 && $num == 0) {
+                    if(array_values($schoolExamMoldTotalDValueRecord[$schoolName])[1] == 1) {
+                        $schoolExamMoldD1Txt[$schoolName] = $schoolExamMoldD1Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolExamMoldD1Txt[$schoolName] = $schoolExamMoldD1Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 1) {
+                    if(array_values($schoolExamMoldTotalDValueRecord[$schoolName])[2] == 1) {
+                        $schoolExamMoldD1Txt[$schoolName] = $schoolExamMoldD1Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolExamMoldD1Txt[$schoolName] = $schoolExamMoldD1Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 2) {
+                    if(array_values($schoolExamMoldTotalDValueRecord[$schoolName])[3] == 1) {
+                        $schoolExamMoldD1Txt[$schoolName] = $schoolExamMoldD1Txt[$schoolName].$key.'等';
+                    } else {
+                        $schoolExamMoldD1Txt[$schoolName] = $schoolExamMoldD1Txt[$schoolName].$key;
+                    }
+                }
+                $num++;
+            }
+        }
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
+            if($schoolExamMoldTotalRateRecord[$schoolName] == count(self::$detailTableData['examMoldName']) && array_values($schoolExamMoldTotalDValueRecord[$schoolName])[0] > 0) {
+                $schoolExamMoldName11[] = $schoolName;
+            } elseif($schoolExamMoldTotalRateRecord[$schoolName] < count(self::$detailTableData['examMoldName']) && array_values($schoolExamMoldTotalDValueRecord[$schoolName])[0] > 0) {
+                $schoolExamMoldName12[] = $schoolName;
+            } else {
+                $schoolExamMoldName13[] = $schoolName;
+            }
+        }
+
+        if(count($schoolExamMoldName11) > 1) {
+            foreach ($schoolExamMoldName11 as $key => $name) {
+                if($key < count($schoolExamMoldName11) - 1) {
+                    $schoolExamMoldName11List = $schoolExamMoldName11List.$name.'、';
+                } else {
+                    $schoolExamMoldName11List = $schoolExamMoldName11List.$name;
+                }
+            }
+            $examMoldSecondTxt = $examMoldSecondTxt.$schoolExamMoldName11List.'考生各能力层级的得分率均高于全区考生得分率，经效果量检验，';
+            foreach ($schoolExamMoldName11 as $key => $name) {
+                if($key < count($schoolExamMoldName11) - 1) {
+                    $examMoldSecondTxt = $examMoldSecondTxt.$name.$schoolExamMoldD1Txt[$name].'；';
+                } else {
+                    $examMoldSecondTxt = $examMoldSecondTxt.$name.$schoolExamMoldD1Txt[$name];
+                }
+                
+            }
+            $examMoldSecondTxt = $examMoldSecondTxt.'具有实际意义上的差异显著性。';
+        } elseif(count($schoolExamMoldName11) == 1) {
+            $examMoldSecondTxt = $examMoldSecondTxt.$schoolExamMoldName11[0].'考生各能力层级的得分率均高于全区考生得分率，经效果量检验，';
+            $examMoldSecondTxt = $examMoldSecondTxt.'该校'.$schoolExamMoldD1Txt[$schoolExamMoldName11[0]].'具有实际意义上的差异显著性。';
+        }
+
+        if(count($schoolExamMoldName12) > 1) {
+            foreach ($schoolExamMoldName12 as $key => $name) {
+                if($key < count($schoolExamMoldName12) - 1) {
+                    $schoolExamMoldName12List = $schoolExamMoldName12List.$name.'中的'.$schoolExamMoldD1Txt[$name].'；';
+                } else {
+                    $schoolExamMoldName12List = $schoolExamMoldName12List.$name.'中的'.$schoolExamMoldD1Txt[$name].'，';
+                }
+            }
+            $examMoldSecondTxt = $examMoldSecondTxt.$schoolExamMoldName12List.'经效果量检验，具有实际意义上的差异显著性。';
+        } elseif(count($schoolExamMoldName12) == 1) {
+            $schoolExamMoldName12List = $schoolExamMoldName12List.$schoolExamMoldName12[0].'中的'.$schoolExamMoldD1Txt[$schoolExamMoldName12[0]];
+            $examMoldSecondTxt = $examMoldSecondTxt.$schoolName2List.'经效果量检验，具有实际意义上的差异显著性。';
+        }
+
+        if(count($schoolExamMoldName11) == 0 && count($schoolExamMoldName12) == 0 && count($schoolExamMoldName13) > 0) {
+            $examMoldSecondTxt = $examMoldSecondTxt.'所有学校全体考生的各能力层级经效果量检验，均不具有实际意义上的差异显著性。';
+        } elseif(count($schoolExamMoldName13) > 0) {
+            $examMoldSecondTxt = $examMoldSecondTxt.'其他学校全体考生的各能力层级经效果量检验，均不具有实际意义上的差异显著性。';
+        }
+
+        $section->addText('         2）   比较不同学校全体组考生各能力层级的作答表现可知，'.$examMoldSecondTxt, $contentStyleFont, $contentStyleParagraph);
 
 
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) { 
+            arsort($schoolExamMoldExcellentDValueRecord[$schoolName]);
+            $num = 0;
+            // $schoolExamMoldD2Txt[$schoolName] = $schoolExamMoldD2Txt[$schoolName].'的';
+            foreach ($schoolExamMoldExcellentDValueRecord[$schoolName] as $key => $value) {
+                if($value == 1 && $num == 0) {
+                    if(array_values($schoolExamMoldExcellentDValueRecord[$schoolName])[1] == 1) {
+                        $schoolExamMoldD2Txt[$schoolName] = $schoolExamMoldD2Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolExamMoldD2Txt[$schoolName] = $schoolExamMoldD2Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 1) {
+                    if(array_values($schoolExamMoldExcellentDValueRecord[$schoolName])[2] == 1) {
+                        $schoolExamMoldD2Txt[$schoolName] = $schoolExamMoldD2Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolExamMoldD2Txt[$schoolName] = $schoolExamMoldD2Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 2) {
+                    if(array_values($schoolExamMoldExcellentDValueRecord[$schoolName])[3] == 1) {
+                        $schoolExamMoldD2Txt[$schoolName] = $schoolExamMoldD2Txt[$schoolName].$key.'等';
+                    } else {
+                        $schoolExamMoldD2Txt[$schoolName] = $schoolExamMoldD2Txt[$schoolName].$key;
+                    }
+                }
+                $num++;
+            }
+        }
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) { 
+            foreach (self::$detailTableData['examMoldName'] as $key => $examMoldName) {
+                if($schoolExamMoldExcellentDValueRecord[$schoolName][$examMoldName] == 1) {
+                    $schoolExamMoldExcellentDValueCount[$schoolName] = $schoolExamMoldExcellentDValueCount[$schoolName] + 1;
+                }
+            }
+        }
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
+            if($schoolExamMoldExcellentRateRecord[$schoolName] == count(self::$detailTableData['examMoldName']) && $schoolExamMoldExcellentDValueCount[$schoolName] == count(self::$detailTableData['examMoldName'])) {
+                $schoolExamMoldName21[] = $schoolName;
+            } elseif($schoolExamMoldExcellentRateRecord[$schoolName] == count(self::$detailTableData['examMoldName']) && $schoolExamMoldExcellentDValueCount[$schoolName] > 0) {
+                $schoolExamMoldName22[] = $schoolName;
+            } else {
+                $schoolExamMoldName23[] = $schoolName;
+            }
+        }
+
+        if(count($schoolExamMoldName21) > 1) {
+            foreach ($schoolExamMoldName21 as $key => $name) {
+                if($key < count($schoolExamMoldName21) - 1) {
+                    $schoolExamMoldName21List = $schoolExamMoldName21List.$name.'、';
+                } else {
+                    $schoolExamMoldName21List = $schoolExamMoldName21List.$name;
+                }
+            }
+            $examMoldThirdTxt = $examMoldThirdTxt.$schoolExamMoldName21List.'考生各能力层级的得分率均高于全区考生得分率，经效果量检验，';
+            $examMoldThirdTxt = $examMoldThirdTxt.'均具有实际意义上的显著性。';
+        } elseif(count($schoolExamMoldName21) == 1) {
+            $examMoldThirdTxt = $examMoldThirdTxt.$schoolExamMoldName21[0].'考生各能力层级的得分率均高于全区考生得分率，经效果量检验，';
+            $examMoldThirdTxt = $examMoldThirdTxt.'该校均具有实际意义上的显著性。';
+        }
+
+        if(count($schoolExamMoldName22) > 1) {
+            foreach ($schoolExamMoldName22 as $key => $name) {
+                if($key < count($schoolExamMoldName22) - 1) {
+                    $schoolExamMoldName22List = $schoolExamMoldName22List.$name.'中的'.$schoolExamMoldD2Txt[$name].'；';
+                } else {
+                    $schoolExamMoldName22List = $schoolExamMoldName22List.$name.'中的'.$schoolExamMoldD2Txt[$name].'，';
+                }
+            }
+            $examMoldThirdTxt = $examMoldThirdTxt.$schoolExamMoldName22List.'经效果量检验，具有实际意义上的差异显著性。';
+        } elseif(count($schoolExamMoldName22) == 1) {
+            $schoolExamMoldName22List = $schoolExamMoldName22List.$schoolExamMoldName22[0].'中的'.$schoolExamMoldD2Txt[$schoolExamMoldName22[0]];
+            $examMoldThirdTxt = $examMoldThirdTxt.$schoolExamMoldName22List.'经效果量检验，具有实际意义上的差异显著性。';
+        }
+
+        if(count($schoolExamMoldName21) == 0 && count($schoolExamMoldName22) == 0 && count($schoolExamMoldName23) > 0) {
+            $examMoldThirdTxt = $examMoldThirdTxt.'所有学校全体考生的各能力层级经效果量检验，均不具有实际意义上的差异显著性。';
+        } elseif(count($schoolExamMoldName23) > 0) {
+            $examMoldThirdTxt = $examMoldThirdTxt.'其他学校全体考生的各能力层级经效果量检验，均不具有实际意义上的差异显著性。';
+        }
 
 
+        $section->addText('         3）   比较不同学校优秀组考生各能力层级的作答表现可知，'.$examMoldThirdTxt, $contentStyleFont, $contentStyleParagraph);
 
 
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) { 
+            arsort($schoolExamMoldPassDValueRecord[$schoolName]);
+            $num = 0;
+            // $schoolExamMoldD3Txt[$schoolName] = $schoolExamMoldD3Txt[$schoolName].'的';
+            foreach ($schoolExamMoldPassDValueRecord[$schoolName] as $key => $value) {
+                if($value == 1 && $num == 0) {
+                    if(array_values($schoolExamMoldPassDValueRecord[$schoolName])[1] == 1) {
+                        $schoolExamMoldD3Txt[$schoolName] = $schoolExamMoldD3Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolExamMoldD3Txt[$schoolName] = $schoolExamMoldD3Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 1) {
+                    if(array_values($schoolExamMoldPassDValueRecord[$schoolName])[2] == 1) {
+                        $schoolExamMoldD3Txt[$schoolName] = $schoolExamMoldD3Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolExamMoldD3Txt[$schoolName] = $schoolExamMoldD3Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 2) {
+                    if(array_values($schoolExamMoldPassDValueRecord[$schoolName])[3] == 1) {
+                        $schoolExamMoldD3Txt[$schoolName] = $schoolExamMoldD3Txt[$schoolName].$key.'等';
+                    } else {
+                        $schoolExamMoldD3Txt[$schoolName] = $schoolExamMoldD3Txt[$schoolName].$key;
+                    }
+                }
+                $num++;
+            }
+        }
+
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
+            if($schoolExamMoldPassRateRecord[$schoolName] == count(self::$detailTableData['examMoldName']) && array_values($schoolExamMoldPassDValueRecord[$schoolName])[0] > 0) {
+                $schoolExamMoldName31[] = $schoolName;
+            } elseif($schoolExamMoldPassRateRecord[$schoolName] < count(self::$detailTableData['examMoldName']) && array_values($schoolExamMoldPassDValueRecord[$schoolName])[0] > 0) {
+                $schoolExamMoldName32[] = $schoolName;
+            } else {
+                $schoolExamMoldName33[] = $schoolName;
+            }
+        }
+
+        if(count($schoolExamMoldName31) > 1) {
+            foreach ($schoolExamMoldName31 as $key => $name) {
+                if($key < count($schoolExamMoldName31) - 1) {
+                    $schoolExamMoldName31List = $schoolExamMoldName31List.$name.'、';
+                } else {
+                    $schoolExamMoldName31List = $schoolExamMoldName31List.$name;
+                }
+            }
+            $examMoldFourTxt = $examMoldFourTxt.$schoolExamMoldName31List.'考生各能力层级的得分率均高于全区考生得分率，经效果量检验，';
+            foreach ($schoolExamMoldName31 as $key => $name) {
+                if($key < count($schoolExamMoldName31) - 1) {
+                    $examMoldFourTxt = $examMoldFourTxt.$name.$schoolExamMoldD3Txt[$name].'；';
+                } else {
+                    $examMoldFourTxt = $examMoldFourTxt.$name.$schoolExamMoldD3Txt[$name];
+                }
+                
+            }
+            $examMoldFourTxt = $examMoldFourTxt.'具有实际意义上的差异显著性。';
+        } elseif(count($schoolExamMoldName31) == 1) {
+            $examMoldFourTxt = $examMoldFourTxt.$schoolExamMoldName31[0].'考生各能力层级的得分率均高于全区考生得分率，经效果量检验，';
+            $examMoldFourTxt = $examMoldFourTxt.'该校'.$schoolExamMoldD3Txt[$schoolExamMoldName31[0]].'具有实际意义上的差异显著性。';
+        }
+
+        if(count($schoolExamMoldName32) > 1) {
+            foreach ($schoolExamMoldName32 as $key => $name) {
+                if($key < count($schoolExamMoldName32) - 1) {
+                    $schoolExamMoldName32List = $schoolExamMoldName32List.$name.'中的'.$schoolExamMoldD3Txt[$name].'；';
+                } else {
+                    $schoolExamMoldName32List = $schoolExamMoldName32List.$name.'中的'.$schoolExamMoldD3Txt[$name].'，';
+                }
+            }
+            $examMoldFourTxt = $examMoldFourTxt.$schoolExamMoldName32List.'经效果量检验，具有实际意义上的差异显著性。';
+        } elseif(count($schoolExamMoldName32) == 1) {
+            $schoolExamMoldName32List = $schoolExamMoldName32List.$schoolExamMoldName32[0].'中的'.$schoolExamMoldD3Txt[$schoolExamMoldName32[0]];
+            $examMoldFourTxt = $examMoldFourTxt.$schoolExamMoldName32List.'经效果量检验，具有实际意义上的差异显著性。';
+        }
+
+        if(count($schoolExamMoldName31) == 0 && count($schoolExamMoldName32) == 0 && count($schoolExamMoldName33) > 0) {
+            $examMoldFourTxt = $examMoldFourTxt.'所有学校全体考生的各能力层级经效果量检验，均不具有实际意义上的差异显著性。';
+        } elseif(count($schoolExamMoldName33) > 0) {
+            $examMoldFourTxt = $examMoldFourTxt.'其他学校全体考生的各能力层级经效果量检验，均不具有实际意义上的差异显著性。';
+        }
 
 
+        $section->addText('         4）   及格组中'.$examMoldFourTxt, $contentStyleFont, $contentStyleParagraph);
 
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) { 
+            arsort($schoolExamMoldFailDValueRecord[$schoolName]);
+            $num = 0;
+            // $schoolExamMoldD4Txt[$schoolName] = $schoolExamMoldD4Txt[$schoolName].'的';
+            foreach ($schoolExamMoldFailDValueRecord[$schoolName] as $key => $value) {
+                if($value == 1 && $num == 0) {
+                    if(array_values($schoolExamMoldFailDValueRecord[$schoolName])[1] == 1) {
+                        $schoolExamMoldD4Txt[$schoolName] = $schoolExamMoldD4Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolExamMoldD4Txt[$schoolName] = $schoolExamMoldD4Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 1) {
+                    if(array_values($schoolExamMoldFailDValueRecord[$schoolName])[2] == 1) {
+                        $schoolExamMoldD4Txt[$schoolName] = $schoolExamMoldD4Txt[$schoolName].$key.'、';
+                    } else {
+                        $schoolExamMoldD4Txt[$schoolName] = $schoolExamMoldD4Txt[$schoolName].$key;
+                    }
+                } elseif($value == 1 && $num == 2) {
+                    if(array_values($schoolExamMoldFailDValueRecord[$schoolName])[3] == 1) {
+                        $schoolExamMoldD4Txt[$schoolName] = $schoolExamMoldD4Txt[$schoolName].$key.'等';
+                    } else {
+                        $schoolExamMoldD4Txt[$schoolName] = $schoolExamMoldD4Txt[$schoolName].$key;
+                    }
+                }
+                $num++;
+            }
+        }
 
+        foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
+            if($schoolExamMoldFailRateRecord[$schoolName] == count(self::$detailTableData['examMoldName']) && array_values($schoolExamMoldFailDValueRecord[$schoolName])[0] > 0) {
+                $schoolExamMoldName41[] = $schoolName;
+            } elseif($schoolExamMoldFailRateRecord[$schoolName] < count(self::$detailTableData['examMoldName']) && array_values($schoolExamMoldFailDValueRecord[$schoolName])[0] > 0) {
+                $schoolExamMoldName42[] = $schoolName;
+            } else {
+                $schoolExamMoldName43[] = $schoolName;
+            }
+        }
 
+        if(count($schoolExamMoldName41) > 1) {
+            foreach ($schoolExamMoldName41 as $key => $name) {
+                if($key < count($schoolExamMoldName41) - 1) {
+                    $schoolExamMoldName41List = $schoolExamMoldName41List.$name.'、';
+                } else {
+                    $schoolExamMoldName41List = $schoolExamMoldName41List.$name;
+                }
+            }
+            $examMoldFiveTxt = $examMoldFiveTxt.$schoolExamMoldName41List.'考生各能力层级的得分率均高于全区考生得分率，经效果量检验，';
+            foreach ($schoolExamMoldName41 as $key => $name) {
+                if($key < count($schoolExamMoldName41) - 1) {
+                    $examMoldFiveTxt = $examMoldFiveTxt.$name.$schoolExamMoldD4Txt[$name].'；';
+                } else {
+                    $examMoldFiveTxt = $examMoldFiveTxt.$name.$schoolExamMoldD4Txt[$name];
+                }
+                
+            }
+            $examMoldFiveTxt = $examMoldFiveTxt.'具有实际意义上的差异显著性。';
+        } elseif(count($schoolExamMoldName41) == 1) {
+            $examMoldFiveTxt = $examMoldFiveTxt.$schoolExamMoldName41[0].'考生各能力层级的得分率均高于全区考生得分率，经效果量检验，';
+            $examMoldFiveTxt = $examMoldFiveTxt.'该校'.$schoolExamMoldD4Txt[$schoolExamMoldName41[0]].'具有实际意义上的差异显著性。';
+        }
 
+        if(count($schoolExamMoldName42) > 1) {
+            foreach ($schoolExamMoldName42 as $key => $name) {
+                if($key < count($schoolExamMoldName42) - 1) {
+                    $schoolExamMoldName42List = $schoolExamMoldName42List.$name.'中的'.$schoolExamMoldD4Txt[$name].'；';
+                } else {
+                    $schoolExamMoldName42List = $schoolExamMoldName42List.$name.'中的'.$schoolExamMoldD4Txt[$name].'，';
+                }
+            }
+            $examMoldFiveTxt = $examMoldFiveTxt.$schoolExamMoldName42List.'经效果量检验，具有实际意义上的差异显著性。';
+        } elseif(count($schoolExamMoldName42) == 1) {
+            $schoolExamMoldName42List = $schoolExamMoldName42List.$schoolExamMoldName42[0].'中的'.$schoolExamMoldD4Txt[$schoolExamMoldName42[0]];
+            $examMoldFiveTxt = $examMoldFiveTxt.$schoolExamMoldName42List.'经效果量检验，具有实际意义上的差异显著性。';
+        }
 
+        if(count($schoolExamMoldName41) == 0 && count($schoolExamMoldName42) == 0 && count($schoolExamMoldName43) > 0) {
+            $examMoldFiveTxt = $examMoldFiveTxt.'所有学校全体考生的各能力层级经效果量检验，均不具有实际意义上的差异显著性。';
+        } elseif(count($schoolExamMoldName43) > 0) {
+            $examMoldFiveTxt = $examMoldFiveTxt.'其他学校全体考生的各能力层级经效果量检验，均不具有实际意义上的差异显著性。';
+        }
 
-
-
-
-
+        $section->addText('         5）   未及格组中'.$examMoldFiveTxt, $contentStyleFont, $contentStyleParagraph);
 
         $section->addTextBreak(2);
 
@@ -818,8 +1560,14 @@ class CreateWord {
 
         for ($i = 0; $i < count(self::$choiceQuestionsAnalysisData); $i++) { 
             foreach (self::$choiceQuestionsAnalysisData[$i] as $key => $name) {
-                if($key == '选A率%' || $key == '选B率%' || $key == '选C率%' || $key == '选D率%') {
-                    $kgtRate[$i][] = $name;
+                if($key == '选A率%') {
+                    $kgtRate[$i]['A'] = $name;
+                } elseif($key == '选B率%') {
+                    $kgtRate[$i]['B'] = $name;
+                } elseif($key == '选C率%') {
+                    $kgtRate[$i]['C'] = $name;
+                } elseif($key == '选D率%') {
+                    $kgtRate[$i]['D'] = $name;
                 }
             }
             arsort($kgtRate[$i]);
@@ -844,640 +1592,33 @@ class CreateWord {
             }
         }
 
-        $section->addText('     注：区分度评价标准:>0.4区分度较高;0.3~0.39 区分度中等;0.2~0.29 区分度一般;<0.2区分度较低', $tableTitleStyleFont);
-        $section->addText('         难度评价标准:  >0.9容易;0.7~0.9较易;0.4~0.7中等;<0.4偏难;', $tableTitleStyleFont);
+        $section->addText('     注：区分度评价标准:>0.4区分度较高;0.3~0.39 区分度中等;0.2~0.29 区分度一般;<0.2区分度较低', $tableCommentStyleFont);
+        $section->addText('     难度评价标准:  >0.9容易;0.7~0.9较易;0.4~0.7中等;<0.4偏难;', $tableCommentStyleFont);
+
+        $section->addTextBreak();
 
         $section->addText('表2.0的数据表明', $contentStyleFont);
 
         for ($i = 0; $i < count(self::$choiceQuestionsAnalysisData); $i++) {
-            if($kgtRate[$i][array_keys($kgtRate[$i])[1]] > 17) {
-                if(array_keys($kgtRate[$i])[1] == 0) {
-                    $item = 'A';
-                }
-                elseif(array_keys($kgtRate[$i])[1] == 1) {
-                    $item = 'B';
-                }
-                elseif(array_keys($kgtRate[$i])[1] == 2) {
-                    $item = 'C';
-                }
-                elseif(array_keys($kgtRate[$i])[1] == 3) {
-                    $item = 'D';
-                }
-                $txt = '，选项'.$item.'的干扰性最强达到了'.$kgtRate[$i][array_keys($kgtRate[$i])[1]].'%';
-            }
-            else{
+            if(array_values($kgtRate[$i])[1] > 17) {
+                $item = array_keys($kgtRate[$i])[1];
+                $txt = '，选项'.$item.'的干扰性最强达到了'.array_values($kgtRate[$i])[1].'%';
+            } else {
                 $txt = '';
             }
-            if($i / 2 == 0){
-                $section->addText('     '.($i+1).'）'.self::$choiceQuestionsAnalysisData[$i]['题号'].'：该题难度'.self::$choiceQuestionsAnalysisData[$i]['难度评价标准'].'('.self::$choiceQuestionsAnalysisData[$i]['难度'].')，'.self::$choiceQuestionsAnalysisData[$i]['区分度评价标准'].'('.self::$choiceQuestionsAnalysisData[$i]['区分度'].')，有'.self::$choiceQuestionsAnalysisData[$i]['选'.self::$choiceQuestionsAnalysisData[$i]['答案'].'率%'].'%的学生选择了正确答案('.self::$choiceQuestionsAnalysisData[$i]['答案'].')，得分率>'.self::$choiceQuestionsAnalysisData[$i]['得分率'].'%'.$txt, $choiceQuestionsContentStyleFont);
+
+            if($i % 2 == 0){
+                $section->addText('     '.($i+1).'）'.self::$choiceQuestionsAnalysisData[$i]['题号'].'：该题难度'.self::$choiceQuestionsAnalysisData[$i]['难度评价标准'].'('.self::$choiceQuestionsAnalysisData[$i]['难度'].')，'.self::$choiceQuestionsAnalysisData[$i]['区分度评价标准'].'('.self::$choiceQuestionsAnalysisData[$i]['区分度'].')，有'.self::$choiceQuestionsAnalysisData[$i]['选'.self::$choiceQuestionsAnalysisData[$i]['答案'].'率%'].'%的学生选择了正确答案('.self::$choiceQuestionsAnalysisData[$i]['答案'].')，得分率>'.self::$choiceQuestionsAnalysisData[$i]['得分率'].'%'.$txt, $choiceQuestionsContentStyleFont, $choiceQuestionsContentStyleParagraph);
             }
             else {
-                $section->addText('     '.($i+1).'）'.self::$choiceQuestionsAnalysisData[$i]['题号'].'：该题从难度上讲属于'.self::$choiceQuestionsAnalysisData[$i]['难度评价标准'].'('.self::$choiceQuestionsAnalysisData[$i]['难度'].')，'.self::$choiceQuestionsAnalysisData[$i]['区分度评价标准'].'('.self::$choiceQuestionsAnalysisData[$i]['区分度'].')，正确答案('.self::$choiceQuestionsAnalysisData[$i]['答案'].')的选择率达到了'.self::$choiceQuestionsAnalysisData[$i]['选'.self::$choiceQuestionsAnalysisData[$i]['答案'].'率%'].'%，其余选项的选择率都低于'.$kgtRate[$i][array_keys($kgtRate[$i])[1]].'%'.$txt, $choiceQuestionsContentStyleFont);
+                $section->addText('     '.($i+1).'）'.self::$choiceQuestionsAnalysisData[$i]['题号'].'：该题从难度上讲属于'.self::$choiceQuestionsAnalysisData[$i]['难度评价标准'].'('.self::$choiceQuestionsAnalysisData[$i]['难度'].')，'.self::$choiceQuestionsAnalysisData[$i]['区分度评价标准'].'('.self::$choiceQuestionsAnalysisData[$i]['区分度'].')，正确答案('.self::$choiceQuestionsAnalysisData[$i]['答案'].')的选择率达到了'.self::$choiceQuestionsAnalysisData[$i]['选'.self::$choiceQuestionsAnalysisData[$i]['答案'].'率%'].'%，其余选项的选择率都低于'.array_values($kgtRate[$i])[1].'%'.$txt, $choiceQuestionsContentStyleFont, $choiceQuestionsContentStyleParagraph);
             }
         }
-
-
         
         $section = \PHPWord_IOFactory::createWriter($PHPWord, 'Word2007');
         $section->save($wordSaveDir.iconv("utf-8", "gb2312", self::$course).'.docx');
 
-        /*
-
-        $examSchoolTotalRate = array();
-        $examSchoolExcellentRate = array();
-        $examSchoolPassRate = array();
-        $examSchoolFailRate = array();
-
-        $examSchoolRecord = array();
-
-        foreach ($studentData['averageScore']['schoolName'] as $name) {
-            for ($i = 0; $i < count($studentData['detailTable']['examName']); $i++) {
-                if($i != count($studentData['detailTable']['examName']) - 1) {
-                    $tableSchoolZSFC->addRow(300); 
-                    
-                    $tableSchoolZSFC->addCell(2500)->addText($name, $cellStyleFont, $cellStyle); 
-                    $tableSchoolZSFC->addCell(2500)->addText($studentData['detailTable']['examName'][$i], $cellStyleFont, $cellStyle); 
-
-                    $tableSchoolZSFC->addCell(1600)->addText($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['total']['totalRate'], $cellStyleFont, $cellStyle); 
-                    $tableSchoolZSFC->addCell(1600)->addText($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['totalRate'], $cellStyleFont, $cellStyle); 
-                    $tableSchoolZSFC->addCell(1600)->addText($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['excellentRate'], $cellBlueStyleFont, $cellStyle); 
-                    $tableSchoolZSFC->addCell(1600)->addText($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['passRate'], $cellGreenStyleFont, $cellStyle); 
-                    $tableSchoolZSFC->addCell(1600)->addText($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['failRate'], $cellRedStyleFont, $cellStyle);
-                }
-                else {
-                    $tableSchoolZSFC->addRow(300); 
-                    
-                    $tableSchoolZSFC->addCell(2500, $cellStyleLast)->addText($name, $cellStyleFont, $cellStyle); 
-                    $tableSchoolZSFC->addCell(2500, $cellStyleLast)->addText($studentData['detailTable']['examName'][$i], $cellStyleFont, $cellStyle); 
-
-                    $tableSchoolZSFC->addCell(1600, $cellStyleLast)->addText($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['total']['totalRate'], $cellStyleFont, $cellStyle); 
-                    $tableSchoolZSFC->addCell(1600, $cellStyleLast)->addText($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['totalRate'], $cellStyleFont, $cellStyle); 
-                    $tableSchoolZSFC->addCell(1600, $cellStyleLast)->addText($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['excellentRate'], $cellBlueStyleFont, $cellStyle); 
-                    $tableSchoolZSFC->addCell(1600, $cellStyleLast)->addText($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['passRate'], $cellGreenStyleFont, $cellStyle); 
-                    $tableSchoolZSFC->addCell(1600, $cellStyleLast)->addText($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['failRate'], $cellRedStyleFont, $cellStyle);
-                }
-
-                $examSchoolTotalRate[$studentData['detailTable']['examName'][$i]] = $studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['total']['totalRate'];
-                
-                if($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['totalRate'] > $studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['total']['totalRate']) {
-                    $examSchoolRecord[$name][] = 1;
-                }
-                else {
-                    $examSchoolRecord[$name][] = 0;
-                }
-            }
-        }
-
-        arsort($examSchoolTotalRate);
-
-        $schoolName1 = array();
-        $schoolName2 = array();
-        $schoolCourseNum = array();
-
-        foreach ($examSchoolRecord as $key => $value) {
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 0) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 1) {
-                        $schoolName1[] = $key;
-                    }
-                }
-            }
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 1) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 0) {
-                        $schoolName2[] = $key;
-                    }
-                }
-            }
-        }
-
-        $num = 0;
-        foreach ($examSchoolRecord as $key => $value) {
-
-            if ($num > 1) {// 随便找个学校当样板
-                for ($i = 0; $i < count($value); $i++) { 
-                    if($value[$i] == 1) {
-                        $schoolCourseNum[0] = $key;
-                        $schoolCourseNum[1] = $value;
-                        break;
-                    }
-                }
-                break;
-            }
-            $num++;
-        }
-
-        $num = 0;
-        foreach ($examSchoolRecord as $key => $value) {
-
-            if ($num > 3) {// 随便找个学校当样板
-                for ($i = 0; $i < count($value); $i++) { 
-                    if($value[$i] == 0) {
-                        $schoolCourseNum[3] = $key;
-                        $schoolCourseNum[4] = $value;
-                        break;
-                    }
-                }
-                break;
-            }
-            $num++;
-        }
-
-        for ($i = 0; $i < count($schoolCourseNum[1]); $i++) { 
-            if($schoolCourseNum[1][$i] == 1) {
-                $str1 = $str1 . '、' . $studentData['detailTable']['examName'][$i];
-            }
-        }
-
-        for ($i = 0; $i < count($schoolCourseNum[4]); $i++) { 
-            if($schoolCourseNum[4][$i] == 0) {
-                $str2 = $str2 . '、' . $studentData['detailTable']['examName'][$i];
-            }
-        }
-
-
-        $schoolName1 = implode('、', $schoolName1);
-        if(!empty($schoolName2)) {
-            $schoolName2 = implode('、', $schoolName2);
-        }
-        else {
-            $schoolName2 = '无';
-        }
-
-        $section->addText('     表3.1的数据表明：', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('     不同学校全体及不同水平组考生各知识范畴作答表现存在差异，具体如下：', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('         1）   不同学校全体及不同水平组考生在'.array_keys($examSchoolTotalRate)[0].'知识范畴作答表现好，得分率为'.$examSchoolTotalRate[array_keys($examSchoolTotalRate)[0]].'%；在'.array_keys($examSchoolTotalRate)[count($examSchoolTotalRate)-1].'表现相对较差为'.$examSchoolTotalRate[array_keys($examSchoolTotalRate)[count($examSchoolTotalRate)-1]].'%。', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('         2）   比较不同学校全体组考生各知识范畴的作答表现可知，'.$schoolName1.'考生各知识范畴的得分率均高于全区考生得分率； '.$schoolCourseNum[0].'中的'.$str1.'知识范畴的得分率均高于全区考生；'.$schoolCourseNum[3].'的'.$str2.'知识范畴得分率低于全区考生；'.$schoolName2.'考生各知识范畴考生的得分率均低于全区考生；', $contentStyleFont, $contentStyleParagraph);
-
-        $examSchoolExcellentRecord = array();
-        $examSchoolExcellentRecord1 = array();
-        foreach ($studentData['averageScore']['schoolName'] as $name) {
-            for ($i = 0; $i < count($studentData['detailTable']['examName']); $i++) {
-                if($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['excellentRate'] > $studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['total']['totalRate']) {
-                    $examSchoolExcellentRecord[$name][] = 1;
-                }
-                else {
-                    $examSchoolExcellentRecord[$name][] = 0;
-                }
-
-                if($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['excellentRate'] >= $studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['total']['totalRate']) {
-                    $examSchoolExcellentRecord1[$name][] = 1;
-                }
-                else {
-                    $examSchoolExcellentRecord1[$name][] = 0;
-                }
-            }
-        }
-
-
-        $schoolName3 = array();
-        $schoolName4 = array();
-        $schoolName5 = array();
-        foreach ($examSchoolExcellentRecord as $key => $value) {
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 0) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 1) {
-                        $schoolName3[] = $key;
-                    }
-                }
-            }
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 0) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 0) {
-                        $schoolName4[] = $key;
-                    }
-                }
-            }
-        }
-        foreach ($examSchoolExcellentRecord1 as $key => $value) {
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 0) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 1) {
-                        $schoolName5[] = $key;
-                    }
-                }
-            }
-        }
-        $schoolName3 = implode('、', $schoolName3);
-        $schoolName4 = implode('、', $schoolName4);
-        $schoolName5 = implode('、', $schoolName5);
-
-        $section->addText('         3）   比较同水平组不同学校考生各知识范畴的作答表现， 优秀组'.$schoolName3.'考生在各知识范畴均高于全区得分率；'.$schoolName5.'考生在各知识范畴均高于或等于全区得分率；', $contentStyleFont, $contentStyleParagraph);
-
-        $examSchoolPassRecord = array();
-        foreach ($studentData['averageScore']['schoolName'] as $name) {
-            for ($i = 0; $i < count($studentData['detailTable']['examName']); $i++) {
-                if($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['passRate'] >= $studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['total']['totalRate']) {
-                    $examSchoolPassRecord[$name][] = 1;
-                }
-                else {
-                    $examSchoolPassRecord[$name][] = 0;
-                }
-            }
-        }
-
-
-        $schoolName6 = array();
-        $schoolName7 = array();
-        foreach ($examSchoolPassRecord as $key => $value) {
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 0) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 1) {
-                        $schoolName6[] = $key;
-                    }
-                }
-            }
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 0) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 1) {
-                        $schoolName7[] = $key;
-                    }
-                }
-            }
-        }
-
-        $schoolName6 = implode('、', $schoolName6);
-        $schoolName7 = implode('、', $schoolName7);
-
-        $section->addText('         4）   及格组中'.$schoolName6.'考生在各知识范畴的得分率均高于或等于全区考生得分率； 其余学校在各知识范畴的得分率均等于或低于全区考生得分率；', $contentStyleFont, $contentStyleParagraph);
-
-        $examSchoolFailRecord = array();
-        foreach ($studentData['averageScore']['schoolName'] as $name) {
-            for ($i = 0; $i < count($studentData['detailTable']['examName']); $i++) {
-                if($studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['failRate'] != 0 && $studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['schoolScore'][$name]['failRate'] < $studentData['scoreStatisticsRate']['exam'][$studentData['detailTable']['examName'][$i]]['total']['totalRate']) {
-                    $examSchoolFailRecord[$name][] = 1;
-                }
-                else {
-                    $examSchoolFailRecord[$name][] = 0;
-                }
-            }
-        }
-
-        $schoolName8 = array();
-        foreach ($examSchoolFailRecord as $key => $value) {
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 0) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 1) {
-                        $schoolName8[] = $key;
-                    }
-                }
-            }
-        }
-
-        if(count($schoolName8) == count($studentData['averageScore']['schoolName'])) {
-            $schoolName8 = '所有学校考生';
-        }
-        else {
-            $schoolName8 = implode('、', $schoolName8);
-        }
-
-
-        $section->addText('         5）   未及格组中'.$schoolName8.'在各知识范畴的得分率均等于或低于全区考生得分率；', $contentStyleFont, $contentStyleParagraph);
-        
-        $section->addTextBreak(2);
-
-        $section->addText('3.2 各校不同能力层级得分率比较分析', $subSmallTitleStyleFont);
-        $section->addText('表3.2 各校对比全区能力层级得分率对比表', $tableTitleStyleFont, $tableStyleParagraph);
-
-        // Add tableSchoolNLCJ（学校能力层级）
-        $tableSchoolNLCJ = $section->addTable('myTableStyle'); 
-
-        // Add row设置行高 
-        $tableSchoolNLCJ->addRow(300); 
-         
-        $tableSchoolNLCJ->addCell(2500)->addText('学校', $cellStyleFont, $cellStyle); 
-        $tableSchoolNLCJ->addCell(2500)->addText('知识范畴', $cellStyleFont, $cellStyle); 
-        $tableSchoolNLCJ->addCell(1600)->addText('全区', $cellStyleFont, $cellStyle); 
-        $tableSchoolNLCJ->addCell(1600)->addText('全体', $cellStyleFont, $cellStyle); 
-        $tableSchoolNLCJ->addCell(1600)->addText('优秀', $cellBlueStyleFont, $cellStyle); 
-        $tableSchoolNLCJ->addCell(1600)->addText('及格', $cellGreenStyleFont, $cellStyle); 
-        $tableSchoolNLCJ->addCell(1600)->addText('未及格', $cellRedStyleFont, $cellStyle); 
-
-        $typeSchoolTotalRate = array();
-        $typeSchoolExcellentRate = array();
-        $typeSchoolPassRate = array();
-        $typeSchoolFailRate = array();
-
-        $typeSchoolRecord = array();
-
-        foreach ($studentData['averageScore']['schoolName'] as $name) {
-            for ($i = 0; $i < count($studentData['detailTable']['typeName']); $i++) {
-                if($i != count($studentData['detailTable']['typeName']) - 1) {
-                    $tableSchoolNLCJ->addRow(300); 
-                    
-                    $tableSchoolNLCJ->addCell(2500)->addText($name, $cellStyleFont, $cellStyle); 
-                    $tableSchoolNLCJ->addCell(2500)->addText($studentData['detailTable']['typeName'][$i], $cellStyleFont, $cellStyle); 
-
-                    $tableSchoolNLCJ->addCell(1600)->addText($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['total']['totalRate'], $cellStyleFont, $cellStyle); 
-                    $tableSchoolNLCJ->addCell(1600)->addText($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['totalRate'], $cellStyleFont, $cellStyle); 
-                    $tableSchoolNLCJ->addCell(1600)->addText($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['excellentRate'], $cellBlueStyleFont, $cellStyle); 
-                    $tableSchoolNLCJ->addCell(1600)->addText($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['passRate'], $cellGreenStyleFont, $cellStyle); 
-                    $tableSchoolNLCJ->addCell(1600)->addText($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['failRate'], $cellRedStyleFont, $cellStyle);
-                }
-                else {
-                    $tableSchoolNLCJ->addRow(300); 
-                    
-                    $tableSchoolNLCJ->addCell(2500, $cellStyleLast)->addText($name, $cellStyleFont, $cellStyle); 
-                    $tableSchoolNLCJ->addCell(2500, $cellStyleLast)->addText($studentData['detailTable']['examName'][$i], $cellStyleFont, $cellStyle); 
-
-                    $tableSchoolNLCJ->addCell(1600, $cellStyleLast)->addText($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['total']['totalRate'], $cellStyleFont, $cellStyle); 
-                    $tableSchoolNLCJ->addCell(1600, $cellStyleLast)->addText($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['totalRate'], $cellStyleFont, $cellStyle); 
-                    $tableSchoolNLCJ->addCell(1600, $cellStyleLast)->addText($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['excellentRate'], $cellBlueStyleFont, $cellStyle); 
-                    $tableSchoolNLCJ->addCell(1600, $cellStyleLast)->addText($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['passRate'], $cellGreenStyleFont, $cellStyle); 
-                    $tableSchoolNLCJ->addCell(1600, $cellStyleLast)->addText($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['failRate'], $cellRedStyleFont, $cellStyle);
-                }
-
-                $typeSchoolTotalRate[$studentData['detailTable']['typeName'][$i]] = $studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['total']['totalRate'];
-                
-                if($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['totalRate'] >= $studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['total']['totalRate']) {
-                    $typeSchoolRecord[$name][] = 1;
-                }
-                else {
-                    $typeSchoolRecord[$name][] = 0;
-                }
-            }
-        }
-
-        arsort($typeSchoolTotalRate);
-
-        $schoolName1 = array();
-        $schoolName2 = array();
-
-        foreach ($typeSchoolRecord as $key => $value) {
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 0) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 1) {
-                        $schoolName1[] = $key;
-                    }
-                }
-            }
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 1) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 0) {
-                        $schoolName2[] = $key;
-                    }
-                }
-            }
-        }
-
-        $schoolName1 = implode('、', $schoolName1);
-        if(!empty($schoolName2)) {
-            $schoolName2 = '其他学校';
-        }
-        else {
-            $schoolName2 = '无';
-        }
-
-        $section->addText('     表3.2的数据表明：', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('     不同学校全体及不同水平组考生各能力层级作答表现存在差异，具体如下：', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('         1）   不同学校全体及不同水平组考生在'.array_keys($typeSchoolTotalRate)[0].'能力层级的得分率相对较高为'.$typeSchoolTotalRate[array_keys($typeSchoolTotalRate)[0]].'%；在'.array_keys($typeSchoolTotalRate)[count($typeSchoolTotalRate)-2].'、'.array_keys($typeSchoolTotalRate)[count($typeSchoolTotalRate)-1].'作答得分率相对较低分别为'.$typeSchoolTotalRate[array_keys($typeSchoolTotalRate)[count($typeSchoolTotalRate)-2]].'%和'.$typeSchoolTotalRate[array_keys($typeSchoolTotalRate)[count($typeSchoolTotalRate)-1]].'%。', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('         2）   比较不同学校全体组考生各能力层级的作答表现可知，'.$schoolName1.'考生各知识范畴的得分率均高于或等于全区考生得分率；'.$schoolName1.'中的各能力层级的得分率均等于或低于全区考生', $contentStyleFont, $contentStyleParagraph);
-
-        $typeSchoolExcellentRecord = array();
-        $typeSchoolExcellentRecord1 = array();
-        foreach ($studentData['averageScore']['schoolName'] as $name) {
-            for ($i = 0; $i < count($studentData['detailTable']['typeName']); $i++) {
-                if($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['excellentRate'] > $studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['total']['totalRate']) {
-                    $typeSchoolExcellentRecord[$name][] = 1;
-                }
-                else {
-                    $typeSchoolExcellentRecord[$name][] = 0;
-                }
-
-                if($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['excellentRate'] >= $studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['total']['totalRate']) {
-                    $typeSchoolExcellentRecord1[$name][] = 1;
-                }
-                else {
-                    $typeSchoolExcellentRecord1[$name][] = 0;
-                }
-            }
-        }
-
-        $schoolName3 = array();
-        foreach ($typeSchoolExcellentRecord as $key => $value) {
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 0) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 1) {
-                        $schoolName3[] = $key;
-                    }
-                }
-            }
-        }
-
-        if(count($schoolName3) == count($studentData['averageScore']['schoolName'])) {
-            $schoolName3 = '所有学校考生';
-        }
-        else {
-            $schoolName3 = implode('、', $schoolName3);
-        }
-
-        $section->addText('         3）   比较同水平组不同学校考生各能力层级的作答表现， 优秀组'.$schoolName3.'考生在各能力层级均高于或等于全区得分率；', $contentStyleFont, $contentStyleParagraph);
-
-        $typeSchoolPassRecord = array();
-        foreach ($studentData['averageScore']['schoolName'] as $name) {
-            for ($i = 0; $i < count($studentData['detailTable']['typeName']); $i++) {
-                if($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['passRate'] >= $studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['total']['totalRate']) {
-                    $typeSchoolPassRecord[$name][] = 1;
-                }
-                else {
-                    $typeSchoolPassRecord[$name][] = 0;
-                }
-            }
-        }
-
-
-        $schoolName6 = array();
-        $schoolName7 = array();
-        foreach ($typeSchoolPassRecord as $key => $value) {
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 0) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 1) {
-                        $schoolName6[] = $key;
-                    }
-                }
-            }
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 0) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && $value[$i] == 1) {
-                        $schoolName7[] = $key;
-                    }
-                }
-            }
-        }
-
-        $schoolName6 = implode('、', $schoolName6);
-        $schoolName7 = implode('、', $schoolName7);
-
-        $section->addText('         4）   及格组中'.$schoolName6.'考生在各能力范畴的得分率均高于或等于全区考生得分率； '.$schoolName7.'在各能力层级的得分率均等于或低于全区考生得分率；', $contentStyleFont, $contentStyleParagraph);
-
-        $examSchoolFailRecord = array();
-        foreach ($studentData['averageScore']['schoolName'] as $name) {
-            for ($i = 0; $i < count($studentData['detailTable']['typeName']); $i++) {
-                if($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['failRate'] != 0 && $studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['failRate'] < $studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['total']['totalRate']) {
-                    $typeSchoolFailRecord[$name][] = 1;
-                }
-                elseif($studentData['scoreStatisticsRate']['type'][$studentData['detailTable']['typeName'][$i]]['schoolScore'][$name]['failRate'] == 0) {
-                    $typeSchoolFailRecord[$name][] = 0.5;
-                }
-                else {
-                    $typeSchoolFailRecord[$name][] = 0;
-                }
-            }
-        }
-
-        $schoolName8 = array();
-        foreach ($typeSchoolFailRecord as $key => $value) {
-            
-            for ($i = 0; $i < count($value); $i++) { 
-                if($value[$i] == 0 && $value[$i] != 0.5 ) {
-                    break;
-                }
-                else {
-                    if($i == count($value) - 1 && ($value[$i] == 1 || $value[$i] == 0.5)) {
-                        $schoolName8[] = $key;
-                    }
-                }
-            }
-        }
-
-        if(count($schoolName8) == count($studentData['averageScore']['schoolName'])) {
-            $schoolName8 = '所有学校';
-        }
-        else {
-            $schoolName8 = implode('、', $schoolName8);
-        }
-
-        $section->addText('         5）   未及格组中'.$schoolName8.'考生在各知识范畴的得分率均等于或低于全区考生得分率；', $contentStyleFont, $contentStyleParagraph);
-        
-        $section->addTextBreak(2);
-
-
-        $section->addText('4.全体考生客观题水平分析', $subTitleStyleFont, $subTitleStyleParagraph);
-        $section->addText('表4.1 全区考生语文科目客观题分析表', $tableTitleStyleFont, $tableStyleParagraph);
-
-        // Add tableKGT（客观题水平分析）
-        $tableKGT = $section->addTable('myTableStyle'); 
-
-        // Add row设置行高 
-        $tableKGT->addRow(300); 
-         
-        $tableKGT->addCell(1600)->addText('题号', $cellStyleFont, $cellStyle); 
-        $tableKGT->addCell(1600)->addText('答案', $cellStyleFont, $cellStyle); 
-        $tableKGT->addCell(1600)->addText('人数', $cellStyleFont, $cellStyle); 
-        $tableKGT->addCell(1600)->addText('平均分', $cellStyleFont, $cellStyle); 
-        $tableKGT->addCell(1600)->addText('标准差', $cellStyleFont, $cellStyle); 
-        $tableKGT->addCell(1600)->addText('得分率', $cellStyleFont, $cellStyle); 
-        $tableKGT->addCell(1600)->addText('难度', $cellStyleFont, $cellStyle); 
-        $tableKGT->addCell(1600)->addText('区分度', $cellStyleFont, $cellStyle); 
-        $tableKGT->addCell(1600)->addText('选A率%', $cellStyleFont, $cellStyle); 
-        $tableKGT->addCell(1600)->addText('选B率%', $cellStyleFont, $cellStyle); 
-        $tableKGT->addCell(1600)->addText('选C率%', $cellStyleFont, $cellStyle); 
-        $tableKGT->addCell(1600)->addText('选D率%', $cellStyleFont, $cellStyle); 
-
-        $kgtRate = array();
-
-        for ($i = 0; $i < count($studentData['choiceQuestionsAnalysis']); $i++) { 
-            $tableKGT->addRow(300);
-            foreach ($studentData['choiceQuestionsAnalysis'][$i] as $key => $name) { 
-                if($key != '难度评价标准' && $key != '区分度评价标准') {
-                    $tableKGT->addCell(1200)->addText($name, $cellStyleFont, $cellStyle);
-                }
-                if($key == '选A率%' || $key == '选B率%' || $key == '选C率%' || $key == '选D率%') {
-                    $kgtRate[$i][] = $name;
-                }
-            }
-            arsort($kgtRate[$i]);
-        }
-
-        $section->addText('     注：区分度评价标准:>0.4区分度较高;0.3~0.39 区分度中等;0.2~0.29 区分度一般;<0.2区分度较低', $tableTitleStyleFont, $tableStyleParagraph);
-        $section->addText('         难度评价标准:  >0.9容易;0.7~0.9较易;0.4~0.7中等;<0.4偏难;', $tableTitleStyleFont, $tableStyleParagraph);
-
-        $section->addText('表2.0的数据表明', $contentStyleFont);
-
-        for ($i = 0; $i < count($studentData['choiceQuestionsAnalysis']); $i++) {
-            if($kgtRate[$i][array_keys($kgtRate[$i])[1]] > 17) {
-                if(array_keys($kgtRate[$i])[1] == 0) {
-                    $item = 'A';
-                }
-                elseif(array_keys($kgtRate[$i])[1] == 1) {
-                    $item = 'B';
-                }
-                elseif(array_keys($kgtRate[$i])[1] == 2) {
-                    $item = 'C';
-                }
-                elseif(array_keys($kgtRate[$i])[1] == 3) {
-                    $item = 'D';
-                }
-                $txt = '，选项'.$item.'的干扰性最强达到了'.$kgtRate[$i][array_keys($kgtRate[$i])[1]].'%';
-            }
-            else{
-                $txt = '';
-            }
-            if($i / 2 == 0){
-                $section->addText('     '.($i+1).'）'.$studentData['choiceQuestionsAnalysis'][$i]['题号'].'：该题难度'.$studentData['choiceQuestionsAnalysis'][$i]['难度评价标准'].'('.$studentData['choiceQuestionsAnalysis'][$i]['难度'].')，'.$studentData['choiceQuestionsAnalysis'][$i]['区分度评价标准'].'('.$studentData['choiceQuestionsAnalysis'][$i]['区分度'].')，有'.$studentData['choiceQuestionsAnalysis'][$i]['选'.$studentData['choiceQuestionsAnalysis'][$i]['答案'].'率%'].'%的学生选择了正确答案('.$studentData['choiceQuestionsAnalysis'][$i]['答案'].')，得分率>'.$studentData['choiceQuestionsAnalysis'][$i]['得分率'].'%'.$txt, $contentStyleFont);
-            }
-            else {
-                $section->addText('     '.($i+1).'）'.$studentData['choiceQuestionsAnalysis'][$i]['题号'].'：该题从难度上讲属于'.$studentData['choiceQuestionsAnalysis'][$i]['难度评价标准'].'('.$studentData['choiceQuestionsAnalysis'][$i]['难度'].')，'.$studentData['choiceQuestionsAnalysis'][$i]['区分度评价标准'].'('.$studentData['choiceQuestionsAnalysis'][$i]['区分度'].')，正确答案('.$studentData['choiceQuestionsAnalysis'][$i]['答案'].')的选择率达到了'.$studentData['choiceQuestionsAnalysis'][$i]['选'.$studentData['choiceQuestionsAnalysis'][$i]['答案'].'率%'].'%，其余选项的选择率都低于'.$kgtRate[$i][array_keys($kgtRate[$i])[1]].'%'.$txt, $contentStyleFont);
-            }
-        }*/
-        
-        /*$section = \PHPWord_IOFactory::createWriter($PHPWord, 'Word2007');
-        $section->save($wordSaveDir.iconv("utf-8", "gb2312", $course).'.docx');*/
-
     }
-
 }
 
 ?>
