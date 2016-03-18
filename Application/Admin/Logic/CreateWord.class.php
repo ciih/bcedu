@@ -91,6 +91,16 @@ class CreateWord {
     function __construct($date, $foldername, $course)
     {
         // 获取考试数据目录
+        $zValueObj = new \Admin\Model\ZValueData($date, $foldername);
+        self::$zValueData = $zValueObj->getZValueData();
+
+        var_export('===========$zValueData==========');
+        var_export($zValueData);
+        exit();
+
+
+
+        // 获取考试数据目录
         $examInfoObj = new \Admin\Model\ExamInfoData($date, $foldername);
         self::$examInfoData = $examInfoObj->getExamInfoData();
 
