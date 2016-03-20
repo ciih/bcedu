@@ -55,7 +55,7 @@
         link = '';
 
     for (var i = 0; i < len; i++) {
-        link = '/Data/Word/' + uploaddate + '/' + fullname + '/' + course[i] + '.docx';
+        link = '/Data/Word/' + fullname + '/' + course[i] + '.docx';
         tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ course[i] +'</a></li>';
     }
     listEl.html(tpl);

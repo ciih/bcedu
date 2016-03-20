@@ -8,7 +8,8 @@
 					<a href="#edu-section" title="教育局">教育局</a>
 					<span>教育局</span>
 				</li>
-				<li class="icon-tag icon-highschool">
+				<?php // 暂时不计算各学校数据 ?>
+				<!-- <li class="icon-tag icon-highschool">
 					<a href="#highschool-section" title="高中">高中</a>
 					<span>高中</span>
 				</li>
@@ -19,7 +20,7 @@
 				<li class="icon-tag icon-juniorschool">
 					<a href="#juniorschool-section" title="小学">小学</a>
 					<span>小学</span>
-				</li>
+				</li> -->
 			</ul>
 		</div>
 		</if>

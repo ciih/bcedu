@@ -17,6 +17,15 @@ class ValueaddedController extends Controller {
         
         $schoolyear = array_unique($data);
 
+        
+        // 获取考试数据目录
+        /*$zValueObj = new \Admin\Model\ZValueData($date, $foldername);
+        $zValueData = $zValueObj->getZValueData();
+
+        var_export('===========$zValueData==========');
+        var_export($zValueData);
+        exit();*/
+
         $this->assign('loadCss', $loadCss);
         $this->assign('loadJs', $loadJs);
         $this->assign('loadPageJs', $loadPageJs);

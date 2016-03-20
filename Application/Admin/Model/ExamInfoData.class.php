@@ -64,7 +64,7 @@ class ExamInfoData {
         $fullname = $foldernameData['fullname'];
         $uploadDate = self::$uploadDate;
         $examInfoData = M('exam');
-        // $examInfo = $examInfoData->where("fullname='$fullname'")->find();
+        $examInfo = $examInfoData->where("fullname='$fullname'")->find();
         $data = array(); // 写入数据信息
         if(!$examInfo){
             $data['schooltype'] = self::$schoolType;

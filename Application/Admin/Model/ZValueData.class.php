@@ -160,15 +160,100 @@ class ZValueData {
      */
     private function getZValueDefaultData()
     {
+        $filePath = self::$basePath.self::$examInfoData['mainDir'].'/';
+
+        $filename = self::$averageContrast;
+
+        $excelData = self::$excelFile->openExcel($filePath, $filename);
+
+        $CValueNumerator = array(); // 标准差C值分子
+
+        $CValue = array(); // 标准差C值
+
+        $schoolZValue = array(); // 增值性评价Z值
+
+        $ZValueData = array(); // Z值数据
+
+        foreach($excelData->getRowIterator() as $kr => $row){
+            $cellIterator = $row->getCellIterator();
+
+            $num = 1;
+
+            if($kr == 1) {
+                foreach($cellIterator as $kc => $cell){
+                    if ($kc % 2 == 1) {
+                        $item[] = $cell->getValue();
+                    }
+                }
+            } elseif($kr > 1) {
+                foreach($cellIterator as $kc => $cell){
+                    if ($kc == 0) {
+                        $schoolName = $cell->getValue();
+                    } elseif($kc % 2 == 1) {
+                        $data[$schoolName][$item[$kc-$num]] = number_format($cell->getValue(), 2, '.', '');
+                        $num++;
+                    }
+                }
+            }
+        }
+
+        foreach ($data as $schoolName => $item) {
+            foreach ($item as $key => $value) {
+                if($schoolName != '全体') {
+                    $averageScoreStudentData[$schoolName][$key] = $value;
+                } else {
+                    $averageScoreTotalData[$key] = $value;
+                }
+            }
+        }
+
+        foreach ($averageScoreStudentData as $schoolName => $item) {
+            foreach ($item as $key => $value) {
+                $CValueNumerator[$key] = number_format($CValueNumerator[$key] + number_format(pow(number_format($value - $averageScoreTotalData[$key], 2, '.', '') , 2), 2, '.', ''), 2, '.', '');
+                $totalScore[$key] = number_format($totalScore[$key] + $value, 2, '.', '');
+            }
+        }
+
+        $totalStudentCount = count(self::$schoolInfoData['schoolList']);
+
+        foreach ($totalScore as $key => $value) {
+            $averageScoreSchoolData[$key] = number_format($value / $totalStudentCount, 2, '.', '');
+        }
+
+        foreach ($CValueNumerator as $key => $value) {
+            $CValue[$key] = number_format(sqrt(number_format($value / $totalStudentCount, 2, '.', '')), 2, '.', '');
+        }
+
+        foreach ($averageScoreStudentData as $schoolName => $item) {
+            foreach ($item as $key => $value) {
+                $schoolZValue[$schoolName][$key] = number_format(number_format($value - $averageScoreSchoolData[$key], 2, '.', '') / $CValue[$key], 2, '.', '');
+            }
+        }
+
+        foreach ($schoolZValue as $schoolName => $item) {
+            foreach ($item as $key => $value) {
+                foreach (self::$courseListData as $courseName) {
+                    $name = $courseName.'均分';
+                    $totalName = '总分均分'; // 此处还需要确认字段名称
+                    if($key == $name) {
+                        $schoolZValue[$schoolName][$courseName] = $value;
+                        unset($schoolZValue[$schoolName][$key]);
+                    } elseif($key == $totalName) {
+                        $schoolZValue[$schoolName]['总体'] = $value;
+                        unset($schoolZValue[$schoolName][$key]);
+                    }
+                }
+            }
+        }
 
         $ZValueData = array(
             'schoolZValue'            => $schoolZValue, // 学校Z值
             // 以下为查询各项数值
             // 'CValue'                  => $CValue, // 学校C值
-            // 'totalStudentCount'       => $totalStudentCount, // 全区参加考试人数
+            // 'CValueNumerator'         => $CValueNumerator, // 学校C值分子
             // 'totalSchoolStudentCount' => $totalSchoolStudentCount, // 全校参加考试人数
-            // 'totalAverageScore'       => $totalAverageScore, // 全区平均分
-            // 'totalSchoolAverageScore' => $totalSchoolAverageScore, // 全校平均分
+            // 'averageScoreTotalData'   => $averageScoreTotalData, // 全区平均分
+            // 'averageScoreSchoolData'  => $averageScoreSchoolData, // 全校平均分
         );
 
         return $ZValueData;
@@ -179,7 +264,6 @@ class ZValueData {
      */
     private function getZValueHighData()
     {
-
         $filePath = self::$basePath.self::$examInfoData['mainDir'].'/';
 
         $filenameScience = self::$averageContrastScience;
@@ -187,6 +271,14 @@ class ZValueData {
 
         $excelScienceData = self::$excelFile->openExcel($filePath, $filenameScience);
         $excelArtsData = self::$excelFile->openExcel($filePath, $filenameArts);
+
+        $CValueNumerator = array(); // 标准差C值分子
+
+        $CValue = array(); // 标准差C值
+
+        $schoolZValue = array(); // 增值性评价Z值
+
+        $ZValueData = array(); // Z值数据
 
         foreach($excelScienceData->getRowIterator() as $kr => $row){
             $cellIterator = $row->getCellIterator();
@@ -204,7 +296,11 @@ class ZValueData {
                     if ($kc == 0) {
                         $schoolName = $cell->getValue();
                     } elseif($kc % 2 == 1) {
-                        $scienceData[$schoolName][$itemScience[$kc-$num]] = number_format($cell->getValue(), 2, '.', '');
+                        if($itemScience[$kc-$num] == '理科总分均分') {
+                            $scienceExtraData[$schoolName][$itemScience[$kc-$num]] = number_format($cell->getValue(), 2, '.', '');
+                        } else {
+                            $scienceData[$schoolName][$itemScience[$kc-$num]] = number_format($cell->getValue(), 2, '.', '');
+                        }
                         $num++;
                     }
                 }
@@ -227,7 +323,11 @@ class ZValueData {
                     if ($kc == 0) {
                         $schoolName = $cell->getValue();
                     } elseif($kc % 2 == 1) {
-                        $artsData[$schoolName][$itemArts[$kc-$num]] = number_format($cell->getValue(), 2, '.', '');
+                        if($itemArts[$kc-$num] == '文科总分均分') {
+                            $artsExtraData[$schoolName][$itemArts[$kc-$num]] = number_format($cell->getValue(), 2, '.', '');
+                        } else {
+                            $artsData[$schoolName][$itemArts[$kc-$num]] = number_format($cell->getValue(), 2, '.', '');
+                        }
                         $num++;
                     }
                 }
@@ -236,31 +336,124 @@ class ZValueData {
 
         $scoreDate = self::getComprehensiveIndicatorsData();
 
-        foreach ($artsData as $key => $value) {
-            
+        foreach ($scienceData as $schoolName => $item) {
+            foreach ($item as $key => $value) {
+                if($schoolName != '全体') {
+                    if($key == '语文均分') {
+                        $averageScoreStudentData[$schoolName][$key] = $scoreDate['totalSchoolCAverageScore'][$schoolName];
+                    } elseif($key == '英语均分') {
+                        $averageScoreStudentData[$schoolName][$key] = $scoreDate['totalSchoolEAverageScore'][$schoolName];
+                    } else {
+                        $averageScoreStudentData[$schoolName][$key] = $value;
+                    }
+                } else {
+                    if($key == '语文均分') {
+                        $averageScoreTotalData[$key] = $scoreDate['totalCAverageScore'];
+                    } elseif($key == '英语均分') {
+                        $averageScoreTotalData[$key] = $scoreDate['totalEAverageScore'];
+                    } else {
+                        $averageScoreTotalData[$key] = $value;
+                    }
+                }
+            }
         }
 
-        // 在这里要将把所有平均分都整合好
+        foreach ($artsData as $schoolName => $item) {
+            foreach ($item as $key => $value) {
+                if($schoolName != '全体') {
+                    if($key == '语文均分') {
+                        $averageScoreStudentData[$schoolName][$key] = $scoreDate['totalSchoolCAverageScore'][$schoolName];
+                    } elseif($key == '英语均分') {
+                        $averageScoreStudentData[$schoolName][$key] = $scoreDate['totalSchoolEAverageScore'][$schoolName];
+                    } else {
+                        $averageScoreStudentData[$schoolName][$key] = $value;
+                    }
+                } else {
+                    if($key == '语文均分') {
+                        $averageScoreTotalData[$key] = $scoreDate['totalCAverageScore'];
+                    } elseif($key == '英语均分') {
+                        $averageScoreTotalData[$key] = $scoreDate['totalEAverageScore'];
+                    } else {
+                        $averageScoreTotalData[$key] = $value;
+                    }
+                }
+            }
+        }
+        
+        foreach ($scienceExtraData as $schoolName => $item) {
+            foreach ($item as $key => $value) {
+                if($schoolName != '全体') {
+                    $averageScoreStudentData[$schoolName][$key] = $scienceExtraData[$schoolName][$key];
+                } else {
+                    $averageScoreTotalData[$schoolName][$key] = $scienceExtraData[$schoolName][$key];
+                }
+            }
+        }
+        
+        foreach ($artsExtraData as $schoolName => $item) {
+            foreach ($item as $key => $value) {
+                if($schoolName != '全体') {
+                    $averageScoreStudentData[$schoolName][$key] = $artsExtraData[$schoolName][$key];
+                } else {
+                    $averageScoreTotalData[$schoolName][$key] = $artsExtraData[$schoolName][$key];
+                }
+            }
+        }
 
-        var_export('====================');
-        var_export($artsData);
-        exit();
+        foreach ($averageScoreStudentData as $schoolName => $item) {
+            foreach ($item as $key => $value) {
+                $CValueNumerator[$key] = number_format($CValueNumerator[$key] + number_format(pow(number_format($value - $averageScoreTotalData[$key], 2, '.', '') , 2), 2, '.', ''), 2, '.', '');
+                $totalScore[$key] = number_format($totalScore[$key] + $value, 2, '.', '');
+            }
+        }
 
+        $totalStudentCount = count(self::$schoolInfoData['schoolList']);
 
+        foreach ($totalScore as $key => $value) {
+            $averageScoreSchoolData[$key] = number_format($value / $totalStudentCount, 2, '.', '');
+        }
 
+        foreach ($CValueNumerator as $key => $value) {
+            $CValue[$key] = number_format(sqrt(number_format($value / $totalStudentCount, 2, '.', '')), 2, '.', '');
+        }
+
+        foreach ($averageScoreStudentData as $schoolName => $item) {
+            foreach ($item as $key => $value) {
+                $schoolZValue[$schoolName][$key] = number_format(number_format($value - $averageScoreSchoolData[$key], 2, '.', '') / $CValue[$key], 2, '.', '');
+            }
+        }
+
+        foreach ($schoolZValue as $schoolName => $item) {
+            foreach ($item as $key => $value) {
+                foreach (self::$courseListData as $courseName) {
+                    $name = $courseName.'均分';
+                    $scienceName = '理科总分均分';
+                    $artsName = '文科总分均分';
+                    if($key == $name) {
+                        $schoolZValue[$schoolName][$courseName] = $value;
+                        unset($schoolZValue[$schoolName][$key]);
+                    } elseif($key == $scienceName) {
+                        $schoolZValue[$schoolName]['理科'] = $value;
+                        unset($schoolZValue[$schoolName][$key]);
+                    } elseif($key == $artsName) {
+                        $schoolZValue[$schoolName]['文科'] = $value;
+                        unset($schoolZValue[$schoolName][$key]);
+                    }
+                }
+            }
+        }
 
         $ZValueData = array(
             'schoolZValue'            => $schoolZValue, // 学校Z值
             // 以下为查询各项数值
             // 'CValue'                  => $CValue, // 学校C值
-            // 'totalStudentCount'       => $totalStudentCount, // 全区参加考试人数
+            // 'CValueNumerator'         => $CValueNumerator, // 学校C值分子
             // 'totalSchoolStudentCount' => $totalSchoolStudentCount, // 全校参加考试人数
-            // 'totalAverageScore'       => $totalAverageScore, // 全区平均分
-            // 'totalSchoolAverageScore' => $totalSchoolAverageScore, // 全校平均分
+            // 'averageScoreTotalData'   => $averageScoreTotalData, // 全区平均分
+            // 'averageScoreSchoolData'  => $averageScoreSchoolData, // 全校平均分
         );
 
         return $ZValueData;
-
     }
 
 
@@ -269,7 +462,6 @@ class ZValueData {
      */
     public function getZValueData()
     {
-
         if(self::$examInfoData['grade'] =='高二年级' || self::$examInfoData['grade'] == '高三年级') {
             $ZValueData = self::getZValueHighData();
         } else {
@@ -277,74 +469,7 @@ class ZValueData {
         }
 
         return $ZValueData;
-
-        $filePath = self::$basePath.self::$examInfoData['mainDir'].'/'.self::$course.'/';
-        $filename = self::$comprehensiveIndicators;
-
-        $excelData = self::$excelFile->openExcel($filePath, $filename);
-
-        $keys = array(); // 平均分字段名
-
-        $totalStudentCount = 0; // 全区参加考试人数
-        $totalSchoolStudentCount = array(); // 全校参加考试人数
-        $totalAverageScore = 0; // 全区平均分
-        $totalSchoolAverageScore = array(); // 全校平均分
-
-        $CValueNumerator = 0; // 标准差C值分子
-
-        $CValue = 0; // 标准差C值
-
-        $schoolZValue = array(); // 增值性评价Z值
-
-        $ZValueData = array(); // Z值数据
-
-        foreach($excelData->getRowIterator() as $kr => $row){
-            $cellIterator = $row->getCellIterator();
-
-            if ($kr > 1) {
-                foreach($cellIterator as $kc => $cell){
-                    if ($kc == 0) {
-                        $schoolName = $cell->getValue();
-                    }
-                    if ($kc == 2) {
-                        $totalSchoolStudentCount[$schoolName] = $cell->getValue();
-                    }
-                    if ($kc == 3) {
-                        $totalSchoolAverageScore[$schoolName] = number_format($cell->getValue(), 2, '.', '');
-                    }
-                }
-            }
-        }
-
-        array_pop($totalSchoolStudentCount);
-
-        $totalStudentCount = count($totalSchoolStudentCount);
-
-        $totalAverageScore = array_pop($totalSchoolAverageScore);
-
-        foreach ($totalSchoolAverageScore as $value) {
-            $CValueNumerator = number_format($CValueNumerator + number_format(pow(number_format($value - $totalAverageScore, 2, '.', '') , 2), 2, '.', ''), 2, '.', '');
-        }
-
-        $CValue = number_format(sqrt(number_format($CValueNumerator / $totalStudentCount, 2, '.', '')), 2, '.', '');
-
-        foreach ($totalSchoolAverageScore as $key => $value) {
-            $schoolZValue[$key] = number_format(number_format($value - $totalAverageScore, 2, '.', '') / $CValue, 2, '.', '');
-        }
-
-        $ZValueData = array(
-            'schoolZValue'            => $schoolZValue, // 学校Z值
-            // 以下为查询各项数值
-            // 'CValue'                  => $CValue, // 学校C值
-            // 'totalStudentCount'       => $totalStudentCount, // 全区参加考试人数
-            // 'totalSchoolStudentCount' => $totalSchoolStudentCount, // 全校参加考试人数
-            // 'totalAverageScore'       => $totalAverageScore, // 全区平均分
-            // 'totalSchoolAverageScore' => $totalSchoolAverageScore, // 全校平均分
-        );
-
-        return $ZValueData;
     }
-
 }
 
 ?>

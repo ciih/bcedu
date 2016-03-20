@@ -12,7 +12,6 @@ class SchoolController extends Controller {
         $username = session('username');
         $pagename = strtolower(CONTROLLER_NAME);
 
-
         $data = new \Admin\Model\SchoolData();
 
         $juniorData = $data->getSchoolData('junior');
@@ -25,6 +24,7 @@ class SchoolController extends Controller {
 
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');
+        
         $this->assign('adminCss', $adminCss);
         $this->assign('adminJs', $adminJs);
 

@@ -15,7 +15,6 @@ class ResultController extends Controller {
         $date = $_GET['date'];
         $foldername = $_GET['foldername'];
 
-
         $examInfoObj = new \Admin\Model\ExamInfoData($date, $foldername);
         $examInfoData = $examInfoObj->getExamInfoData();
 
@@ -26,6 +25,7 @@ class ResultController extends Controller {
 
         $adminCss = getLoadCssStatic('admin_other');
         $adminJs = getLoadJsStatic('admin_other');
+        
         $this->assign('adminCss', $adminCss);
         $this->assign('adminJs', $adminJs);
 

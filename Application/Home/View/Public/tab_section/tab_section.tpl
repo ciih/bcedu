@@ -13,9 +13,10 @@
 			<a href="/home/teachertalk?type=<%$type%>&schoolname=<%$schoolname%>" class="title jsjl">教师交流室</a>
 		</li>
 		<if condition="($schoolname eq 小学) OR ($schoolname eq 初中) OR ($schoolname eq 高中) ">
-		<li <eq name="page" value="schoolanalysis"> class="tab-active" </eq>>
+		<?php // 暂时不计算各学校数据 ?>
+		<!-- <li <eq name="page" value="schoolanalysis"> class="tab-active" </eq>>
 			<a href="/home/schoolanalysis?type=<%$type%>&schoolname=<%$schoolname%>" class="title xxfx">学校成绩分析</a>
-		</li>
+		</li> -->
 		</if>
 		<li <eq name="page" value="valueadded"> class="tab-active" </eq>>
 			<a href="/home/valueadded?type=<%$type%>&schoolname=<%$schoolname%>" class="title zzpj">增值性评价</a>

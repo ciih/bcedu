@@ -48,7 +48,7 @@
   $.get("/home/Queryexam/ajax_get_school", {schooltype: schooltype}, function(data){
     schoollist = $.parseJSON(data);
   });
-console.log(schoollist);
+
   $('.dropdown-menu').on('click', 'a', function(){
       var currType = $(this).parents('.dropdown-menu').attr('aria-labelledby').split('-')[0],
           currData = $(this).text();
@@ -141,7 +141,7 @@ console.log(schoollist);
       tpl += '<td>' + name[i] + '</td>';
       tpl += '<td>';
       for (var j = 0; j < listItem.length; j++) {
-        link = '/Word/' + uploaddate[i] + '/' + name[i] + '/' + listItem[j] + '.docx';
+        link = '/Data/Word/' + name[i] + '/' + listItem[j] + '.docx';
         tpl += '<a href="'+ link +'">'+ listItem[j] +'</a>';
       }
       tpl += '</td>';
