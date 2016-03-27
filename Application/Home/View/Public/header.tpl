@@ -1,6 +1,6 @@
 <div class="header-section">
 	<div class="container">
-		<div class="logo"><img src="../Public/static/img/logo_banner.png" alt="北辰区考试数据分析平台" /></div>
+		<div class="logo"><img src="__ROOT__/Public/static/img/logo_banner.png" alt="北辰区考试数据分析平台" /></div>
 		<if condition="(strtolower(CONTROLLER_NAME) eq 'list')">
 		<div class="nav-bar">
 			<ul>

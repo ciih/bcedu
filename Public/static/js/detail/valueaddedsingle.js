@@ -1,4 +1,4 @@
-/*(function () {
+(function () {
 
   var classifyEl = $('.school-classify');
   var schooltype = classifyEl.attr('data-schooltype');
@@ -8,7 +8,7 @@
   var schoolTermEl = $('#schoolterm-dropdown');
   var schoolGradeEl = $('#grade-dropdown');
   var schoolExamnameEl = $('#examname-dropdown');
-  var schoolCoureseEl = $('#course-dropdown');
+  var schoolCourseEl = $('#course-dropdown');
 
   var examInfo;
 
@@ -18,10 +18,7 @@
   var schoolyear = [],
       schoolterm = [],
       grade = [],
-      examname = [],
-      courselist = [];
-
-  var schoollist;
+      examname = [];
 
   $.get("/home/Queryexam/ajax_get_exam", {schooltype: schooltype}, function(data){
     if(data) {
@@ -37,7 +34,7 @@
       schoolyear = $.unique(schoolyear);
 
       for (var i = 0; i < schoolyear.length; i++) {
-        contList += '<li><a href="#">' + schoolyear[i] + '</a></li>'
+        contList += '<li><a href="#">' + schoolyear[i] + '</a></li>';
       }
 
       schoolYearEl.children('.dropdown-menu').html(contList);
@@ -48,13 +45,7 @@
       schoolTermEl.find('.dropdown-toggle').addClass('disabled');
       schoolGradeEl.find('.dropdown-toggle').addClass('disabled');
       schoolExamnameEl.find('.dropdown-toggle').addClass('disabled');
-      schoolCoureseEl.find('.dropdown-toggle').addClass('disabled');
-    }
-  });
-
-  $.get("/home/Queryexam/ajax_get_school", {schooltype: schooltype}, function(data){
-    if(data) {
-      schoollist = $.parseJSON(data);
+      schoolCourseEl.find('.dropdown-toggle').addClass('disabled');
     }
   });
 
@@ -81,7 +72,7 @@
           schoolTermEl.find('.name').text('学期');
           schoolGradeEl.find('.name').text('年级');
           schoolExamnameEl.find('.name').text('考试名称');
-          schoolCoureseEl.find('.name').text('考试科目');
+          schoolCourseEl.find('.name').text('考试科目');
           schoolTermEl.children('.dropdown-menu').html(contList);
           schoolTermEl.find('.dropdown-toggle').removeClass('disabled');
 
@@ -91,12 +82,13 @@
           if(!schoolExamnameEl.find('.dropdown-toggle').hasClass('disabled')) {
             schoolExamnameEl.find('.dropdown-toggle').addClass('disabled')
           }
-          if(!schoolCoureseEl.find('.dropdown-toggle').hasClass('disabled')) {
-            schoolCoureseEl.find('.dropdown-toggle').addClass('disabled')
+          if(!schoolCourseEl.find('.dropdown-toggle').hasClass('disabled')) {
+            schoolCourseEl.find('.dropdown-toggle').addClass('disabled')
           }
           if(!$('.btn-search').hasClass('disabled')) {
             $('.btn-search').addClass('disabled')
           }
+          
           break;
         case 'schoolterm':
           grade = [];
@@ -110,24 +102,26 @@
           grade = $.unique(grade);
 
           for (var i = 0; i < grade.length; i++) {
-            contList += '<li><a href="#">' + grade[i] + '</a></li>'
+            contList += '<li><a href="#">' + grade[i] + '</a></li>';
           }
 
           schoolGradeEl.find('.name').text('年级');
           schoolExamnameEl.find('.name').text('考试名称');
-          schoolCoureseEl.find('.name').text('考试科目');
+          schoolCourseEl.find('.name').text('考试科目');
           schoolGradeEl.children('.dropdown-menu').html(contList);
+
           schoolGradeEl.find('.dropdown-toggle').removeClass('disabled');
+
           if(!schoolExamnameEl.find('.dropdown-toggle').hasClass('disabled')) {
             schoolExamnameEl.find('.dropdown-toggle').addClass('disabled')
           }
-          if(!schoolCoureseEl.find('.dropdown-toggle').hasClass('disabled')) {
-            schoolCoureseEl.find('.dropdown-toggle').addClass('disabled')
+          if(!schoolCourseEl.find('.dropdown-toggle').hasClass('disabled')) {
+            schoolCourseEl.find('.dropdown-toggle').addClass('disabled')
           }
           if(!$('.btn-search').hasClass('disabled')) {
             $('.btn-search').addClass('disabled')
           }
-          
+
           break;
         case 'grade':
           examname = [];
@@ -139,32 +133,32 @@
               examname.push(examInfo[i].examname);
             }
           }
-          examname.push('全选');
           examname = $.unique(examname);
 
           for (var i = 0; i < examname.length; i++) {
-            contList += '<li><a href="#">' + examname[i] + '</a></li>'
+            contList += '<li><a href="#">' + examname[i] + '</a></li>';
           }
 
           schoolExamnameEl.find('.name').text('考试名称');
-          schoolCoureseEl.find('.name').text('考试科目');
+          schoolCourseEl.find('.name').text('考试科目');
+
           schoolExamnameEl.children('.dropdown-menu').html(contList);
           schoolExamnameEl.find('.dropdown-toggle').removeClass('disabled');
 
-          if(!schoolCoureseEl.find('.dropdown-toggle').hasClass('disabled')) {
-            schoolCoureseEl.find('.dropdown-toggle').addClass('disabled')
+          if(!schoolCourseEl.find('.dropdown-toggle').hasClass('disabled')) {
+            schoolCourseEl.find('.dropdown-toggle').addClass('disabled')
           }
           if(!$('.btn-search').hasClass('disabled')) {
             $('.btn-search').addClass('disabled')
           }
           
           break;
-
         case 'examname':
           var schoolyear = schoolYearEl.find('.name').text();
           var schoolterm = schoolTermEl.find('.name').text();
           var schoolgrade = schoolGradeEl.find('.name').text();
 
+          var courselist = [];
           var contList = '';
 
           for (var i = 0; i < examInfo.length; i++) {
@@ -173,75 +167,94 @@
             }
           }
 
+          courselist.push('理科');
+          courselist.push('文科');
+
           for (var i = 0; i < courselist.length; i++) {
-            contList += '<li><a href="#">' + courselist[i] + '</a></li>'
+            contList += '<li><a href="#">' + courselist[i] + '</a></li>';
           }
 
-          schoolCoureseEl.find('.name').text('考试科目');
-          schoolCoureseEl.children('.dropdown-menu').html(contList);
-          schoolCoureseEl.find('.dropdown-toggle').removeClass('disabled');
+          schoolCourseEl.find('.name').text('考试科目');
+
+          schoolCourseEl.children('.dropdown-menu').html(contList);
+          schoolCourseEl.find('.dropdown-toggle').removeClass('disabled');
 
           if(!$('.btn-search').hasClass('disabled')) {
             $('.btn-search').addClass('disabled')
           }
           
           break;
-
         case 'course':
-          var schoolyear = schoolYearEl.find('.name').text();
-          var schoolterm = schoolTermEl.find('.name').text();
-          var schoolgrade = schoolGradeEl.find('.name').text();
-          var schoolexamname = schoolExamnameEl.find('.name').text();
-          var schoolcourse = schoolCoureseEl.find('.name').text();
-
-          course = schoolcourse;
-
-          for (var i = 0; i < examInfo.length; i++) {
-            if(schoolyear == examInfo[i].schoolyear && schoolterm == examInfo[i].schoolterm && schoolgrade == examInfo[i].grade) {
-              if(schoolexamname == examInfo[i].examname) {
-                examFullname = examInfo[i].fullname;
-              } else if (schoolexamname == '全选') {
-                examFullname.push(examInfo[i].fullname);
-              }
-            }
-          }
           $('.btn-search').removeClass('disabled');
-          console.log(course);
-          console.log(examFullname);
+
           break;
       }
 
   });
 
   $('.btn-search').on('click', function(){
-    cntTPL(examName, courseList);
+
+    $('#highcharts-section .highcharts-load').show();
+
+    var schoolyear = schoolYearEl.find('.name').text();
+    var schoolterm = schoolTermEl.find('.name').text();
+    var schoolgrade = schoolGradeEl.find('.name').text();
+    var schoolexamname = schoolExamnameEl.find('.name').text();
+    var course = schoolCourseEl.find('.name').text();
+
+    var examFullname = schoolyear + '年' + schoolterm + schoolgrade + schoolexamname;
+
+    $.get("/home/Queryexam/ajax_get_zvalue", {fullname: examFullname, datatype: 'single'}, function(data){
+      if(data) {
+        var zvalueData = $.parseJSON(data);
+        var valueaddedObj = {};
+        var schoolName = [];
+        var schoolCont;
+        var scoreData = [];
+        var courseName,
+            courseCont;
+        var score = [];
+
+        for(var key in zvalueData) {  
+          schoolName.push(key);
+          schoolCont = zvalueData[key];
+          for(courseName in schoolCont) {
+            if(course == courseName) {
+              score.push(parseFloat(schoolCont[course]));
+            }
+          }
+        }
+
+        courseCont = {
+          name: course,
+          data: score
+        };
+
+        valueaddedObj = {
+          chart: {
+              type: 'column'
+          },
+          title: {
+              text: course + '学科的增值性评价'
+          },
+          xAxis: {
+              categories: schoolName
+          },
+          credits: {
+              enabled: false
+          },
+          series: [courseCont]
+        }
+
+        cntTPL(valueaddedObj);
+      }
+    });
+
+    // cntTPL(examName, courseList);
   });
 
-  function cntTPL() {
+  function cntTPL(obj) {
 
-    $('#highcharts-section').highcharts({
-        chart: {
-            type: 'column'
-        },
-        title: {
-            text: 'Column chart with negative values'
-        },
-        xAxis: {
-            categories: ['Apples', 'Oranges', 'Pears', 'Grapes', 'Bananas']
-        },
-        credits: {
-            enabled: false
-        },
-        series: [{
-            name: 'John',
-            data: [5, 3, 4, 7, 2]
-        }, {
-            name: 'Jane',
-            data: [2, -2, -3, 2, 1]
-        }, {
-            name: 'Joe',
-            data: [3, 4, 4, -2, 5]
-        }]
-    });
+    $('#highcharts-section').highcharts(obj);
   }
-})();*/
+})();

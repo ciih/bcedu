@@ -468,7 +468,7 @@ class ZValueData {
             $ZValueData = self::getZValueDefaultData();
         }
 
-        return $ZValueData;
+        return $ZValueData['schoolZValue'];
     }
 }
 

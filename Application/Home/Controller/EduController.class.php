@@ -3,6 +3,12 @@ namespace Home\Controller;
 use Think\Controller;
 class EduController extends Controller {
     public function index(){
+        if (!session('?username')) {
+            redirectUrl('index');
+        }
+        
+        $username = session('username');
+        
     	$loadCss   = getLoadCssStatic('edu');
     	$loadJs    = getLoadJsStatic('edu');
     	$loadHtml  = getLoadHtmlStatic('edu');
@@ -36,6 +42,8 @@ class EduController extends Controller {
     	$this->assign('loadCss', $loadCss);
     	$this->assign('loadJs', $loadJs);
         $this->assign('loadHtml', $loadHtml);
+
+        $this->assign('username', $username);
 
         $this->assign('schoolType', $schoolType);
         $this->assign('schoolYear', $schoolYear);

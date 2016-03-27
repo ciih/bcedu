@@ -14,7 +14,7 @@ class SchoolInfoData {
      * 其它信息主路径(包括：片区、分数线等)
      * @var array
      */
-    protected static $excelTemplatePath = '/Excel/Template/';
+    protected static $excelTemplatePath = '/Baseinfo/';
 
     /**
      * 获取参考学校列表数据

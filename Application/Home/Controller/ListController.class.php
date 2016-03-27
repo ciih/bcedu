@@ -3,7 +3,12 @@ namespace Home\Controller;
 use Think\Controller;
 class ListController extends Controller {
     public function index(){
-    	redirectUrl();
+        if (!session('?username')) {
+            redirectUrl('index');
+        }
+        
+        $username = session('username');
+
     	$loadCss = getLoadCssStatic('list');
     	$loadJs = getLoadJsStatic('list');
 
@@ -22,6 +27,8 @@ class ListController extends Controller {
     	$this->assign('loadCss', $loadCss);
     	$this->assign('loadJs', $loadJs);
 
+        $this->assign('username', $username);
+        
     	$this->assign('juniorAreaName', $juniorSchoolData['areaName']);
     	$this->assign('juniorSchoolList', $juniorSchoolData['schoolArea']);
 

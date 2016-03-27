@@ -3,6 +3,12 @@ namespace Home\Controller;
 use Think\Controller;
 class TeachertalkController extends Controller {
     public function index(){
+        if (!session('?username')) {
+            redirectUrl('index');
+        }
+        
+        $username = session('username');
+        
         // 教师交流室
     	$loadCss = getLoadCssStatic('detail');
     	$loadJs  = getLoadJsStatic('detail');
@@ -13,6 +19,8 @@ class TeachertalkController extends Controller {
 
     	$this->assign('loadCss', $loadCss);
     	$this->assign('loadJs', $loadJs);
+
+        $this->assign('username', $username);
 
         $this->assign('page', $page);
         $this->assign('type', $type);

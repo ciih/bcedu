@@ -3,6 +3,12 @@ namespace Home\Controller;
 use Think\Controller;
 class DeepanalysisController extends Controller {
     public function index(){
+        if (!session('?username')) {
+            redirectUrl('index');
+        }
+        
+        $username = session('username');
+        
         // 深度分析档案
         $loadCss     = getLoadCssStatic('detail');
         $loadJs      = getLoadJsStatic('detail');
@@ -20,6 +26,8 @@ class DeepanalysisController extends Controller {
         $this->assign('loadCss', $loadCss);
         $this->assign('loadJs', $loadJs);
         $this->assign('loadPageJs', $loadPageJs);
+
+        $this->assign('username', $username);
 
         $this->assign('page', $page);
         $this->assign('type', $type);

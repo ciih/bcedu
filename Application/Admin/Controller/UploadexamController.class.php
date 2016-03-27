@@ -51,7 +51,7 @@ class UploadexamController extends Controller {
 
         $archive  = new \PHPZip();
 
-        $savepath  = './Data/'.$uploadDate;
+        $savepath  = './Data/Excel/'.$uploadDate.'/';
         $foldername  = substr($file['name'],0,-4);
         $array     = $archive->GetZipInnerFilesInfo($filePath);
         $filecount = 0;

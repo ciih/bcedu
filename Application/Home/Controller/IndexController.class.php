@@ -17,14 +17,15 @@ class IndexController extends Controller {
 		$username = trim($_POST['inputUsername']);
 		$pwd = md5($_POST['inputPassword']);
 
-
 		$userTable = M('user');
 		$data = $userTable->where("username='$username' AND password='$pwd'")->select();
 
 		if(!empty($data)) {
 			if($data[0]['role'] == 1) {
+				session('username',$data[0]['username']);
 				$this->redirect('/home/list/');
 			} elseif($data[0]['role'] == 2) {
+				session('username',$data[0]['username']);
 				$this->redirect('/home/detail/');
 			} else {
 				$this->redirect('/');
@@ -32,6 +33,5 @@ class IndexController extends Controller {
 		} else {
 			$this->redirect('/');
 		}
-
 	}
 }

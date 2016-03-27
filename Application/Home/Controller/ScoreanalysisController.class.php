@@ -3,6 +3,12 @@ namespace Home\Controller;
 use Think\Controller;
 class ScoreanalysisController extends Controller {
     public function index(){
+        if (!session('?username')) {
+            redirectUrl('index');
+        }
+        
+        $username = session('username');
+        
         // 成绩深度分析
     	$loadCss     = getLoadCssStatic('detail');
         $loadJs      = getLoadJsStatic('detail');
@@ -15,6 +21,8 @@ class ScoreanalysisController extends Controller {
     	$this->assign('loadCss', $loadCss);
         $this->assign('loadJs', $loadJs);
     	$this->assign('loadPageJs', $loadPageJs);
+
+        $this->assign('username', $username);
 
         $this->assign('page', $page);
         $this->assign('type', $type);

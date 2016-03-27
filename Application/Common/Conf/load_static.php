@@ -67,8 +67,26 @@ return array(
         ),
         'valueadded' => array(
             'js_foot' => array(
-                __ROOT__.'/Public/static/js/lib/highcharts/highcharts-custom.js',
+                __ROOT__.'/Public/static/js/lib/highcharts/highcharts.js',
                 __ROOT__.'/Public/static/js/detail/valueadded.js'
+            )
+        ),
+        'valueaddedsingle' => array(
+            'js_foot' => array(
+                __ROOT__.'/Public/static/js/lib/highcharts/highcharts.js',
+                __ROOT__.'/Public/static/js/detail/valueaddedsingle.js'
+            )
+        ),
+        'valueaddedmulti' => array(
+            'js_foot' => array(
+                __ROOT__.'/Public/static/js/lib/highcharts/highcharts.js',
+                __ROOT__.'/Public/static/js/detail/valueaddedmulti.js'
+            )
+        ),
+        'scatteranalysis' => array(
+            'js_foot' => array(
+                __ROOT__.'/Public/static/js/lib/highcharts/highcharts.js',
+                __ROOT__.'/Public/static/js/detail/scatteranalysis.js'
             )
         ),
         'admin_index' => array(

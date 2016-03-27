@@ -20,7 +20,7 @@ class BaseScoreRateData {
      * 其它信息主路径(包括：片区、分数线等)
      * @var array
      */
-    protected static $excelTemplatePath = '/Excel/Template/';
+    protected static $excelTemplatePath = '/Baseinfo/';
 
     /**
      * 获取优秀、及格、不及格得分率

@@ -14,7 +14,7 @@ class ExamInfoData {
      * Excel表目录
      * @var string
      */
-    const EXCEL_DIR = '/Data/';
+    const EXCEL_DIR = '/Data/Excel/';
    
     /**
      * 学生分数主目录

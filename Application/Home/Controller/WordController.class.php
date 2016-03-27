@@ -69,7 +69,7 @@ class WordController extends Controller {
 		), $js);
 
         file_put_contents($jsFile, $js);
-        exec("D:/server/phantomjs/bin/phantomjs.exe ".$jsFile); 
+        exec("D:/webserver/phantomjs/bin/phantomjs.exe ".$jsFile); 
 
         // 等待截图完成
         sleep(2);

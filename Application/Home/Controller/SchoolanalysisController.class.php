@@ -3,6 +3,12 @@ namespace Home\Controller;
 use Think\Controller;
 class SchoolanalysisController extends Controller {
     public function index(){
+        if (!session('?username')) {
+            redirectUrl('index');
+        }
+        
+        $username = session('username');
+        
         // 学校成绩分析
     	$loadCss = getLoadCssStatic('detail');
     	$loadJs  = getLoadJsStatic('detail');
@@ -25,6 +31,8 @@ class SchoolanalysisController extends Controller {
 
         $this->assign('loadCss', $loadCss);
         $this->assign('loadJs', $loadJs);
+
+        $this->assign('username', $username);
 
         $this->assign('juniorAreaName', $juniorSchoolData['areaName']);
         $this->assign('juniorSchoolList', $juniorSchoolData['schoolArea']);
