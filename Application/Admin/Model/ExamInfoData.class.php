@@ -89,12 +89,12 @@ class ExamInfoData {
     {
 
         $schoolYear = substr(self::$foldername,0,9); // 学年
-        $schoolTerm = substr(self::$foldername,12,12); // 学期
+        $schoolTerm = substr(self::$foldername,15,12); // 学期
 
-        if(substr(self::$foldername,24,3) == '高') {
-            $grade = substr(self::$foldername,24,12); // 年级
+        if(substr(self::$foldername,27,3) == '高') {
+            $grade = substr(self::$foldername,27,12); // 年级
         } else {
-            $grade = substr(self::$foldername,24,9); // 年级
+            $grade = substr(self::$foldername,27,9); // 年级
         }
 
         $examName = substr(self::$foldername,-12); // 考试名称

@@ -80,6 +80,7 @@ class UploadexamController extends Controller {
             $this->error('上传文件解压失败，请返回重新上传！');
         } else {
             unlink($filePath);  // remove temp file
+            rmdir($zipRoot.$file['savepath']);  // remove folder
             header('Location: /admin/uploadexam/score?date='.$uploadDate.'&foldername='.$foldername);
         }
     }
