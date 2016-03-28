@@ -9,7 +9,7 @@
 			<ul class="selection-section">
 				<li><a href="valueadded/single?type=<?php echo $type ?>&schoolname=<?php echo $schoolname ?>" class="btn btn-primary">单次-增值性评价</a></li>
 				<li><a href="valueadded/multi?type=<?php echo $type ?>&schoolname=<?php echo $schoolname ?>" class="btn btn-primary">历次-增值性评价</a></li>
-				<li><a href="" class="btn btn-primary">对比-增值性评价</a></li>
+				<li><a href="" class="btn btn-primary disabled">对比-增值性评价</a></li>
 			</ul>
 		</div>
 	</div>

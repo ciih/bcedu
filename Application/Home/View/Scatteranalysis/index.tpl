@@ -30,7 +30,7 @@
 		</div>
 		<div class="detail-bd">
 			<div id="highcharts-section" class="highcharts-section">
-				<div class="highcharts-load"><img src="../Public/static/img/admin/ajax_loading.gif" title="正在分析中..."><span>正在分析中</span></div>
+				<div class="highcharts-load"><img src="__ROOT__/Public/static/img/admin/ajax_loading.gif" title="正在分析中..."><span>正在分析中</span></div>
 			</div>
 		</div>
 	</div>
