@@ -225,11 +225,11 @@ class DValueData {
 
                 $examScopeTotalSValue[$name][$schoolName]['totalScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['totalCount'] - 1) * number_format(pow($examScopeSchoolCValue[$name][$schoolName]['totalScore'], 2), 2, '.', '') + ($studentTotalCount['totalCount'] - 1) * number_format(pow($examScopeTotalEValue[$name]['totalScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['totalCount'] + $studentTotalCount['totalCount'] - 2), 2, '.', '')), 2, '.', '');
 
-                $examScopeTotalSValue[$name][$schoolName]['excellentScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['excellentCount'] - 1) * number_format(pow($examScopeSchoolCValue[$name][$schoolName]['excellentScore'], 2), 2, '.', '') + ($studentTotalCount['excellentCount'] - 1) * number_format(pow($examScopeTotalEValue[$name]['excellentScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['excellentCount'] + $studentTotalCount['excellentCount'] - 2), 2, '.', '')), 2, '.', '');
+                $examScopeTotalSValue[$name][$schoolName]['excellentScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['excellentCount'] - 1) * number_format(pow($examScopeSchoolCValue[$name][$schoolName]['excellentScore'], 2), 2, '.', '') + ($studentTotalCount['totalCount'] - 1) * number_format(pow($examScopeTotalEValue[$name]['totalScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['excellentCount'] + $studentTotalCount['excellentCount'] - 2), 2, '.', '')), 2, '.', '');
 
-                $examScopeTotalSValue[$name][$schoolName]['passScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['passCount'] - 1) * number_format(pow($examScopeSchoolCValue[$name][$schoolName]['passScore'], 2), 2, '.', '') + ($studentTotalCount['passCount'] - 1) * number_format(pow($examScopeTotalEValue[$name]['passScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['passCount'] + $studentTotalCount['passCount'] - 2), 2, '.', '')), 2, '.', '');
+                $examScopeTotalSValue[$name][$schoolName]['passScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['passCount'] - 1) * number_format(pow($examScopeSchoolCValue[$name][$schoolName]['passScore'], 2), 2, '.', '') + ($studentTotalCount['totalCount'] - 1) * number_format(pow($examScopeTotalEValue[$name]['totalScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['passCount'] + $studentTotalCount['passCount'] - 2), 2, '.', '')), 2, '.', '');
 
-                $examScopeTotalSValue[$name][$schoolName]['failScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['failCount'] - 1) * number_format(pow($examScopeSchoolCValue[$name][$schoolName]['failScore'], 2), 2, '.', '') + ($studentTotalCount['failCount'] - 1) * number_format(pow($examScopeTotalEValue[$name]['failScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['failCount'] + $studentTotalCount['failCount'] - 2), 2, '.', '')), 2, '.', '');
+                $examScopeTotalSValue[$name][$schoolName]['failScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['failCount'] - 1) * number_format(pow($examScopeSchoolCValue[$name][$schoolName]['failScore'], 2), 2, '.', '') + ($studentTotalCount['totalCount'] - 1) * number_format(pow($examScopeTotalEValue[$name]['totalScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['failCount'] + $studentTotalCount['failCount'] - 2), 2, '.', '')), 2, '.', '');
 
                 if(self::$studentScore['totalSchoolCount'][$schoolName]['totalCount'] > 0) {
                     $examScopeTotalDValue[$name][$schoolName]['totalScore'] = number_format(($examScopeSchoolAverageScore[$name][$schoolName]['totalScore'] - $examScopeTotalAverageScore[$name]['totalScore']) / $examScopeTotalSValue[$name][$schoolName]['totalScore'], 2, '.', '');
@@ -237,17 +237,17 @@ class DValueData {
                     $examScopeTotalDValue[$name][$schoolName]['totalScore'] = 0;
                 }
                 if(self::$studentScore['totalSchoolCount'][$schoolName]['excellentCount'] > 0) {
-                    $examScopeTotalDValue[$name][$schoolName]['excellentScore'] = number_format(($examScopeSchoolAverageScore[$name][$schoolName]['excellentScore'] - $examScopeTotalAverageScore[$name]['excellentScore']) / $examScopeTotalSValue[$name][$schoolName]['excellentScore'], 2, '.', '');
+                    $examScopeTotalDValue[$name][$schoolName]['excellentScore'] = number_format(($examScopeSchoolAverageScore[$name][$schoolName]['excellentScore'] - $examScopeTotalAverageScore[$name]['totalScore']) / $examScopeTotalSValue[$name][$schoolName]['excellentScore'], 2, '.', '');
                 } else {
                     $examScopeTotalDValue[$name][$schoolName]['excellentScore'] = 0;
                 }
                 if(self::$studentScore['totalSchoolCount'][$schoolName]['passCount'] > 0) {
-                    $examScopeTotalDValue[$name][$schoolName]['passScore'] = number_format(($examScopeSchoolAverageScore[$name][$schoolName]['passScore'] - $examScopeTotalAverageScore[$name]['passScore']) / $examScopeTotalSValue[$name][$schoolName]['passScore'], 2, '.', '');
+                    $examScopeTotalDValue[$name][$schoolName]['passScore'] = number_format(($examScopeSchoolAverageScore[$name][$schoolName]['passScore'] - $examScopeTotalAverageScore[$name]['totalScore']) / $examScopeTotalSValue[$name][$schoolName]['passScore'], 2, '.', '');
                 } else {
                     $examScopeTotalDValue[$name][$schoolName]['passScore'] = 0;
                 }
                 if(self::$studentScore['totalSchoolCount'][$schoolName]['failCount'] > 0) {
-                    $examScopeTotalDValue[$name][$schoolName]['failScore'] = number_format(($examScopeSchoolAverageScore[$name][$schoolName]['failScore'] - $examScopeTotalAverageScore[$name]['failScore']) / $examScopeTotalSValue[$name][$schoolName]['failScore'], 2, '.', '');
+                    $examScopeTotalDValue[$name][$schoolName]['failScore'] = number_format(($examScopeSchoolAverageScore[$name][$schoolName]['failScore'] - $examScopeTotalAverageScore[$name]['totalScore']) / $examScopeTotalSValue[$name][$schoolName]['failScore'], 2, '.', '');
                 } else {
                     $examScopeTotalDValue[$name][$schoolName]['failScore'] = 0;
                 }
@@ -268,11 +268,11 @@ class DValueData {
 
                 $examMoldTotalSValue[$name][$schoolName]['totalScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['totalCount'] - 1) * number_format(pow($examMoldSchoolCValue[$name][$schoolName]['totalScore'], 2), 2, '.', '') + ($studentTotalCount['totalCount'] - 1) * number_format(pow($examMoldTotalEValue[$name]['totalScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['totalCount'] + $studentTotalCount['totalCount'] - 2), 2, '.', '')), 2, '.', '');
 
-                $examMoldTotalSValue[$name][$schoolName]['excellentScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['excellentCount'] - 1) * number_format(pow($examMoldSchoolCValue[$name][$schoolName]['excellentScore'], 2), 2, '.', '') + ($studentTotalCount['excellentCount'] - 1) * number_format(pow($examMoldTotalEValue[$name]['excellentScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['excellentCount'] + $studentTotalCount['excellentCount'] - 2), 2, '.', '')), 2, '.', '');
+                $examMoldTotalSValue[$name][$schoolName]['excellentScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['excellentCount'] - 1) * number_format(pow($examMoldSchoolCValue[$name][$schoolName]['excellentScore'], 2), 2, '.', '') + ($studentTotalCount['totalCount'] - 1) * number_format(pow($examMoldTotalEValue[$name]['totalScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['excellentCount'] + $studentTotalCount['excellentCount'] - 2), 2, '.', '')), 2, '.', '');
 
-                $examMoldTotalSValue[$name][$schoolName]['passScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['passCount'] - 1) * number_format(pow($examMoldSchoolCValue[$name][$schoolName]['passScore'], 2), 2, '.', '') + ($studentTotalCount['passCount'] - 1) * number_format(pow($examMoldTotalEValue[$name]['passScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['passCount'] + $studentTotalCount['passCount'] - 2), 2, '.', '')), 2, '.', '');
+                $examMoldTotalSValue[$name][$schoolName]['passScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['passCount'] - 1) * number_format(pow($examMoldSchoolCValue[$name][$schoolName]['passScore'], 2), 2, '.', '') + ($studentTotalCount['totalCount'] - 1) * number_format(pow($examMoldTotalEValue[$name]['totalScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['passCount'] + $studentTotalCount['passCount'] - 2), 2, '.', '')), 2, '.', '');
 
-                $examMoldTotalSValue[$name][$schoolName]['failScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['failCount'] - 1) * number_format(pow($examMoldSchoolCValue[$name][$schoolName]['failScore'], 2), 2, '.', '') + ($studentTotalCount['failCount'] - 1) * number_format(pow($examMoldTotalEValue[$name]['failScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['failCount'] + $studentTotalCount['failCount'] - 2), 2, '.', '')), 2, '.', '');
+                $examMoldTotalSValue[$name][$schoolName]['failScore'] = number_format(sqrt(number_format((($studentSchoolCount[$schoolName]['failCount'] - 1) * number_format(pow($examMoldSchoolCValue[$name][$schoolName]['failScore'], 2), 2, '.', '') + ($studentTotalCount['totalCount'] - 1) * number_format(pow($examMoldTotalEValue[$name]['totalScore'], 2), 2, '.', '')) / ($studentSchoolCount[$schoolName]['failCount'] + $studentTotalCount['failCount'] - 2), 2, '.', '')), 2, '.', '');
 
                 if(self::$studentScore['totalSchoolCount'][$schoolName]['totalCount'] > 0) {
                     $examMoldTotalDValue[$name][$schoolName]['totalScore'] = number_format(($examMoldSchoolAverageScore[$name][$schoolName]['totalScore'] - $examMoldTotalAverageScore[$name]['totalScore']) / $examMoldTotalSValue[$name][$schoolName]['totalScore'], 2, '.', '');
@@ -280,17 +280,17 @@ class DValueData {
                     $examMoldTotalDValue[$name][$schoolName]['totalScore'] = 0;
                 }
                 if(self::$studentScore['totalSchoolCount'][$schoolName]['excellentCount'] > 0) {
-                    $examMoldTotalDValue[$name][$schoolName]['excellentScore'] = number_format(($examMoldSchoolAverageScore[$name][$schoolName]['excellentScore'] - $examMoldTotalAverageScore[$name]['excellentScore']) / $examMoldTotalSValue[$name][$schoolName]['excellentScore'], 2, '.', '');
+                    $examMoldTotalDValue[$name][$schoolName]['excellentScore'] = number_format(($examMoldSchoolAverageScore[$name][$schoolName]['excellentScore'] - $examMoldTotalAverageScore[$name]['totalScore']) / $examMoldTotalSValue[$name][$schoolName]['excellentScore'], 2, '.', '');
                 } else {
                     $examMoldTotalDValue[$name][$schoolName]['excellentScore'] = 0;
                 }
                 if(self::$studentScore['totalSchoolCount'][$schoolName]['passCount'] > 0) {
-                    $examMoldTotalDValue[$name][$schoolName]['passScore'] = number_format(($examMoldSchoolAverageScore[$name][$schoolName]['passScore'] - $examMoldTotalAverageScore[$name]['passScore']) / $examMoldTotalSValue[$name][$schoolName]['passScore'], 2, '.', '');
+                    $examMoldTotalDValue[$name][$schoolName]['passScore'] = number_format(($examMoldSchoolAverageScore[$name][$schoolName]['passScore'] - $examMoldTotalAverageScore[$name]['totalScore']) / $examMoldTotalSValue[$name][$schoolName]['passScore'], 2, '.', '');
                 } else {
                     $examMoldTotalDValue[$name][$schoolName]['passScore'] = 0;
                 }
                 if(self::$studentScore['totalSchoolCount'][$schoolName]['failCount'] > 0) {
-                    $examMoldTotalDValue[$name][$schoolName]['failScore'] = number_format(($examMoldSchoolAverageScore[$name][$schoolName]['failScore'] - $examMoldTotalAverageScore[$name]['failScore']) / $examMoldTotalSValue[$name][$schoolName]['failScore'], 2, '.', '');
+                    $examMoldTotalDValue[$name][$schoolName]['failScore'] = number_format(($examMoldSchoolAverageScore[$name][$schoolName]['failScore'] - $examMoldTotalAverageScore[$name]['totalScore']) / $examMoldTotalSValue[$name][$schoolName]['failScore'], 2, '.', '');
                 } else {
                     $examMoldTotalDValue[$name][$schoolName]['failScore'] = 0;
                 }
@@ -299,11 +299,11 @@ class DValueData {
 
         $dValueData = array(
             'examScopeTotalDValue'   => $examScopeTotalDValue, // 全区考核范畴D值
-            'examMoldTotalDValue'    => $examMoldTotalDValue, // 全校考核层级D值
+            'examMoldTotalDValue'    => $examMoldTotalDValue, // 全区考核层级D值
 
-            /* 为了测试数据用，调试时用
-            'examScopeTotalSValue'   => $examScopeTotalSValue, // 全区考核范畴D值分母
-            'examMoldTotalSValue'    => $examMoldTotalSValue, // 全校考核层级D值分母
+            // 为了测试数据用，调试时用
+            /*'examScopeTotalSValue'   => $examScopeTotalSValue, // 全区考核范畴D值分母
+            'examMoldTotalSValue'    => $examMoldTotalSValue, // 全区考核层级D值分母
 
             'examScopeTotalEValue'   => $examScopeTotalEValue, // 全区考核范畴对照组标准差E值
             'examScopeSchoolCValue'  => $examScopeSchoolCValue, // 全校考核范畴对比组标准差C值
@@ -313,8 +313,8 @@ class DValueData {
             'examScopeTotalNumerator'   => $examScopeTotalNumerator, // 全区考核范畴对照组标准差分子
             'examScopeSchoolNumerator'  => $examScopeSchoolNumerator, // 全校考核范畴对比组标准差分子
             'examMoldTotalNumerator'    => $examMoldTotalNumerator, // 全区考核层级对照组标准差分子
-            'examMoldSchoolNumerator'   => $examMoldSchoolNumerator, // 全校考核层级对比组标准差分子
-            */
+            'examMoldSchoolNumerator'   => $examMoldSchoolNumerator, // 全校考核层级对比组标准差分子*/
+            
         );
 
         return $dValueData;

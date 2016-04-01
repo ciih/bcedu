@@ -660,6 +660,7 @@ class CreateWord {
                     $dValueTxt = '';
                     $schoolPassDValueRecord[$schoolName][$examScopeName] = 0; // 统计有D值的记录
                 }
+
                 $tableSchoolZSFC->addCell(1600, $cellStyleValue)->addText(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['passRate'].$dValueTxt, $cellStyleFontColor, $cellStyle); 
 
                 if(self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['failRate'] == 0 || self::$scoreStatisticsData['examScopeSchoolRate'][$examScopeName][$schoolName]['failRate'] == self::$scoreStatisticsData['examScopeTotalRate'][$examScopeName]['totalRate']) {
@@ -980,9 +981,9 @@ class CreateWord {
         }
 
         foreach (self::$schoolInfoData['schoolList'] as $schoolName) {
-            if($schoolFailDValueRecord[$schoolName] == count(self::$detailTableData['examScopeName']) && array_values($schoolFailDValueRecord[$schoolName])[0] > 0) {
+            if($schoolFailRateRecord[$schoolName] == count(self::$detailTableData['examScopeName']) && array_values($schoolFailDValueRecord[$schoolName])[0] > 0) {
                 $schoolName41[] = $schoolName;
-            } elseif($schoolFailDValueRecord[$schoolName] < count(self::$detailTableData['examScopeName']) && array_values($schoolFailDValueRecord[$schoolName])[0] > 0) {
+            } elseif($schoolFailRateRecord[$schoolName] < count(self::$detailTableData['examScopeName']) && array_values($schoolFailDValueRecord[$schoolName])[0] > 0) {
                 $schoolName42[] = $schoolName;
             } else {
                 $schoolName43[] = $schoolName;
