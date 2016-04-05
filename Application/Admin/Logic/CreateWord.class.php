@@ -279,7 +279,7 @@ class CreateWord {
         $section->addText('             1、优秀水平：>='.(self::$baseScoreRateData[0]).'%', $contentStyleFont, $contentStyleParagraph);
         $section->addText('             2、及格水平：>='.(self::$baseScoreRateData[1]).'%', $contentStyleFont, $contentStyleParagraph);
         $section->addText('             3、未及格：   <'.(self::$baseScoreRateData[1]).'%', $contentStyleFont, $contentStyleParagraph);
-        $section->addText('         本报告的评价对象为实际参加该次语文学科的考生。以下将根据考生在不同知识范畴、能力层级的作答表现，分析不同区域学校以及不同水平考生的水平。', $contentStyleFont, $contentStyleParagraph);
+        $section->addText('         本报告的评价对象为实际参加该次'.self::$course.'学科的考生。以下将根据考生在不同知识范畴、能力层级的作答表现，分析不同区域学校以及不同水平考生的水平。', $contentStyleFont, $contentStyleParagraph);
 
         $section->addTextBreak(17);
 
@@ -1536,7 +1536,7 @@ class CreateWord {
 
 
         $section->addText('4.全体考生客观题水平分析', $subTitleStyleFont, $subTitleStyleParagraph);
-        $section->addText('表4.1 全区考生语文科目客观题分析表', $tableTitleStyleFont, $tableStyleParagraph);
+        $section->addText('表4.1 全区考生'.self::$course.'科目客观题分析表', $tableTitleStyleFont, $tableStyleParagraph);
 
         // Add tableKGT（客观题水平分析）
         $tableKGT = $section->addTable('myTableStyle'); 
