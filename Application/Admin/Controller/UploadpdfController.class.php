@@ -50,7 +50,7 @@ class UploadpdfController extends Controller {
 
         $archive  = new \PHPZip();
 
-        $savepath  = './PDF/';
+        $savepath  = './Data/PDF/';
         $foldername  = substr($file['name'],0,-4);
         $array     = $archive->GetZipInnerFilesInfo($filePath);
         $filecount = 0;

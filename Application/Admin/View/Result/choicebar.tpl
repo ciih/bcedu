@@ -23,7 +23,7 @@
                 choiceCont1Arr = [],
                 choiceCont2Arr = [];
             <foreach name="data" item="vo" key="k">
-                choiceNameArr.push('<%$k%>');
+                choiceNameArr.push('单选<%$k%>');
                 choiceCont1Arr.push('<%$vo[0]%>');
                 choiceCont2Arr.push('<%$vo[1]%>');
             </foreach>
