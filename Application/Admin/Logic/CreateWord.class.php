@@ -83,6 +83,18 @@ class CreateWord {
     protected static $dValueData;
 
     /**
+     * 获取图表路径
+     * @var array
+     */
+    protected static $chartPicPath;
+
+    /**
+     * 获取图表名称
+     * @var array
+     */
+    protected static $chartPicName;
+
+    /**
      * 构造
      * @param $date 日期
      * @param $foldername 文件夹名称（包含信息：学年、学期、年级、考试名称）
@@ -134,6 +146,11 @@ class CreateWord {
         // 获取课程分析数据
         $dValueObj = new \Admin\Model\DValueData(self::$schoolInfoData, self::$detailTableData, self::$studentScoreData, self::$scoreStatisticsData);
         self::$dValueData = $dValueObj->getDValueData();
+
+        $picDir = iconv("utf-8", "gb2312", $foldername);
+
+        self::$chartPicPath = dirname(dirname(dirname(dirname(__FILE__))))."/Phantom/".$picDir."/";
+        self::$chartPicName = ['examscopepie.png','examscopebar.png','exammoldpie.png','exammoldbar.png','choicebar.png'];
     }
 
     /**
@@ -376,6 +393,18 @@ class CreateWord {
 
         $section->addTextBreak();
 
+        $imageStyle = array('width'=>700, 'height'=>400, 'align'=>'center'); 
+
+        $section->addImage(self::$chartPicPath.self::$chartPicName[0], $imageStyle); 
+        $section->addText('图2.1各知识范畴分值分布饼状图', $tableTitleStyleFont, $tableStyleParagraph);
+
+        $imageStyle = array('width'=>700, 'height'=>900, 'align'=>'center'); 
+
+        $section->addImage(self::$chartPicPath.self::$chartPicName[1], $imageStyle); 
+        $section->addText('图2.2各知识范畴全区及不同水平组得分率比较图', $tableTitleStyleFont, $tableStyleParagraph);
+
+        $section->addTextBreak();
+
         $section->addText('     由以上图表的数据分析表明：', $contentStyleFont, $contentStyleParagraph);
     
         if(count(self::$detailTableData['examScopeName']) <= 6) {
@@ -477,6 +506,18 @@ class CreateWord {
                 $examMoldfailRateDiffCount[$examMoldName] = $scorerRate['totalRate'] - $scorerRate['failRate'];
             }
         }
+
+        $section->addTextBreak();
+
+        $imageStyle = array('width'=>700, 'height'=>400, 'align'=>'center'); 
+
+        $section->addImage(self::$chartPicPath.self::$chartPicName[2], $imageStyle); 
+        $section->addText('图2.3各能力层级分值分布饼状图', $tableTitleStyleFont, $tableStyleParagraph);
+
+        $imageStyle = array('width'=>700, 'height'=>900, 'align'=>'center'); 
+
+        $section->addImage(self::$chartPicPath.self::$chartPicName[3], $imageStyle); 
+        $section->addText('图2.4各能力层级全区及不同水平组得分率比较图', $tableTitleStyleFont, $tableStyleParagraph);
 
         $section->addTextBreak();
 
@@ -1595,6 +1636,12 @@ class CreateWord {
 
         $section->addText('     注：区分度评价标准:>0.4区分度较高;0.3~0.39 区分度中等;0.2~0.29 区分度一般;<0.2区分度较低', $tableCommentStyleFont);
         $section->addText('     难度评价标准:  >0.9容易;0.7~0.9较易;0.4~0.7中等;<0.4偏难;', $tableCommentStyleFont);
+
+        $section->addTextBreak();
+
+        $imageStyle = array('width'=>700, 'height'=>500, 'align'=>'center'); 
+
+        $section->addImage(self::$chartPicPath.self::$chartPicName[4], $imageStyle); 
 
         $section->addTextBreak();
 

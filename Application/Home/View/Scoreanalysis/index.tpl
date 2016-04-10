@@ -21,7 +21,7 @@
 					<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="name">考试名称</span><span class="caret"></span></button>
 					<ul class="dropdown-menu" aria-labelledby="examname-dropdown"></ul>
 				</div>
-				<button type="button" class="btn btn-primary btn-search">查询</button>
+				<button type="button" class="btn btn-primary btn-search disabled">查询</button>
 			</div>
 		</div>
 		<div class="detail-bd">

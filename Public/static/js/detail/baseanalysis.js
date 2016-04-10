@@ -189,7 +189,7 @@
         tpl += '</td>';
         tpl += '<td>';
         for (var j = 0; j < listItem.length; j++) {
-          link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + name[i] + '_' + listItem[j] + '.pdf';
+          link = '/Data/PDF/' + name[i] + '基础分析报表' + '/' + name[i] + '_' + listItem[j] + '.pdf';
           tpl += '<a href="'+ link +'">'+ listItem[j] +'</a>';
         }
         tpl += '</td>';
@@ -202,7 +202,7 @@
         tpl += '</td>';
         tpl += '<td>';
         for (var n = 0; n < listItem.length; n++) {
-          link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + schoollist[m] + '_' + name[i] + '_' + listItem[n] + '.pdf';
+          link = '/Data/PDF/' + name[i] + '基础分析报表' + '/' + schoollist[m] + '_' + name[i] + '_' + listItem[n] + '.pdf';
           tpl += '<a href="'+ link +'">'+ listItem[n] +'</a>';
         }
         tpl += '</td>';

@@ -34,6 +34,19 @@
       schoolTermEl.children('.dropdown-menu').html('<li><a href="#">' + schoolterm + '</a></li>');
       schoolGradeEl.children('.dropdown-menu').html('<li><a href="#">' + grade + '</a></li>');
       schoolExamnameEl.children('.dropdown-menu').html('<li><a href="#">' + examname + '</a></li>');
+      
+      var listEl = $('.examinfo-list ul');
+      var course = courselist.split(','),
+          len = course.length,
+          tpl = '',
+          link = '';
+
+      for (var i = 0; i < len; i++) {
+          link = '/Data/Word/' + fullname + '/' + course[i] + '.docx';
+          tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ course[i] +'</a></li>';
+      }
+      listEl.html(tpl);
+
     } else {
       classifyEl.find('.btn-search').addClass('disabled');
       schoolYearEl.find('.dropdown-toggle').addClass('disabled');
