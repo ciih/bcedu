@@ -1,12 +1,12 @@
 
-<div id="chart-section" style="width:800px;height:1400px;"></div>
+<div id="chart-section" style="width:600px;height:<%$chartstyleheight%>;"></div>
 
-<script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+<script src="__ROOT__/Public/static/js/lib/echarts/echarts.baidu.min.js"></script>
 <script type="text/javascript">
     // 路径配置
     require.config({
         paths: {
-            echarts: 'http://echarts.baidu.com/build/dist'
+            echarts: '__ROOT__/Public/static/js/lib/echarts'
         }
     });
 

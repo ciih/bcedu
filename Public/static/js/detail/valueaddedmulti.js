@@ -159,6 +159,7 @@
     $.get("/home/Queryexam/ajax_get_zvalue", {schoolyear: schoolyear, schoolterm: schoolterm, schoolgrade: schoolgrade, course: course, datatype: 'multi'}, function(data){
       if(data) {
         var zvalueData = $.parseJSON(data);
+        // console.log(zvalueData);
         var term = [],
             examnameFirst = [],
             examnameSecond = [],
@@ -189,7 +190,7 @@
           for (var j = 0; j < zvalueData.length; j++) {
             if(examnameFirst[i] == zvalueData[j]['examname'] && zvalueData[j]['schoolterm'] == '第一学期') {
               for (var k = 0; k < zvalueData[j]['score'].length; k++) {
-                scoreList[k][i] = zvalueData[j]['score'][k];
+                scoreList[k][i] = parseFloat(zvalueData[j]['score'][k]);
               }
             }
           }
@@ -217,6 +218,7 @@
         ];*/
 
         for (i = 0; i < zvalueData[0]['schoolName'].length; i++) {
+          // console.log(zvalueData[0]['schoolName'][i]+":::"+scoreList[i]);
           courseCont.push({name:zvalueData[0]['schoolName'][i], data:scoreList[i]});
           // courseCont.push({name:zvalueData[0]['schoolName'][i], data:mockData[i]});
         }

@@ -393,12 +393,12 @@ class CreateWord {
 
         $section->addTextBreak();
 
-        $imageStyle = array('width'=>700, 'height'=>400, 'align'=>'center'); 
+        $imageStyle = array('width'=>600, 'height'=>400, 'align'=>'center'); 
 
         $section->addImage(self::$chartPicPath.self::$chartPicName[0], $imageStyle); 
         $section->addText('图2.1各知识范畴分值分布饼状图', $tableTitleStyleFont, $tableStyleParagraph);
 
-        $imageStyle = array('width'=>700, 'height'=>900, 'align'=>'center'); 
+        $imageStyle = array('width'=>600, 'height'=>800, 'align'=>'center'); 
 
         $section->addImage(self::$chartPicPath.self::$chartPicName[1], $imageStyle); 
         $section->addText('图2.2各知识范畴全区及不同水平组得分率比较图', $tableTitleStyleFont, $tableStyleParagraph);
@@ -509,12 +509,12 @@ class CreateWord {
 
         $section->addTextBreak();
 
-        $imageStyle = array('width'=>700, 'height'=>400, 'align'=>'center'); 
+        $imageStyle = array('width'=>600, 'height'=>400, 'align'=>'center'); 
 
         $section->addImage(self::$chartPicPath.self::$chartPicName[2], $imageStyle); 
         $section->addText('图2.3各能力层级分值分布饼状图', $tableTitleStyleFont, $tableStyleParagraph);
 
-        $imageStyle = array('width'=>700, 'height'=>900, 'align'=>'center'); 
+        $imageStyle = array('width'=>600, 'height'=>400, 'align'=>'center'); 
 
         $section->addImage(self::$chartPicPath.self::$chartPicName[3], $imageStyle); 
         $section->addText('图2.4各能力层级全区及不同水平组得分率比较图', $tableTitleStyleFont, $tableStyleParagraph);
@@ -1639,7 +1639,7 @@ class CreateWord {
 
         $section->addTextBreak();
 
-        $imageStyle = array('width'=>700, 'height'=>500, 'align'=>'center'); 
+        $imageStyle = array('width'=>600, 'height'=>400, 'align'=>'center'); 
 
         $section->addImage(self::$chartPicPath.self::$chartPicName[4], $imageStyle); 
 

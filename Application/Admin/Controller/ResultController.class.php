@@ -379,9 +379,11 @@ class ResultController extends Controller {
         switch ($title) {
             case 'examscope':
                 $this->assign("title", '各知识范畴全区及不同水平组得分率比较图');
+                $this->assign("chartstyleheight", '800px');
                 break;
             case 'exammold':
                 $this->assign("title", '各能力层级全区及不同水平组得分率比较图');
+                $this->assign("chartstyleheight", '400px');
                 break;
         }
 

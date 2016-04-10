@@ -199,7 +199,7 @@
     var schoolexamname = schoolExamnameEl.find('.name').text();
     var course = schoolCourseEl.find('.name').text();
 
-    var examFullname = schoolyear + '年' + schoolterm + schoolgrade + schoolexamname;
+    var examFullname = schoolyear + '学年' + schoolterm + schoolgrade + schoolexamname;
 
     $.get("/home/Queryexam/ajax_get_scattervalue", {fullname: examFullname, course: course}, function(data){
       if(data) {
