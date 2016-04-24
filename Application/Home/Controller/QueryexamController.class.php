@@ -15,6 +15,7 @@ class QueryexamController extends Controller {
         
         $this->ajaxReturn (json_encode($data),'JSON');
     }
+
     public function ajax_get_school(){
         $schooltype = I('schooltype');
         
@@ -68,6 +69,34 @@ class QueryexamController extends Controller {
             }
 
             $this->ajaxReturn (json_encode($ZValueData),'JSON');
+        } elseif($type == 'contrast') {
+            $schoolyear = I('schoolyear');
+            $schoolterm = I('schoolterm');
+            $schoolgrade = I('schoolgrade');
+            $course = I('course');
+            foreach ($schoolyear as $key => $value) {
+                if($schoolterm[$key] == '全年') {
+                    $data[$key] = $examTable->where("schoolyear='$schoolyear[$key]' AND grade='$schoolgrade[$key]'")->order('id desc')->select();
+                } else {
+                    $data[$key] = $examTable->where("schoolyear='$schoolyear[$key]' AND schoolterm='$schoolterm[$key]' AND grade='$schoolgrade[$key]'")->order('id desc')->select();
+                }
+            }
+
+            foreach ($data as $num => $item) {
+                foreach ($item as $key => $value) {
+                    $ZValueObj[$num][$key] = new \Admin\Model\ZValueData($value['uploaddate'], $value['fullname']);
+                    $ZValueArr[$num][$key] = $ZValueObj[$num][$key]->getZValueData();
+                    foreach ($ZValueArr[$num][$key] as $schoolName => $score) {
+                        $ZValueData[$num][$key]['schoolyear'] = $value['schoolyear'];
+                        $ZValueData[$num][$key]['schoolterm'] = $value['schoolterm'];
+                        $ZValueData[$num][$key]['examname'] = $value['examname'];
+                        $ZValueData[$num][$key]['schoolName'][] = $schoolName;
+                        $ZValueData[$num][$key]['score'][] = $score[$course[$num]];
+                    }
+                }
+            }
+
+            $this->ajaxReturn (json_encode($ZValueData),'JSON');
         }
     }
 
@@ -88,6 +117,5 @@ class QueryexamController extends Controller {
             
             $this->ajaxReturn (json_encode($scatterValueData),'JSON');
         }
-
     }
 }

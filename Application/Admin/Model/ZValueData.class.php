@@ -86,7 +86,6 @@ class ZValueData {
         self::$courseListData = $courseObj->getCourseData();
 
         self::$excelFile = new \Admin\Model\ExeclFile();
-
     }
 
     /**

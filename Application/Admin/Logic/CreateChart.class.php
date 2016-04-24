@@ -83,7 +83,7 @@ class CreateChart {
         $jsTplFile = $phantomBaseDir."/examscoppie.tpl.js";
         $jsFile = $workDir."/data.js";
 
-        $baseUrl = "http://chenhong.bcedu.com/index.php";
+        $baseUrl = "http://www.bcedu.com/index.php";
         $picFile = "examscopepie.png";
 
         $workDir2 = str_replace("\\", '/', $dataJsDir);

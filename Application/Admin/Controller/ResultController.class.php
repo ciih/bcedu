@@ -54,6 +54,11 @@ class ResultController extends Controller {
         $foldername = $_GET['foldername'];
         $course = $_GET['course'];
 
+        // ===========删除===========
+        /*$wordObj = new \Admin\Logic\CreateWord($date, $foldername, $course);
+        $wordObj->creatWordFile();*/
+        // ===========删除===========
+
         $examInfoObj = new \Admin\Model\ExamInfoData($date, $foldername);
         $examInfoData = $examInfoObj->getExamInfoData();
 
@@ -90,7 +95,7 @@ class ResultController extends Controller {
         mkdir($workDir, 0777);
         umask($old);
 
-        $baseUrl = "http://chenhong.bcedu.com/index.php";
+        $baseUrl = "http://www.bcedu.com/index.php";
         $workDir2 = str_replace("\\", '/', $dataJsDir);
 
 
@@ -273,12 +278,6 @@ class ResultController extends Controller {
 
         // 等待截图完成
         sleep(2);
-
-
-
-
-
-
 
         $sign = $this->getSign($choiceQuestionsAnalysisBarStr, $case);
 

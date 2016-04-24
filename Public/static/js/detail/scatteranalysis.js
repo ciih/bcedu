@@ -205,7 +205,7 @@
       if(data) {
         var scattervalue = $.parseJSON(data);
 
-        console.log(scattervalue);
+        // console.log(scattervalue);
 
         valueaddedObj = {
           chart: {
@@ -234,7 +234,7 @@
               align: 'left',
               verticalAlign: 'top',
               x: 100,
-              y: 70,
+              y: 0,
               floating: true,
               backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF',
               borderWidth: 1

@@ -32,6 +32,7 @@
       }
 
       schoolyear = $.unique(schoolyear);
+      schoolyear.sort();
 
       for (var i = 0; i < schoolyear.length; i++) {
         contList += '<li><a href="#">' + schoolyear[i] + '</a></li>';
@@ -189,72 +190,70 @@
 
           break;
       }
-
   });
 
   $('.btn-search').on('click', function(){
+    if(!$(this).hasClass('disabled')) {
+      $('#highcharts-section .highcharts-load').show();
 
-    $('#highcharts-section .highcharts-load').show();
+      var schoolyear = schoolYearEl.find('.name').text();
+      var schoolterm = schoolTermEl.find('.name').text();
+      var schoolgrade = schoolGradeEl.find('.name').text();
+      var schoolexamname = schoolExamnameEl.find('.name').text();
+      var course = schoolCourseEl.find('.name').text();
 
-    var schoolyear = schoolYearEl.find('.name').text();
-    var schoolterm = schoolTermEl.find('.name').text();
-    var schoolgrade = schoolGradeEl.find('.name').text();
-    var schoolexamname = schoolExamnameEl.find('.name').text();
-    var course = schoolCourseEl.find('.name').text();
+      var examFullname = schoolyear + '学年' + schoolterm + schoolgrade + schoolexamname;
 
-    var examFullname = schoolyear + '学年' + schoolterm + schoolgrade + schoolexamname;
+      $.get("/home/Queryexam/ajax_get_zvalue", {fullname: examFullname, datatype: 'single'}, function(data){
+        if(data) {
+          var zvalueData = $.parseJSON(data);
+          var valueaddedObj = {};
+          var schoolName = [];
+          var schoolCont;
+          var scoreData = [];
+          var courseName,
+              courseCont;
+          var score = [];
 
-    $.get("/home/Queryexam/ajax_get_zvalue", {fullname: examFullname, datatype: 'single'}, function(data){
-      if(data) {
-        var zvalueData = $.parseJSON(data);
-        var valueaddedObj = {};
-        var schoolName = [];
-        var schoolCont;
-        var scoreData = [];
-        var courseName,
-            courseCont;
-        var score = [];
-
-        for(var key in zvalueData) {  
-          schoolName.push(key);
-          schoolCont = zvalueData[key];
-          for(courseName in schoolCont) {
-            if(course == courseName) {
-              score.push(parseFloat(schoolCont[course]));
+          for(var key in zvalueData) {  
+            schoolName.push(key);
+            schoolCont = zvalueData[key];
+            for(courseName in schoolCont) {
+              if(course == courseName) {
+                score.push(parseFloat(schoolCont[course]));
+              }
             }
           }
+
+          courseCont = {
+            name: course,
+            data: score
+          };
+
+          valueaddedObj = {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: course + '学科的增值性评价'
+            },
+            xAxis: {
+                categories: schoolName
+            },
+            credits: {
+                enabled: false
+            },
+            series: [courseCont]
+          }
+
+          cntTPL(valueaddedObj);
         }
-
-        courseCont = {
-          name: course,
-          data: score
-        };
-
-        valueaddedObj = {
-          chart: {
-              type: 'column'
-          },
-          title: {
-              text: course + '学科的增值性评价'
-          },
-          xAxis: {
-              categories: schoolName
-          },
-          credits: {
-              enabled: false
-          },
-          series: [courseCont]
-        }
-
-        cntTPL(valueaddedObj);
-      }
-    });
-
+      });
+    }
     // cntTPL(examName, courseList);
   });
 
   function cntTPL(obj) {
-
     $('#highcharts-section').highcharts(obj);
   }
 })();

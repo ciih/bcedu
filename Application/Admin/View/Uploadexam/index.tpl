@@ -13,7 +13,7 @@
 						<div class="col-md-7 col-md-offset-1">
 							<div class="form-group">
 							    <input type="file" name="inputFile" />
-							    <p class="help-block">只能上传后缀为zip或者rar文件</p>
+							    <p class="help-block">只能上传后缀为zip文件</p>
 							</div>
 						</div>
 					</div>

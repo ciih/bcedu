@@ -2,8 +2,8 @@
 return array(
 	// '数据库配置'
 	'DB_TYPE'   => 'mysql',
-	'DB_HOST'   => 'chenhong.bcedu.com',
-	'DB_NAME'   => 'bcedu_test',
+	'DB_HOST'   => 'www.bcedu.com',
+	'DB_NAME'   => 'bcedu',
 	'DB_USER'   => 'root',
 	'DB_PWD'    => 'YeEDjUMLZCvyWRLp',
 	'DB_PORT'   => '3306',

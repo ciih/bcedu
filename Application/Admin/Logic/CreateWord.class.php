@@ -113,7 +113,7 @@ class CreateWord {
         $schoolInfoObj = new \Admin\Model\SchoolInfoData();
         self::$schoolInfoData = $schoolInfoObj->getSchoolData(self::$examInfoData['schoolType']);
 
-        // 获取当前科目得分率
+        // 获取当前科目分数线(得分率)
         $baseScoreRateObj = new \Admin\Model\BaseScoreRateData();
         self::$baseScoreRateData = $baseScoreRateObj->getBaseScoreRateData(self::$course);
 
@@ -146,6 +146,29 @@ class CreateWord {
         // 获取课程分析数据
         $dValueObj = new \Admin\Model\DValueData(self::$schoolInfoData, self::$detailTableData, self::$studentScoreData, self::$scoreStatisticsData);
         self::$dValueData = $dValueObj->getDValueData();
+
+        // 获取考试数据目录
+        $scatterValueObj = new \Admin\Model\ScatterValueData($date, $foldername, self::$course);
+        $scatterValueData = $scatterValueObj->getScatterValueData();
+
+        /*var_export('===========$scatterValueData==============');
+        var_export(self::$scatterValueData);
+        exit();*/
+
+        // if(self::$examInfoData['schoolType'] != 'high') {
+        /*if(self::$examInfoData['schoolType'] == 'high') {
+            // 获取区域分数数据
+            $areaValueObj = new \Admin\Model\AreaValueData(self::$schoolInfoData, self::$detailTableData, self::$comprehensiveIndicatorsData, self::$studentScoreData, self::$scoreStatisticsData);
+            self::$areaValueData = $areaValueObj->getAreaValueData();
+        }
+
+        var_export('===========$detailTableData==============');
+        var_export(self::$detailTableData);
+        exit();
+
+        var_export('===========$areaValueData==============');
+        var_export(self::$areaValueData);
+        exit();*/
 
         $picDir = iconv("utf-8", "gb2312", $foldername);
 
@@ -1639,11 +1662,11 @@ class CreateWord {
 
         $section->addTextBreak();
 
-        $imageStyle = array('width'=>600, 'height'=>400, 'align'=>'center'); 
-
-        $section->addImage(self::$chartPicPath.self::$chartPicName[4], $imageStyle); 
-
-        $section->addTextBreak();
+        if(self::$course != '英语') {
+            $imageStyle = array('width'=>600, 'height'=>400, 'align'=>'center');
+            $section->addImage(self::$chartPicPath.self::$chartPicName[4], $imageStyle);
+            $section->addTextBreak();
+        }
 
         $section->addText('表2.0的数据表明', $contentStyleFont);
 

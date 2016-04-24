@@ -83,6 +83,12 @@ return array(
                 __ROOT__.'/Public/static/js/detail/valueaddedmulti.js'
             )
         ),
+        'valueaddedcontrast' => array(
+            'js_foot' => array(
+                __ROOT__.'/Public/static/js/lib/highcharts/highcharts.js',
+                __ROOT__.'/Public/static/js/detail/valueaddedcontrast.js'
+            )
+        ),
         'scatteranalysis' => array(
             'js_foot' => array(
                 __ROOT__.'/Public/static/js/lib/highcharts/highcharts.js',

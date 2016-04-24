@@ -85,6 +85,29 @@
 	margin-right: 10px;
 }
 
+.school-classify-section {
+	display: none;
+    margin: 0 auto;
+    padding-bottom: 28px;
+    width: 95%;
+    border-bottom: 1px solid #dadada;	
+}
+.school-classify-section .school-classify {
+	display: none;
+	float: none;
+	text-align: center;
+}
+.school-classify-section .school-classify .dropdown {
+	display: inline-block;
+	float: none;
+}
+.school-classify-section .school-classify .dropdown button {
+	width: 110px;
+}
+.school-classify-section .school-classify .btn-search {
+	visibility: hidden;
+}
+
 /* detail-bd */
 .detail-bd .classify-hd {
 	overflow: hidden;

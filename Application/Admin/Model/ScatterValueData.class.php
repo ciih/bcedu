@@ -123,10 +123,11 @@ class ScatterValueData {
             $CValueNumerator = number_format($CValueNumerator + number_format(pow(number_format($studentScore - $averageScore, 2, '.', '') , 2), 2, '.', ''), 2, '.', '');
         }
 
-        $CValue = number_format($CValueNumerator / $studentCount, 2, '.', '');
+        $CValue = number_format(sqrt($CValueNumerator / $studentCount), 2, '.', '');
 
         foreach ($studentScoreList as $num => $studentScore) {
-            $scatterValue[$num][] = $studentScoreList[$num];
+            // $scatterValue[$num][] = $studentScoreList[$num];
+            $scatterValue[$num][] = $num;
             $scatterValue[$num][] = floatval(number_format(number_format($studentScore - $averageScore, 2, '.', '') / $CValue, 2, '.', ''));
         }
 
