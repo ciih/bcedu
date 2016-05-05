@@ -10,7 +10,7 @@
 			<a href="/home/edu?page=deep_analysis&type=<%$type%>&school=<%$school%>" class="title sdfx">深度分析档案</a>
 		</li>
 		<li <eq name="page" value="teacher_talk"> class="tab-active" </eq>>
-			<a href="/home/edu?page=teacher_talk&type=<%$type%>&school=<%$school%>" class="title jsjl">教师交流室</a>
+			<a href="http://bbs.bcedu.com/" class="title jsjl" target="_blank">典型题目库</a>
 		</li>
 		<if condition="($school eq junior) OR ($school eq middle) OR ($school eq high) ">
 		<li <eq name="page" value="school_analysis"> class="tab-active" </eq>>

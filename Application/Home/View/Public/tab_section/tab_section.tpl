@@ -10,7 +10,7 @@
 			<a href="/home/deepanalysis?type=<%$type%>&schoolname=<%$schoolname%>" class="title sdfx">深度分析档案</a>
 		</li>
 		<li <eq name="page" value="teachertalk"> class="tab-active" </eq>>
-			<a href="/home/teachertalk?type=<%$type%>&schoolname=<%$schoolname%>" class="title jsjl">典型题目库</a>
+			<a href="http://bbs.bcedu.com/" class="title jsjl" target="_blank">典型题目库</a>
 		</li>
 		<if condition="($schoolname eq 小学) OR ($schoolname eq 初中) OR ($schoolname eq 高中) ">
 		<?php // 暂时不计算各学校数据 ?>

@@ -16,7 +16,7 @@
 
   var schoolyearList = [],
       schooltermList = ['第一学期', '第二学期'],
-      examnameList = ['一模考试', '二模考试', '三模考试', '期中考试', '期末考试'];
+      examnameList = ['一模考试', '二模考试', '三模考试', '四模考试', '期中考试', '期末考试'];
 
   $.get("/home/Queryexam/ajax_get_exam", {schooltype: schooltype}, function(data){
     if(data) {

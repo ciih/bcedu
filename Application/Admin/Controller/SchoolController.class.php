@@ -12,7 +12,7 @@ class SchoolController extends Controller {
         $username = session('username');
         $pagename = strtolower(CONTROLLER_NAME);
 
-        $data = new \Admin\Model\SchoolData();
+        $data = new \Admin\Model\SchoolInfoData();
 
         $juniorData = $data->getSchoolData('junior');
         $middleData = $data->getSchoolData('middle');
