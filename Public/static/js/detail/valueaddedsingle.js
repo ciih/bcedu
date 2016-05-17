@@ -194,7 +194,10 @@
 
   $('.btn-search').on('click', function(){
     if(!$(this).hasClass('disabled')) {
-      $('#highcharts-section .highcharts-load').show();
+
+      $('.highcharts-section-load').show();
+      $('#highcharts-section').hide();
+      $('.btn-search').addClass('disabled');
 
       var schoolyear = schoolYearEl.find('.name').text();
       var schoolterm = schoolTermEl.find('.name').text();
@@ -245,12 +248,15 @@
             },
             series: [courseCont]
           }
+          
+          $('.highcharts-section-load').hide();
+          $('#highcharts-section').show();
+          $('.btn-search').removeClass('disabled');
 
           cntTPL(valueaddedObj);
         }
       });
     }
-    // cntTPL(examName, courseList);
   });
 
   function cntTPL(obj) {

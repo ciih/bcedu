@@ -19,6 +19,10 @@
       grade = [],
       examname = [];
 
+  var schoolyearList = [],
+      schooltermList = ['第一学期', '第二学期'],
+      examnameList = ['一模考试', '二模考试', '三模考试', '四模考试', '期中考试', '期末考试'];
+
   $.get("/home/Queryexam/ajax_get_exam", {schooltype: schooltype}, function(data){
     if(data) {
 
@@ -27,14 +31,14 @@
       examInfo = $.parseJSON(data);
 
       for (var i = 0; i < examInfo.length; i++) {
-        schoolyear.push(examInfo[i].schoolyear);
+        schoolyearList.push(examInfo[i].schoolyear);
       }
 
-      schoolyear = $.unique(schoolyear);
-      schoolyear.sort();
+      schoolyearList = $.unique(schoolyearList);
+      schoolyearList.sort();
 
-      for (var i = 0; i < schoolyear.length; i++) {
-        contList += '<li><a href="#">' + schoolyear[i] + '</a></li>';
+      for (var i = 0; i < schoolyearList.length; i++) {
+        contList += '<li><a href="#">' + schoolyearList[i] + '</a></li>';
       }
 
       schoolYearEl.children('.dropdown-menu').html(contList);
@@ -149,8 +153,11 @@
 
   $('.btn-search').on('click', function(){
     if(!$(this).hasClass('disabled')) {
-      $('#highcharts-section .highcharts-load').show();
 
+      $('.highcharts-section-load').show();
+      $('#highcharts-section').hide();
+      $('.btn-search').addClass('disabled');
+      
       var schoolyear = schoolYearEl.find('.name').text();
       var schoolterm = schoolTermEl.find('.name').text();
       var schoolgrade = schoolGradeEl.find('.name').text();
@@ -159,10 +166,14 @@
       $.get("/home/Queryexam/ajax_get_zvalue", {schoolyear: schoolyear, schoolterm: schoolterm, schoolgrade: schoolgrade, course: course, datatype: 'multi'}, function(data){
         if(data) {
           var zvalueData = $.parseJSON(data);
-          console.log(zvalueData);
+
           var term = [],
               examnameFirst = [],
               examnameSecond = [],
+              examnameSortFirst = [],
+              examnameSortSecond = [],
+              examnameLabelFirst = [],
+              examnameLabelSecond = [],
               examname = [],
               scoreList = [];
           var courseCont = [];
@@ -180,15 +191,33 @@
             }
           }
 
-          examname = examname.concat(examnameFirst, examnameSecond);
+          for (var i = 0; i < examnameList.length; i++) {
+            for (var j = 0; j < examnameFirst.length; j++) {
+              if(examnameList[i] == examnameFirst[j]) {
+                examnameSortFirst.push(examnameFirst[j]);
+                examnameLabelFirst.push('第一学期' + examnameFirst[j]);
+              }
+            }
+          }
+
+          for (var i = 0; i < examnameList.length; i++) {
+            for (var j = 0; j < examnameSecond.length; j++) {
+              if(examnameList[i] == examnameSecond[j]) {
+                examnameSortSecond.push(examnameSecond[j]);
+                examnameLabelSecond.push('第二学期' + examnameSecond[j]);
+              }
+            }
+          }
+
+          examname = examname.concat(examnameLabelFirst, examnameLabelSecond);
 
           for (i = 0; i < zvalueData[0]['schoolName'].length; i++) {
             scoreList[i] = [];
           }
 
-          for (i = 0; i < examnameFirst.length; i++) {
+          for (i = 0; i < examnameSortFirst.length; i++) {
             for (var j = 0; j < zvalueData.length; j++) {
-              if(examnameFirst[i] == zvalueData[j]['examname'] && zvalueData[j]['schoolterm'] == '第一学期') {
+              if(examnameSortFirst[i] == zvalueData[j]['examname'] && zvalueData[j]['schoolterm'] == '第一学期') {
                 for (var k = 0; k < zvalueData[j]['score'].length; k++) {
                   scoreList[k][i] = parseFloat(zvalueData[j]['score'][k]);
                 }
@@ -196,10 +225,10 @@
             }
           }
 
-          midnum = examnameFirst.length;
-          for (i = 0; i < examnameSecond.length; i++) {
+          midnum = examnameSortFirst.length;
+          for (i = 0; i < examnameSortSecond.length; i++) {
             for (var j = 0; j < zvalueData.length; j++) {
-              if(examnameSecond[i] == zvalueData[j]['examname'] && zvalueData[j]['schoolterm'] == '第二学期') {
+              if(examnameSortSecond[i] == zvalueData[j]['examname'] && zvalueData[j]['schoolterm'] == '第二学期') {
                 for (var k = 0; k < zvalueData[j]['score'].length; k++) {
                   scoreList[k][midnum] = parseFloat(zvalueData[j]['score'][k]);
                 }
@@ -244,6 +273,10 @@
             },
             series: courseCont
           }
+          
+          $('.highcharts-section-load').hide();
+          $('#highcharts-section').show();
+          $('.btn-search').removeClass('disabled');
 
           cntTPL(valueaddedObj);
         }

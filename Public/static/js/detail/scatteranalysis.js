@@ -177,7 +177,7 @@
           schoolCourseEl.find('.dropdown-toggle').removeClass('disabled');
 
           if(!$('.btn-search').hasClass('disabled')) {
-            $('.btn-search').addClass('disabled')
+            $('.btn-search').addClass('disabled');
           }
           
           break;
@@ -191,7 +191,14 @@
 
   $('.btn-search').on('click', function(){
 
-    $('#highcharts-section .highcharts-load').show();
+    if($('.btn-search').hasClass('disabled')) {
+      return false;
+    }
+
+    $('.highcharts-section-load').show();
+    $('#highcharts-section').hide();
+
+    $('.btn-search').addClass('disabled');
 
     var schoolyear = schoolYearEl.find('.name').text();
     var schoolterm = schoolTermEl.find('.name').text();
@@ -269,10 +276,15 @@
               data: scattervalue['scatterValue']
           }]
         }
+          
+        $('.highcharts-section-load').hide();
+        $('#highcharts-section').show();
+        $('.btn-search').removeClass('disabled');
 
         cntTPL(valueaddedObj);
       }
     });
+
   });
 
   function cntTPL(obj) {

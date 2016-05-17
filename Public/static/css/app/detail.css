@@ -185,17 +185,20 @@
 	padding: 20px 16px;
 }
 
-.detail-bd .highcharts-section {
+.detail-bd .highcharts-section,
+.detail-bd .highcharts-section-load {
 	padding: 40px 20px;
 }
-.detail-bd .highcharts-section .highcharts-load {
+.detail-bd .highcharts-section-load {
 	display: none;
+}
+.detail-bd .highcharts-section-load .highcharts-load {
 	padding-top: 180px;
 	width: 100%;
     height: 400px;
     text-align: center;
 }
-.detail-bd .highcharts-section .highcharts-load span {
+.detail-bd .highcharts-section-load .highcharts-load span {
 	display: block;
 	margin-top: 15px;
 	line-height: 20px;

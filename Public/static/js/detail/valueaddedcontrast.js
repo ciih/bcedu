@@ -197,7 +197,11 @@
 
   $('.btn-search').on('click', function(){
     if(!$(this).hasClass('disabled')) {
-      $('#highcharts-section .highcharts-load').show();
+
+      $('.highcharts-section-load').show();
+      $('#highcharts-section').hide();
+      $('.btn-search').addClass('disabled');
+      
       var currNum = $(this).parents('.school-classify').attr('data-itemnum');
       var course = $('#course' + currNum + '-dropdown').find('.name').text();
       var _schoolyear = [],
@@ -259,8 +263,6 @@
 
           zvalueList = zvalueSortList;
 
-          window.chenhong = zvalueList;
-
           for (i = 0; i < zvalueList.length; i++) {
             examname.push(zvalueList[i].schoolyear + '学年' + zvalueList[i].schoolterm + zvalueList[i].examname);
           }
@@ -272,7 +274,6 @@
             }
             scoreList.push(scoreSchoolList);
           }
-          window.zhaoshujuan = scoreList;
 
           for (i = 0; i < zvalueList[0]['schoolName'].length; i++) {
             courseCont.push({name:zvalueList[0]['schoolName'][i], data:scoreList[i]});
@@ -298,6 +299,10 @@
             },
             series: courseCont
           }
+          
+          $('.highcharts-section-load').hide();
+          $('#highcharts-section').show();
+          $('.btn-search').removeClass('disabled');
 
           cntTPL(valueaddedObj);
         }
