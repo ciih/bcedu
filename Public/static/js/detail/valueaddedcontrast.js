@@ -16,7 +16,7 @@
 
   var schoolyearList = [],
       schooltermList = ['第一学期', '第二学期'],
-      examnameList = ['一模考试', '二模考试', '三模考试', '四模考试', '期中考试', '期末考试'];
+      examnameList = ['一模考试', '二模考试', '三模考试', '四模考试', '五模考试', '六模考试', '七模考试', '期中考试', '期末考试'];
 
   $.get("/home/Queryexam/ajax_get_exam", {schooltype: schooltype}, function(data){
     if(data) {
@@ -204,26 +204,53 @@
       
       var currNum = $(this).parents('.school-classify').attr('data-itemnum');
       var course = $('#course' + currNum + '-dropdown').find('.name').text();
+      var schoolyear = [],
+          schoolterm = [],
+          schoolgrade = [],
+          course = [];
       var _schoolyear = [],
           _schoolterm = [],
           _schoolgrade = [],
           _course = [];
 
       for (var i = 1; i <= currNum; i++) {
-        _schoolyear[i] = $('#schoolyear' + i + '-dropdown').find('.name').text() == '学年' ? null : $('#schoolyear' + i + '-dropdown').find('.name').text();
-        _schoolterm[i] = $('#schoolterm' + i + '-dropdown').find('.name').text() == '学期' ? null : $('#schoolterm' + i + '-dropdown').find('.name').text();
+        _schoolyear[i-1] = $('#schoolyear' + i + '-dropdown').find('.name').text() == '学年' ? null : $('#schoolyear' + i + '-dropdown').find('.name').text();
+        _schoolterm[i-1] = $('#schoolterm' + i + '-dropdown').find('.name').text() == '学期' ? null : $('#schoolterm' + i + '-dropdown').find('.name').text();
         if(currNum == 1) {
-          _schoolgrade[i] = $('#grade' + i + '-dropdown').find('.name').text() == '年级' ? null : $('#grade' + i + '-dropdown').find('.name').text();
-          _course[i] = $('#course' + i + '-dropdown').find('.name').text() == '考试科目' ? null : $('#course' + i + '-dropdown').find('.name').text();
+          _schoolgrade[i-1] = $('#grade' + i + '-dropdown').find('.name').text() == '年级' ? null : $('#grade' + i + '-dropdown').find('.name').text();
+          _course[i-1] = $('#course' + i + '-dropdown').find('.name').text() == '考试科目' ? null : $('#course' + i + '-dropdown').find('.name').text();
         } else {
-          _schoolgrade[i] = $('#grade' + currNum + '-dropdown').find('.name').text() == '年级' ? null : $('#grade' + currNum + '-dropdown').find('.name').text();
-          _course[i] = $('#course' + currNum + '-dropdown').find('.name').text() == '考试科目' ? null : $('#course' + currNum + '-dropdown').find('.name').text();
+          _schoolgrade[i-1] = $('#grade' + currNum + '-dropdown').find('.name').text() == '年级' ? null : $('#grade' + currNum + '-dropdown').find('.name').text();
+          _course[i-1] = $('#course' + currNum + '-dropdown').find('.name').text() == '考试科目' ? null : $('#course' + currNum + '-dropdown').find('.name').text();
         }
       }
 
-      $.get("/home/Queryexam/ajax_get_zvalue", {schoolyear: _schoolyear, schoolterm: _schoolterm, schoolgrade: _schoolgrade, course: _course, datatype: 'contrast'}, function(data){
+      var examnameFullname = [];
+      var examnameSplit;
+
+      for (var i = 0; i < _schoolyear.length; i++) {
+        if(_schoolterm[i] == '全年') {
+          examnameFullname.push(_schoolyear[i] + '&第一学期&' + _schoolgrade[i] + '&' + _course[i]);
+          examnameFullname.push(_schoolyear[i] + '&第二学期&' + _schoolgrade[i] + '&' + _course[i]);
+        } else {
+          examnameFullname.push(_schoolyear[i] + '&' + _schoolterm[i] + '&' + _schoolgrade[i] + '&' + _course[i]);
+        }
+      }
+
+      examnameFullname = $.unique(examnameFullname);
+
+      for (var i = 0; i < examnameFullname.length; i++) {
+        examnameSplit = examnameFullname[i].split('&');
+        schoolyear[i] = examnameSplit[0];
+        schoolterm[i] = examnameSplit[1];
+        schoolgrade[i] = examnameSplit[2];
+        course[i] = examnameSplit[3];
+      }
+
+      $.get("/home/Queryexam/ajax_get_zvalue", {schoolyear: schoolyear, schoolterm: schoolterm, schoolgrade: schoolgrade, course: course, datatype: 'contrast'}, function(data){
         if(data) {
           var zvalueData = $.parseJSON(data);
+          console.log(zvalueData);
 
           var zvalueList = [];
 
@@ -260,6 +287,8 @@
               }
             }
           }
+
+          console.log(zvalueSortList);
 
           zvalueList = zvalueSortList;
 

@@ -21,76 +21,75 @@
 
   $.get("/home/Queryexam/ajax_get_school", {schooltype: schooltype}, function(data){
     schoollist = $.parseJSON(data);
-  });
+  }).then(function(){
+    $.get("/home/Queryexam/ajax_get_exam", {schooltype: schooltype}, function(data){
+      if(data) {
 
-  $.get("/home/Queryexam/ajax_get_exam", {schooltype: schooltype}, function(data){
-    if(data) {
+        var contList1 = '';
+        var contList2 = '';
+        var contList3 = '';
 
-      var contList1 = '';
-      var contList2 = '';
-      var contList3 = '';
+        examInfo = $.parseJSON(data);
 
-      examInfo = $.parseJSON(data);
-      console.log(examInfo);
-
-      for (var i = 0; i < examInfo.length; i++) {
-        schoolyear.push(examInfo[i].schoolyear);
-        schoolterm.push(examInfo[i].schoolterm);
-        grade.push(examInfo[i].grade);
-      }
-
-      schoolyear = $.unique(schoolyear);
-      schoolterm = $.unique(schoolterm);
-      grade = $.unique(grade);
-
-      for (var i in examInfo) {
-        if(examInfo[i].schoolyear == schoolyear[schoolyear.length-1] && examInfo[i].schoolterm == schoolterm[schoolterm.length-1] && examInfo[i].grade == grade[grade.length-1]) {
-          examname.push(examInfo[i].examname);
+        for (var i = 0; i < examInfo.length; i++) {
+          schoolyear.push(examInfo[i].schoolyear);
+          schoolterm.push(examInfo[i].schoolterm);
+          grade.push(examInfo[i].grade);
         }
-      }
 
-      examname = $.unique(examname);
+        schoolyear = $.unique(schoolyear);
+        schoolterm = $.unique(schoolterm);
+        grade = $.unique(grade);
 
-      for (var i = 0; i < schoolyear.length; i++) {
-        contList1 += '<li><a href="#">' + schoolyear[i] + '</a></li>'
-      }
-
-      for (var i = 0; i < schoolterm.length; i++) {
-        contList2 += '<li><a href="#">' + schoolterm[i] + '</a></li>'
-      }
-
-      for (var i = 0; i < grade.length; i++) {
-        contList3 += '<li><a href="#">' + grade[i] + '</a></li>'
-      }
-
-      schoolYearEl.children('.dropdown-menu').html(contList1);
-      schoolTermEl.children('.dropdown-menu').html(contList2);
-      schoolGradeEl.children('.dropdown-menu').html(contList3);
-
-      schoolYearEl.find('.name').text(schoolyear[schoolyear.length-1]);
-      schoolTermEl.find('.name').text(schoolterm[schoolterm.length-1]);
-      schoolGradeEl.find('.name').text(grade[grade.length-1]);
-
-      var examfullname = '';
-
-      for (var i = 0; i < examname.length; i++) {
-        examfullname = schoolYearEl.find('.name').text() + '学年' + schoolTermEl.find('.name').text() + schoolGradeEl.find('.name').text() + examname[i];
-        for (var j in examInfo) {
-          if(examInfo[j].fullname == examfullname) {
-            courseList.push(examInfo[j].courselist);
-            examName.push(examInfo[j].fullname);
+        for (var i in examInfo) {
+          if(examInfo[i].schoolyear == schoolyear[schoolyear.length-1] && examInfo[i].schoolterm == schoolterm[schoolterm.length-1] && examInfo[i].grade == grade[grade.length-1]) {
+            examname.push(examInfo[i].examname);
           }
         }
+
+        examname = $.unique(examname);
+
+        for (var i = 0; i < schoolyear.length; i++) {
+          contList1 += '<li><a href="#">' + schoolyear[i] + '</a></li>'
+        }
+
+        for (var i = 0; i < schoolterm.length; i++) {
+          contList2 += '<li><a href="#">' + schoolterm[i] + '</a></li>'
+        }
+
+        for (var i = 0; i < grade.length; i++) {
+          contList3 += '<li><a href="#">' + grade[i] + '</a></li>'
+        }
+
+        schoolYearEl.children('.dropdown-menu').html(contList1);
+        schoolTermEl.children('.dropdown-menu').html(contList2);
+        schoolGradeEl.children('.dropdown-menu').html(contList3);
+
+        schoolYearEl.find('.name').text(schoolyear[schoolyear.length-1]);
+        schoolTermEl.find('.name').text(schoolterm[schoolterm.length-1]);
+        schoolGradeEl.find('.name').text(grade[grade.length-1]);
+
+        var examfullname = '';
+
+        for (var i = 0; i < examname.length; i++) {
+          examfullname = schoolYearEl.find('.name').text() + '学年' + schoolTermEl.find('.name').text() + schoolGradeEl.find('.name').text() + examname[i];
+          for (var j in examInfo) {
+            if(examInfo[j].fullname == examfullname) {
+              courseList.push(examInfo[j].courselist);
+              examName.push(examInfo[j].fullname);
+            }
+          }
+        }
+
+        cntTPL(examName, courseList);
+
+      } else {
+        classifyEl.find('.btn-search').addClass('disabled');
+        schoolYearEl.find('.dropdown-toggle').addClass('disabled');
+        schoolTermEl.find('.dropdown-toggle').addClass('disabled');
+        schoolGradeEl.find('.dropdown-toggle').addClass('disabled');
       }
-
-      cntTPL(examName, courseList);
-
-    } else {
-      classifyEl.find('.btn-search').addClass('disabled');
-      schoolYearEl.find('.dropdown-toggle').addClass('disabled');
-      schoolTermEl.find('.dropdown-toggle').addClass('disabled');
-      schoolGradeEl.find('.dropdown-toggle').addClass('disabled');
-    }
+    });
   });
 
   $('.dropdown-menu').on('click', 'a', function(){
@@ -166,7 +165,6 @@
           
           break;
       }
-
   });
 
   $('.btn-search').on('click', function(){

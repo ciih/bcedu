@@ -75,11 +75,7 @@ class QueryexamController extends Controller {
             $schoolgrade = I('schoolgrade');
             $course = I('course');
             foreach ($schoolyear as $key => $value) {
-                if($schoolterm[$key] == '全年') {
-                    $data[$key] = $examTable->where("schoolyear='$schoolyear[$key]' AND grade='$schoolgrade[$key]'")->order('id desc')->select();
-                } else {
-                    $data[$key] = $examTable->where("schoolyear='$schoolyear[$key]' AND schoolterm='$schoolterm[$key]' AND grade='$schoolgrade[$key]'")->order('id desc')->select();
-                }
+                $data[$key] = $examTable->where("schoolyear='$schoolyear[$key]' AND schoolterm='$schoolterm[$key]' AND grade='$schoolgrade[$key]'")->order('id desc')->select();
             }
 
             foreach ($data as $num => $item) {
