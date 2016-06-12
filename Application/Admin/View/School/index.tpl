@@ -34,7 +34,7 @@
 
 <div class="col-xs-12">
 	<h3 class="page-header">小学列表<span>(共涉及<%$juniorCount%>所学校)</span></h3>
-	<a href="__ROOT__/Excel/Template/小学列表.xls" class="btn blue btn-download-template">下载小学模板</a>
+	<a href="__ROOT__/Baseinfo/小学列表.xls" class="btn blue btn-download-template">下载小学模板</a>
 	<div class="table-responsive">
 		<table class="table table-bordered table-striped table-info">
 			<tbody>
@@ -54,7 +54,7 @@
 </div>
 <div class="col-xs-12">
 	<h3 class="page-header">初中列表<span>(共涉及<%$middleCount%>所学校)</span></h3>
-	<a href="__ROOT__/Excel/Template/初中列表.xls" class="btn blue btn-download-template">下载初中模板</a>
+	<a href="__ROOT__/Baseinfo/初中列表.xls" class="btn blue btn-download-template">下载初中模板</a>
 	<div class="table-responsive">
 		<table class="table table-bordered table-striped table-info">
 			<tbody>
@@ -74,7 +74,7 @@
 </div>
 <div class="col-xs-12">
 	<h3 class="page-header">高中列表<span>(共涉及<%$highCount%>所学校)</span></h3>
-	<a href="__ROOT__/Excel/Template/高中列表.xls" class="btn blue btn-download-template">下载高中模板</a>
+	<a href="__ROOT__/Baseinfo/高中列表.xls" class="btn blue btn-download-template">下载高中模板</a>
 	<div class="table-responsive">
 		<table class="table table-bordered table-striped table-info">
 			<tbody>

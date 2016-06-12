@@ -163,9 +163,11 @@
       var schoolgrade = schoolGradeEl.find('.name').text();
       var course = schoolCourseEl.find('.name').text();
 
-      $.get("/home/Queryexam/ajax_get_zvalue", {schoolyear: schoolyear, schoolterm: schoolterm, schoolgrade: schoolgrade, course: course, datatype: 'multi'}, function(data){
+      $.get("/home/Queryexam/ajax_get_zvalue", {schoolyear: schoolyear, schoolterm: schoolterm, schoolgrade: schoolgrade, course: course, schooltype: schooltype, datatype: 'multi'}, function(data){
         if(data) {
           var zvalueData = $.parseJSON(data);
+
+          console.log(zvalueData);
 
           var term = [],
               examnameFirst = [],

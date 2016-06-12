@@ -247,10 +247,9 @@
         course[i] = examnameSplit[3];
       }
 
-      $.get("/home/Queryexam/ajax_get_zvalue", {schoolyear: schoolyear, schoolterm: schoolterm, schoolgrade: schoolgrade, course: course, datatype: 'contrast'}, function(data){
+      $.get("/home/Queryexam/ajax_get_zvalue", {schoolyear: schoolyear, schoolterm: schoolterm, schoolgrade: schoolgrade, course: course, schooltype: schooltype, datatype: 'contrast'}, function(data){
         if(data) {
           var zvalueData = $.parseJSON(data);
-          console.log(zvalueData);
 
           var zvalueList = [];
 
@@ -288,8 +287,6 @@
             }
           }
 
-          console.log(zvalueSortList);
-
           zvalueList = zvalueSortList;
 
           for (i = 0; i < zvalueList.length; i++) {
@@ -310,7 +307,7 @@
 
           valueaddedObj = {
             title: {
-                text: course + '总分增值性评价'
+                text: course[0] + '总分增值性评价'
             },
             xAxis: {
                 categories: examname
