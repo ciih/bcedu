@@ -8,6 +8,8 @@ class ListController extends Controller {
         }
         
         $username = session('username');
+        $schoolgroup = session('schoolgroup');
+        $role = session('role');
 
     	$loadCss = getLoadCssStatic('list');
     	$loadJs = getLoadJsStatic('list');
@@ -28,6 +30,8 @@ class ListController extends Controller {
     	$this->assign('loadJs', $loadJs);
 
         $this->assign('username', $username);
+        $this->assign('schoolgroup', $schoolgroup);
+        $this->assign('role', $role);
         
     	$this->assign('juniorAreaName', $juniorSchoolData['areaName']);
     	$this->assign('juniorSchoolList', $juniorSchoolData['schoolArea']);

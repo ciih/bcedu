@@ -8,6 +8,8 @@ class ScatteranalysisController extends Controller {
         }
         
         $username = session('username');
+        $schoolgroup = session('schoolgroup');
+        $role = session('role');
         
         // 散点图
         $loadCss     = getLoadCssStatic('detail');
@@ -15,6 +17,8 @@ class ScatteranalysisController extends Controller {
         $loadPageJs  = getLoadPageJsStatic('scatteranalysis');
 
         $this->assign('username', $username);
+        $this->assign('schoolgroup', $schoolgroup);
+        $this->assign('role', $role);
 
         $page = strtolower(CONTROLLER_NAME);
         $type = I('type');

@@ -8,6 +8,8 @@ class ScoreanalysisController extends Controller {
         }
         
         $username = session('username');
+        $schoolgroup = session('schoolgroup');
+        $role = session('role');
         
         // 成绩深度分析
     	$loadCss     = getLoadCssStatic('detail');
@@ -23,6 +25,8 @@ class ScoreanalysisController extends Controller {
     	$this->assign('loadPageJs', $loadPageJs);
 
         $this->assign('username', $username);
+        $this->assign('schoolgroup', $schoolgroup);
+        $this->assign('role', $role);
 
         $this->assign('page', $page);
         $this->assign('type', $type);

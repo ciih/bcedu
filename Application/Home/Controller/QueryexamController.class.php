@@ -8,9 +8,9 @@ class QueryexamController extends Controller {
 
     	$examTable = M('exam');
     	if(empty($count)) {
-    		$data = $examTable->where("schooltype='$schooltype'")->order('id desc')->select();
+    		$data = $examTable->where("schooltype='$schooltype'")->order('uploaddate desc, id desc')->select();
     	} else {
-    		$data = $examTable->where("schooltype='$schooltype'")->order('id desc')->limit($count)->select();
+    		$data = $examTable->where("schooltype='$schooltype'")->order('uploaddate desc, id desc')->limit($count)->select();
     	}
         
         $this->ajaxReturn (json_encode($data),'JSON');

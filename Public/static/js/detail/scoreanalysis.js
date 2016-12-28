@@ -4,6 +4,11 @@
   var schooltype = classifyEl.attr('data-schooltype'),
       count      = 1;
 
+  var userEl = $('.login-info');
+  var username = userEl.attr('data-username'),
+      schoolgroup = userEl.attr('data-schoolgroup'),
+      role = parseInt(userEl.attr('data-role'));
+
   var schoolYearEl = $('#schoolyear-dropdown');
   var schoolTermEl = $('#schoolterm-dropdown');
   var schoolGradeEl = $('#grade-dropdown');
@@ -12,6 +17,20 @@
   var fullname = '',
       uploaddate = '',
       courselist = '';
+
+  var courseEnglishName = username.split('-')[1];
+
+  var courseObj = {
+    "yuwen" : "语文",
+    "shuxue" : "数学",
+    "yingyu" : "英语",
+    "wuli" : "物理",
+    "huaxue" : "化学",
+    "shengwu" : "生物",
+    "zhengzhi" : "政治",
+    "lishi" : "历史",
+    "dili" : "地理"
+  };
 
   $.get("/home/Queryexam/ajax_get_exam", {schooltype: schooltype, count: count}, function(data){
     if(data) {
@@ -41,9 +60,21 @@
           tpl = '',
           link = '';
 
-      for (var i = 0; i < len; i++) {
+      if(role < 3) {
+        for (var i = 0; i < len; i++) {
           link = '/Data/Word/' + fullname + '/' + course[i] + '.docx';
           tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ course[i] +'</a></li>';
+        }
+      } else if(role == 3) {
+        if(courseObj[courseEnglishName] == '数学' && (grade == '高二年级' || grade == '高三年级')) {
+          link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '(文).docx';
+          tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'(文)</a></li>';
+          link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '(理).docx';
+          tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'(理)</a></li>';
+        } else {
+          link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '.docx';
+          tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'</a></li>';
+        }
       }
       listEl.html(tpl);
 
@@ -67,9 +98,21 @@
         tpl = '',
         link = '';
 
-    for (var i = 0; i < len; i++) {
+    if(role < 3) {
+      for (var i = 0; i < len; i++) {
         link = '/Data/Word/' + fullname + '/' + course[i] + '.docx';
         tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ course[i] +'</a></li>';
+      }
+    } else if(role == 3) {
+      if(courseObj[courseEnglishName] == '数学' && (grade == '高二年级' || grade == '高三年级')) {
+        link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '(文).docx';
+        tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'(文)</a></li>';
+        link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '(理).docx';
+        tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'(理)</a></li>';
+      } else {
+        link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '.docx';
+        tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'</a></li>';
+      }
     }
     listEl.html(tpl);
   }

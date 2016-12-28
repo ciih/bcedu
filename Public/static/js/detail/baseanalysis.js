@@ -19,6 +19,25 @@
       grade = [],
       examname = [];
 
+  var userEl = $('.login-info');
+  var username = userEl.attr('data-username'),
+      schoolgroup = userEl.attr('data-schoolgroup'),
+      role = parseInt(userEl.attr('data-role'));
+
+  var courseEnglishName = username.split('-')[1];
+
+  var courseObj = {
+    "yuwen" : "语文",
+    "shuxue" : "数学",
+    "yingyu" : "英语",
+    "wuli" : "物理",
+    "huaxue" : "化学",
+    "shengwu" : "生物",
+    "zhengzhi" : "政治",
+    "lishi" : "历史",
+    "dili" : "地理"
+  };
+
   var schoollist;
 
   $.get("/home/Queryexam/ajax_get_school", {schooltype: schooltype}, function(data){
@@ -209,6 +228,7 @@
     var len = name.length,
         tpl = '',
         link = '';
+    var schoolgrade = schoolGradeEl.find('.name').text();
 
     for (var i = 0; i < len; i++) {
       var listItem = list[i].split(',');
@@ -226,9 +246,21 @@
         tpl += '全区';
         tpl += '</td>';
         tpl += '<td>';
-        for (var j = 0; j < listItem.length; j++) {
-          link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + name[i] + '_' + listItem[j] + '.pdf';
-          tpl += '<a href="'+ link +'">'+ listItem[j] +'</a>';
+        if(role < 3) {
+          for (var j = 0; j < listItem.length; j++) {
+            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + name[i] + '_' + listItem[j] + '.pdf';
+            tpl += '<a href="'+ link +'">'+ listItem[j] +'</a>';
+          }
+        } else if(role == 3) {
+          if(courseObj[courseEnglishName] == '数学' && (schoolgrade == '高二年级' || schoolgrade == '高三年级')) {
+            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + name[i] + '_' + courseObj[courseEnglishName] + '(文).pdf';
+            tpl += '<a href="'+ link +'">'+ courseObj[courseEnglishName] +'(文)</a>';
+            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + name[i] + '_' + courseObj[courseEnglishName] + '(理).pdf';
+            tpl += '<a href="'+ link +'">'+ courseObj[courseEnglishName] +'(理)</a>';
+          } else {
+            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + name[i] + '_' + courseObj[courseEnglishName] + '.pdf';
+            tpl += '<a href="'+ link +'">'+ courseObj[courseEnglishName] +'</a>';
+          }
         }
         tpl += '</td>';
         tpl += '</tr>';
@@ -239,9 +271,21 @@
         tpl += schoollist[m];
         tpl += '</td>';
         tpl += '<td>';
-        for (var n = 0; n < listItem.length; n++) {
-          link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + schoollist[m] + '_' + name[i] + '_' + listItem[n] + '.pdf';
-          tpl += '<a href="'+ link +'">'+ listItem[n] +'</a>';
+        if(role < 3) {
+          for (var n = 0; n < listItem.length; n++) {
+            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + schoollist[m] + '_' + name[i] + '_' + listItem[n] + '.pdf';
+            tpl += '<a href="'+ link +'">'+ listItem[n] +'</a>';
+          }
+        } else if(role == 3) {
+          if(courseObj[courseEnglishName] == '数学' && (schoolgrade == '高二年级' || schoolgrade == '高三年级')) {
+            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + schoollist[m] + '_' + courseObj[courseEnglishName] + '(文).pdf';
+            tpl += '<a href="'+ link +'">'+ courseObj[courseEnglishName] +'(文)</a>';
+            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + schoollist[m] + '_' + courseObj[courseEnglishName] + '(理).pdf';
+            tpl += '<a href="'+ link +'">'+ courseObj[courseEnglishName] +'(理)</a>';
+          } else {
+            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + schoollist[m] + '_' + courseObj[courseEnglishName] + '.pdf';
+            tpl += '<a href="'+ link +'">'+ courseObj[courseEnglishName] +'</a>';
+          }
         }
         tpl += '</td>';
         tpl += '</tr>';

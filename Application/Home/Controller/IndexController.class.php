@@ -21,10 +21,12 @@ class IndexController extends Controller {
 		$data = $userTable->where("username='$username' AND password='$pwd'")->select();
 
 		if(!empty($data)) {
-			if($data[0]['role'] == 1) {
-				session('username',$data[0]['username']);
+			if($data[0]['role'] < 100) {
+        session('username',$data[0]['username']);
+        session('schoolgroup',$data[0]['schoolgroup']);
+				session('role',$data[0]['role']);
 				$this->redirect('/home/list/');
-			} elseif($data[0]['role'] == 2) {
+			} elseif($data[0]['role'] == 100) { // 对特殊组进行单独处理
 				session('username',$data[0]['username']);
 				$this->redirect('/home/detail/');
 			} else {

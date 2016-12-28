@@ -8,6 +8,8 @@ class ValueaddedController extends Controller {
         }
         
         $username = session('username');
+        $schoolgroup = session('schoolgroup');
+        $role = session('role');
         
         // 增值性评价
         $loadCss     = getLoadCssStatic('detail');
@@ -42,6 +44,8 @@ class ValueaddedController extends Controller {
         }
         
         $username = session('username');
+        $schoolgroup = session('schoolgroup');
+        $role = session('role');
         
         // 增值性评价
         $loadCss     = getLoadCssStatic('detail');
@@ -49,6 +53,8 @@ class ValueaddedController extends Controller {
         $loadPageJs  = getLoadPageJsStatic('valueaddedsingle');
 
         $this->assign('username', $username);
+        $this->assign('schoolgroup', $schoolgroup);
+        $this->assign('role', $role);
 
         $page = strtolower(CONTROLLER_NAME);
         $type = I('type');
@@ -73,6 +79,8 @@ class ValueaddedController extends Controller {
         }
         
         $username = session('username');
+        $schoolgroup = session('schoolgroup');
+        $role = session('role');
         
         // 增值性评价
         $loadCss     = getLoadCssStatic('detail');
@@ -80,6 +88,8 @@ class ValueaddedController extends Controller {
         $loadPageJs  = getLoadPageJsStatic('valueaddedmulti');
 
         $this->assign('username', $username);
+        $this->assign('schoolgroup', $schoolgroup);
+        $this->assign('role', $role);
 
         $page = strtolower(CONTROLLER_NAME);
         $type = I('type');
@@ -104,6 +114,8 @@ class ValueaddedController extends Controller {
         }
         
         $username = session('username');
+        $schoolgroup = session('schoolgroup');
+        $role = session('role');
         
         // 增值性评价
         $loadCss     = getLoadCssStatic('detail');
@@ -111,10 +123,21 @@ class ValueaddedController extends Controller {
         $loadPageJs  = getLoadPageJsStatic('valueaddedcontrast');
 
         $this->assign('username', $username);
+        $this->assign('schoolgroup', $schoolgroup);
+        $this->assign('role', $role);
 
         $page = strtolower(CONTROLLER_NAME);
         $type = I('type');
         $schoolname = I('schoolname');
+
+                
+        // 获取考试数据目录
+        /*$zValueObj = new \Admin\Model\ZValueData($date, $foldername);
+        $zValueData = $zValueObj->getZValueData();
+
+        var_export('===========$zValueData==========');
+        var_export($zValueData);
+        exit();*/
 
         $this->assign('loadCss', $loadCss);
         $this->assign('loadJs', $loadJs);
