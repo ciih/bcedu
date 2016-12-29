@@ -21,15 +21,15 @@
   var courseEnglishName = username.split('-')[1];
 
   var courseObj = {
-    "yuwen" : "ÓïÎÄ",
-    "shuxue" : "ÊıÑ§",
-    "yingyu" : "Ó¢Óï",
-    "wuli" : "ÎïÀí",
-    "huaxue" : "»¯Ñ§",
-    "shengwu" : "ÉúÎï",
-    "zhengzhi" : "ÕşÖÎ",
-    "lishi" : "ÀúÊ·",
-    "dili" : "µØÀí"
+    "yuwen" : "è¯­æ–‡",
+    "shuxue" : "æ•°å­¦",
+    "yingyu" : "è‹±è¯­",
+    "wuli" : "ç‰©ç†",
+    "huaxue" : "åŒ–å­¦",
+    "shengwu" : "ç”Ÿç‰©",
+    "zhengzhi" : "æ”¿æ²»",
+    "lishi" : "å†å²",
+    "dili" : "åœ°ç†"
   };
 
   $.get("/home/Queryexam/ajax_get_exam", {schooltype: schooltype, count: count}, function(data){
@@ -66,11 +66,11 @@
           tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ course[i] +'</a></li>';
         }
       } else if(role == 3) {
-        if(courseObj[courseEnglishName] == 'ÊıÑ§' && (grade == '¸ß¶şÄê¼¶' || grade == '¸ßÈıÄê¼¶')) {
-          link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '(ÎÄ).docx';
-          tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'(ÎÄ)</a></li>';
-          link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '(Àí).docx';
-          tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'(Àí)</a></li>';
+        if(courseObj[courseEnglishName] == 'æ•°å­¦' && (grade == 'é«˜äºŒå¹´çº§' || grade == 'é«˜ä¸‰å¹´çº§')) {
+          link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '(æ–‡).docx';
+          tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'(æ–‡)</a></li>';
+          link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '(ç†).docx';
+          tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'(ç†)</a></li>';
         } else {
           link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '.docx';
           tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'</a></li>';
@@ -104,11 +104,11 @@
         tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ course[i] +'</a></li>';
       }
     } else if(role == 3) {
-      if(courseObj[courseEnglishName] == 'ÊıÑ§' && (grade == '¸ß¶şÄê¼¶' || grade == '¸ßÈıÄê¼¶')) {
-        link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '(ÎÄ).docx';
-        tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'(ÎÄ)</a></li>';
-        link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '(Àí).docx';
-        tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'(Àí)</a></li>';
+      if(courseObj[courseEnglishName] == 'æ•°å­¦' && (grade == 'é«˜äºŒå¹´çº§' || grade == 'é«˜ä¸‰å¹´çº§')) {
+        link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '(æ–‡).docx';
+        tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'(æ–‡)</a></li>';
+        link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '(ç†).docx';
+        tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'(ç†)</a></li>';
       } else {
         link = '/Data/Word/' + fullname + '/' + courseObj[courseEnglishName] + '.docx';
         tpl += '<li><a href="'+ link +'"><img src="../Public/static/img/icon_book.jpg" />'+ courseObj[courseEnglishName] +'</a></li>';

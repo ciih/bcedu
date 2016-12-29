@@ -195,6 +195,7 @@
     var len = name.length,
         tpl = '',
         link = '';
+    var schoolgrade = schoolGradeEl.find('.name').text();
 
     for (var i = 0; i < len; i++) {
       var listItem = list[i].split(',')
@@ -207,7 +208,7 @@
           tpl += '<a href="'+ link +'">'+ listItem[j] +'</a>';
         }
       } else if(role == 3) {
-        if(courseObj[courseEnglishName] == '数学' && (grade == '高二年级' || grade == '高三年级')) {
+        if(courseObj[courseEnglishName] == '数学' && (schoolgrade == '高二年级' || schoolgrade == '高三年级')) {
           link = '/Data/Word/' + name[i] + '/' + courseObj[courseEnglishName] + '(文).docx';
           tpl += '<a href="'+ link +'">'+ courseObj[courseEnglishName] +'(文)</a>';
           link = '/Data/Word/' + name[i] + '/' + courseObj[courseEnglishName] + '(理).docx';
