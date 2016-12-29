@@ -29,6 +29,10 @@ class ValueaddedController extends Controller {
         $this->assign('loadJs', $loadJs);
         $this->assign('loadPageJs', $loadPageJs);
 
+        $this->assign('username', $username);
+        $this->assign('schoolgroup', $schoolgroup);
+        $this->assign('role', $role);
+
         $this->assign('page', $page);
         $this->assign('type', $type);
         $this->assign('schoolname', $schoolname);

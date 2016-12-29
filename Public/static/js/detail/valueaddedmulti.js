@@ -149,17 +149,12 @@
           var courselist = ['理科','文科'];
           var contList = '';
 
-          if(role < 3) {
+          if(schoolgrade == '高二年级' || schoolgrade == '高三年级') {
             for (var i = 0; i < courselist.length; i++) {
               contList += '<li><a href="#">' + courselist[i] + '</a></li>';
             }
-          } else if(role == 3) {
-            if(courseObj[courseEnglishName] == '数学' && (schoolgrade == '高二年级' || schoolgrade == '高三年级')) {
-              contList += '<li><a href="#">' + courseObj[courseEnglishName] + '(文)</a></li>';
-              contList += '<li><a href="#">' + courseObj[courseEnglishName] + '(理)</a></li>';
-            } else {
-              contList += '<li><a href="#">' + courseObj[courseEnglishName] + '</a></li>';
-            }
+          } else {
+            contList += '<li><a href="#">无</a></li>';
           }
 
           schoolCourseEl.find('.name').text('考试科目');

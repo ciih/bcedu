@@ -187,8 +187,10 @@
             }
           }
 
-          courselist.push('理科');
-          courselist.push('文科');
+          if(schoolgrade == '高二年级' || schoolgrade == '高三年级') {
+            courselist.push('理科');
+            courselist.push('文科');
+          }
 
           if(role < 3) {
             for (var i = 0; i < courselist.length; i++) {

@@ -8,8 +8,10 @@
 		<div class="detail-bd">
 			<ul class="selection-section">
 				<li><a href="valueadded/single?type=<?php echo $type ?>&schoolname=<?php echo $schoolname ?>" class="btn btn-primary">单次-增值性评价</a></li>
+				<?php if($type == 'high') { ?>
 				<li><a href="valueadded/multi?type=<?php echo $type ?>&schoolname=<?php echo $schoolname ?>" class="btn btn-primary">历次-增值性评价</a></li>
 				<li><a href="valueadded/contrast?type=<?php echo $type ?>&schoolname=<?php echo $schoolname ?>" class="btn btn-primary">对比-增值性评价</a></li>
+				<?php } ?>
 			</ul>
 		</div>
 	</div>
