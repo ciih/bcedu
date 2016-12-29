@@ -278,12 +278,12 @@
           }
         } else if(role == 3) {
           if(courseObj[courseEnglishName] == '数学' && (schoolgrade == '高二年级' || schoolgrade == '高三年级')) {
-            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + schoollist[m] + '_' + courseObj[courseEnglishName] + '(文).pdf';
+            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + schoollist[m] + '_' + name[i] + '_' courseObj[courseEnglishName] + '(文).pdf';
             tpl += '<a href="'+ link +'">'+ courseObj[courseEnglishName] +'(文)</a>';
-            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + schoollist[m] + '_' + courseObj[courseEnglishName] + '(理).pdf';
+            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + schoollist[m] + '_' + name[i] + '_' courseObj[courseEnglishName] + '(理).pdf';
             tpl += '<a href="'+ link +'">'+ courseObj[courseEnglishName] +'(理)</a>';
           } else {
-            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + schoollist[m] + '_' + courseObj[courseEnglishName] + '.pdf';
+            link = '/Data/PDF/' + name[i] + '基础数据分析' + '/' + schoollist[m] + '_' + name[i] + '_' courseObj[courseEnglishName] + '.pdf';
             tpl += '<a href="'+ link +'">'+ courseObj[courseEnglishName] +'</a>';
           }
         }
